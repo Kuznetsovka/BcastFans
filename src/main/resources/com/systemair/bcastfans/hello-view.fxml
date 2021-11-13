@@ -1,46 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-
-<VBox alignment="CENTER" prefHeight="239.0" prefWidth="870.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.TableController">
+<VBox alignment="CENTER" prefHeight="239.0" prefWidth="870.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
 
     <Label text="BCastFans" wrapText="true">
-      <font>
-         <Font name="Chiller" size="24.0" />
-      </font></Label>
+        <font>
+            <Font name="Chiller" size="24.0" />
+        </font></Label>
     <Button onAction="#onHelloButtonClick" text="Считать" />
-   <HBox prefHeight="100.0" prefWidth="906.0">
-      <children>
-         <TableView prefHeight="100.0" prefWidth="456.0" fx:id="tableInputData">
-           <columns>
-               <TableColumn prefWidth="34.0" text="Да" fx:id="columnChoose" />
-               <TableColumn prefWidth="32.0" text="#" fx:id="columnNumberSystem" />
-               <TableColumn text="Расход" fx:id="columnAirFlow"/>
-               <TableColumn prefWidth="86.0" text="Потери" fx:id="columnAirDrop"/>
-               <TableColumn prefWidth="112.0" text="Тип монтажа" fx:id="columnTypeMontage"/>
-               <TableColumn prefWidth="112.0" text="Тип установки" fx:id="columnSubType"/>
-           </columns>
-         </TableView>
-         <TableView prefHeight="100.0" prefWidth="375.0" fx:id="tableResult">
-           <columns>
-             <TableColumn prefWidth="75.0" text="Модель" fx:id="columnModel"/>
-             <TableColumn prefWidth="75.0" text="Артикул" fx:id="columnArticle"/>
-               <TableColumn prefWidth="75.0" text="Мощность" fx:id="columnPower"/>
-               <TableColumn prefWidth="75.0" text="Фазность" fx:id="columnPhase"/>
-               <TableColumn prefWidth="75.0" text="Цена" fx:id="columnPrice"/>
-           </columns>
-         </TableView>
-      </children>
-      <VBox.margin>
-         <Insets />
-      </VBox.margin>
-   </HBox>
-
-
+    <TableView maxHeight="500" prefWidth="900" fx:id="tableInputData">
+        <columns>
+            <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
+                <graphic>
+                    <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize"
+                              prefHeight="17.0" prefWidth="23.0"/>
+                </graphic>
+            </TableColumn>
+            <TableColumn prefWidth="32.0" text="#" fx:id="columnNumberSystem"/>
+            <TableColumn text="Расход" fx:id="columnAirFlow"/>
+            <TableColumn prefWidth="86.0" text="Потери" fx:id="columnAirDrop"/>
+            <TableColumn prefWidth="112.0" text="Тип монтажа" fx:id="columnTypeMontage"/>
+            <TableColumn prefWidth="112.0" text="Тип установки" fx:id="columnSubType"/>
+            <TableColumn prefWidth="75.0" text="Модель" fx:id="columnModel"/>
+            <TableColumn prefWidth="75.0" text="Артикул" fx:id="columnArticle"/>
+            <TableColumn prefWidth="75.0" text="Мощность" fx:id="columnPower"/>
+            <TableColumn prefWidth="75.0" text="Фазность" fx:id="columnPhase"/>
+            <TableColumn prefWidth="75.0" text="Цена" fx:id="columnPrice"/>
+        </columns>
+    </TableView>
 </VBox>

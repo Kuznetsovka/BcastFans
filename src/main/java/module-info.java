@@ -6,9 +6,12 @@ module com.systemair.bcastfans {
     requires com.dlsc.formsfx;
     requires validatorfx;
     requires org.kordamp.bootstrapfx.core;
+    requires lombok;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;
     exports com.systemair.bcastfans.domain;
     opens com.systemair.bcastfans.domain to javafx.fxml;
+    exports com.systemair.bcastfans.controller;
+    opens com.systemair.bcastfans.controller to javafx.fxml;
 }
