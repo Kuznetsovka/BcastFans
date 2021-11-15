@@ -3,12 +3,14 @@ package com.systemair.bcastfans.controller;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.System;
 import com.systemair.bcastfans.service.TableService;
+import com.systemair.bcastfans.service.TableUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -23,7 +25,7 @@ import java.util.ResourceBundle;
 public class TableController implements Initializable {
     private TableService tableService = new TableService();
     @FXML
-    TableView<System> tableInputData;
+    TableView<System> table;
     @FXML
     private CheckBox checkBox;
     @FXML
@@ -59,7 +61,7 @@ public class TableController implements Initializable {
             );
     @FXML
     protected void onHelloButtonClick() {
-        tableService.fillData(inputData,tableInputData,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
+        tableService.fillData(inputData, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
     }
 
     @FXML
@@ -73,5 +75,10 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
+        // enable multi-selection
+        //table.getSelectionModel().setCellSelectionEnabled(true); Выбор одной ячейки
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        // enable copy/paste
+        TableUtils.installCopyPasteHandler(table);
     }
 }
