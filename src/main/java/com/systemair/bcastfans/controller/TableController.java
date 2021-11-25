@@ -1,12 +1,13 @@
 package com.systemair.bcastfans.controller;
-import com.gembox.spreadsheet.*;
 
+import com.gembox.spreadsheet.*;
 import com.systemair.bcastfans.domain.Fan;
+import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.System;
+import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -46,9 +47,9 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<System,String> columnAirDrop;
     @FXML
-    TableColumn<System,String> columnTypeMontage;
+    TableColumn<System, TypeMontage> columnTypeMontage;
     @FXML
-    TableColumn<System,String> columnSubType;
+    TableColumn<System,SubType> columnSubType;
     @FXML
     TableColumn<Fan,String> columnModel;
     @FXML
@@ -59,6 +60,9 @@ public class TableController implements Initializable {
     TableColumn<Fan,String> columnPhase;
     @FXML
     TableColumn<Fan,Double> columnPrice;
+
+    ObservableList<SubType> genderList = FXCollections.observableArrayList(//
+            SubType.values());
 
     private ObservableList<System> inputData;
 
@@ -106,7 +110,7 @@ public class TableController implements Initializable {
             list.add(new System(row));
         }
         inputData = FXCollections.observableArrayList(list);
-        tableService.fillData(inputData, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
+        tableService.fillInputData(inputData, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
     }
 
     @SneakyThrows

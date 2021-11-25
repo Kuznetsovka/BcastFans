@@ -1,21 +1,26 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.System;
+import com.systemair.bcastfans.domain.TypeMontage;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 
 public class TableService {
-    public void fillData(ObservableList<System> inputData, TableView<System> tableInputData, TableColumn<System, String> columnNumberSystem, TableColumn<System, String> columnAirFlow, TableColumn<System, String> columnAirDrop, TableColumn<System, String> columnTypeMontage, TableColumn<System, String> columnSubType) {
+    public void fillInputData(ObservableList<System> inputData, TableView<System> tableInputData, TableColumn<System, String> columnNumberSystem, TableColumn<System, String> columnAirFlow, TableColumn<System, String> columnAirDrop, TableColumn<System, TypeMontage> columnTypeMontage, TableColumn<System, SubType> columnSubType) {
         tableInputData.setEditable(true);
-        columnNumberSystem.setEditable(true);
-        columnAirFlow.setEditable(true);
-        columnNumberSystem.setCellValueFactory(new PropertyValueFactory<>("name"));
 
+        columnNumberSystem.setCellValueFactory(
+                new PropertyValueFactory<>("name"));
         columnNumberSystem.setCellFactory(TextFieldTableCell.forTableColumn());
         columnNumberSystem.setOnEditCommit(
                 (TableColumn.CellEditEvent<System, String> t) -> {
@@ -45,27 +50,63 @@ public class TableService {
                     ).setAirDrop(t.getNewValue());
                 });
 
-        columnTypeMontage.setCellValueFactory(
-                new PropertyValueFactory<>("typeMontage"));
+        // ==== TypeMontage ====
 
-        columnTypeMontage.setCellFactory(ComboBoxTableCell.forTableColumn());
-        columnTypeMontage.setOnEditCommit(
-                (TableColumn.CellEditEvent<System, String> t) -> {
-                    (t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                    ).setTypeMontage(t.getNewValue());
-                });
+        ObservableList<TypeMontage> typeMontages = FXCollections.observableArrayList(
+                TypeMontage.values());
 
-        columnSubType.setCellValueFactory(
-                new PropertyValueFactory<>("subType"));
+        columnTypeMontage.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<System, TypeMontage>, ObservableValue<TypeMontage>>() {
 
-        columnSubType.setCellFactory(ComboBoxTableCell.forTableColumn());
-        columnSubType.setOnEditCommit(
-                (TableColumn.CellEditEvent<System, String> t) -> {
-                    (t.getTableView().getItems().get(
-                            t.getTablePosition().getRow())
-                    ).setSubType(t.getNewValue());
-                });
+            @Override
+            public ObservableValue<TypeMontage> call(TableColumn.CellDataFeatures<System, TypeMontage> param) {
+                System system = param.getValue();
+                // F,M
+                TypeMontage typeMontage = system.getTypeMontage();
+                return new SimpleObjectProperty<TypeMontage>(typeMontage);
+            }
+        });
+
+        columnTypeMontage.setCellFactory(ComboBoxTableCell.forTableColumn(typeMontages));
+
+        columnTypeMontage.setOnEditCommit((TableColumn.CellEditEvent<System, TypeMontage> event) -> {
+            TablePosition<System, TypeMontage> pos = event.getTablePosition();
+
+            TypeMontage newTypeMontage = event.getNewValue();
+
+            int row = pos.getRow();
+            System system = event.getTableView().getItems().get(row);
+
+            system.setTypeMontage(newTypeMontage);
+        });
+
+        // ==== SubType ====
+
+        ObservableList<SubType> subTypes = FXCollections.observableArrayList(
+                SubType.values());
+
+        columnSubType.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<System, SubType>, ObservableValue<SubType>>() {
+
+            @Override
+            public ObservableValue<SubType> call(TableColumn.CellDataFeatures<System, SubType> param) {
+                System system = param.getValue();
+                // F,M
+                SubType subType = system.getSubType();
+                return new SimpleObjectProperty<SubType>(subType);
+            }
+        });
+
+        columnSubType.setCellFactory(ComboBoxTableCell.forTableColumn(subTypes));
+
+        columnSubType.setOnEditCommit((TableColumn.CellEditEvent<System, SubType> event) -> {
+            TablePosition<System, SubType> pos = event.getTablePosition();
+
+            SubType newSubType = event.getNewValue();
+
+            int row = pos.getRow();
+            System system = event.getTableView().getItems().get(row);
+
+            system.setSubType(newSubType);
+        });
 
         tableInputData.setItems(inputData);
     }

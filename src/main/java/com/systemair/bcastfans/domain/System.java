@@ -1,7 +1,7 @@
 package com.systemair.bcastfans.domain;
 
+import com.systemair.bcastfans.intarface.EnumInterface;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.control.CheckBox;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ public class System {
     private SimpleStringProperty name;
     private SimpleStringProperty airFlow;
     private SimpleStringProperty airDrop;
-    private SimpleStringProperty typeMontage;
-    private SimpleStringProperty subType;
+    private TypeMontage typeMontage;
+    private SubType subType;
     private CheckBox check;
     private Fan fan;
     private Map<Integer,String> row = new HashMap<>();
@@ -22,8 +22,8 @@ public class System {
         this.name = new SimpleStringProperty(name);
         this.airFlow = new SimpleStringProperty(airFlow);
         this.airDrop = new SimpleStringProperty(airDrop);
-        this.typeMontage = new SimpleStringProperty(typeMontage);
-        this.subType = new SimpleStringProperty(subType);
+        this.typeMontage = TypeMontage.valueOf(typeMontage);
+        this.subType = SubType.valueOf(subType);
         check = new CheckBox();
     }
 
@@ -31,11 +31,11 @@ public class System {
         this.name = new SimpleStringProperty(row.get(0));
         this.airFlow = new SimpleStringProperty(row.get(1));
         this.airDrop = new SimpleStringProperty(row.get(2));
-        this.typeMontage = new SimpleStringProperty(row.get(3));
+        this.typeMontage = TypeMontage.getByDescription(row.get(3));
         if (row.size() > 4)
-            this.subType = new SimpleStringProperty(row.get(4));
+            this.subType = SubType.getByDescription(row.get(4));
         else
-            this.subType = new SimpleStringProperty();
+            this.subType = SubType.NONE;
         check = new CheckBox();
     }
 
@@ -91,28 +91,20 @@ public class System {
         this.airDrop.set(airDrop);
     }
 
-    public String getTypeMontage() {
-        return typeMontage.get();
-    }
-
-    public SimpleStringProperty typeMontageProperty() {
+    public TypeMontage getTypeMontage() {
         return typeMontage;
     }
 
-    public void setTypeMontage(String typeMontage) {
-        this.typeMontage.set(typeMontage);
+    public void setTypeMontage(TypeMontage typeMontage) {
+        this.typeMontage = typeMontage;
     }
 
-    public String getSubType() {
-        return subType.get();
-    }
-
-    public SimpleStringProperty subTypeProperty() {
+    public SubType getSubType() {
         return subType;
     }
 
-    public void setSubType(String subType) {
-        this.subType.set(subType);
+    public void setSubType(SubType subType) {
+        this.subType = subType;
     }
 
     public Map<Integer, String> getRow() {
@@ -121,8 +113,8 @@ public class System {
         row.put(1, name.getValue());
         row.put(2, airFlow.getValue());
         row.put(3, airDrop.getValue());
-        row.put(4, typeMontage.getValue());
-        row.put(5, subType.getValue());
+        row.put(4, typeMontage.getDescription());
+        row.put(5, subType.getDescription());
         if (fan != null) {
             row.put(6, fan.getModel());
             row.put(7,fan.getArticle());
