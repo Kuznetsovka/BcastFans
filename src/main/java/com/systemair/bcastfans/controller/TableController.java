@@ -1,16 +1,16 @@
 package com.systemair.bcastfans.controller;
 
 import com.gembox.spreadsheet.*;
-import org.openqa.selenium.chrome.ChromeDriver;
 import com.systemair.bcastfans.domain.Fan;
-import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,7 +20,9 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -76,9 +78,26 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
-        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\DriverChrome\\chromedriver.exe");
-        WebDriver driver = new ChromeDriver();
-        driver.get("http://www.google.com");
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        try {
+            WebDriver driver = new ChromeDriver();
+            driver.get("http://www.google.com");
+        } catch(SessionNotCreatedException e) {
+            showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
+        } catch(IllegalArgumentException e) {
+            showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
+        } finally {
+            System.exit(0);
+        }
+    }
+
+    private void showAlert(String alertTxt) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Error");
+        alert.setHeaderText("Description:");
+        alert.setContentText(alertTxt);
+        alert.showAndWait();
+
     }
 
     @SneakyThrows
