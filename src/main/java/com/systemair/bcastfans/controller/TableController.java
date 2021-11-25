@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -78,10 +79,17 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        initializeBrowser();
+    }
+
+    private void initializeBrowser() {
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver96.exe");
         try {
-            WebDriver driver = new ChromeDriver();
-            driver.get("http://www.google.com");
+            ChromeOptions chromeOptions = new ChromeOptions();
+            chromeOptions.setHeadless(false);//выбор фонового режима true
+            WebDriver driver = new ChromeDriver(chromeOptions);
+            driver.get("https://www.systemair.com/ru/");
+            //driver.close();
         } catch(SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch(IllegalArgumentException e) {
