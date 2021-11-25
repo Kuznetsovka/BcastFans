@@ -6,6 +6,7 @@ import com.systemair.bcastfans.domain.System;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
@@ -41,9 +42,9 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<System,String> columnNumberSystem;
     @FXML
-    TableColumn<System,Integer> columnAirFlow;
+    TableColumn<System,String> columnAirFlow;
     @FXML
-    TableColumn<System,Integer> columnAirDrop;
+    TableColumn<System,String> columnAirDrop;
     @FXML
     TableColumn<System,String> columnTypeMontage;
     @FXML
@@ -151,5 +152,8 @@ public class TableController implements Initializable {
         worksheet.getCell(0, 8).setValue("Мощность");
         worksheet.getCell(0, 9).setValue("Фазность");
         worksheet.getCell(0, 10).setValue("Цена");
+    }
+
+    public void calculate() {
     }
 }
