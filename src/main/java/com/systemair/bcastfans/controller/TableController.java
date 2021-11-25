@@ -76,7 +76,7 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", "C:\\ProgramData\\DriverChrome\\chromedriver.exe");
         WebDriver driver = new ChromeDriver();
         driver.get("http://www.google.com");
     }
