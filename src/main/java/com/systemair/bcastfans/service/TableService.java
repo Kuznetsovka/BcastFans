@@ -19,6 +19,8 @@ public class TableService {
     public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType) {
         tableInputData.setEditable(true);
 
+        // ==== Name ====
+
         columnNumberSystem.setCellValueFactory(
                 new PropertyValueFactory<>("name"));
         columnNumberSystem.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -26,6 +28,8 @@ public class TableService {
                 (TableColumn.CellEditEvent<FanUnit, String> t) -> (
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
                 ).setName(t.getNewValue()));
+
+        // ==== airFlow ====
 
         columnAirFlow.setCellValueFactory(
                 new PropertyValueFactory<>("airFlow"));
@@ -35,6 +39,7 @@ public class TableService {
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
                 ).setAirFlow(t.getNewValue()));
 
+        // ==== airDrop ====
 
         columnAirDrop.setCellValueFactory(
                 new PropertyValueFactory<>("airDrop"));
