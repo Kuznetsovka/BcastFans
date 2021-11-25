@@ -8,6 +8,8 @@ module com.systemair.bcastfans {
     requires org.kordamp.bootstrapfx.core;
     requires lombok;
     requires gembox.spreadsheet;
+    requires org.seleniumhq.selenium.api;
+    requires org.seleniumhq.selenium.chrome_driver;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;

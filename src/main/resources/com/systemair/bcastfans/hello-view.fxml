@@ -41,6 +41,7 @@
         </padding>
         <Button layoutX="611.0" layoutY="753.0" mnemonicParsing="false" onAction="#load" text="Load ..." />
         <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#save" text="Save as ..." />
+        <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#clear" text="Clear" />
         <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
     </HBox>
 </VBox>

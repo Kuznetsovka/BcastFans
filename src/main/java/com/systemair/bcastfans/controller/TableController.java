@@ -1,9 +1,10 @@
 package com.systemair.bcastfans.controller;
 
 import com.gembox.spreadsheet.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
-import com.systemair.bcastfans.domain.System;
+import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
@@ -19,6 +20,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.openqa.selenium.WebDriver;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,21 +37,21 @@ public class TableController implements Initializable {
     }
     private TableService tableService = new TableService();
     @FXML
-    TableView<System> table;
+    TableView<FanUnit> table;
     @FXML
     private CheckBox checkBox;
     @FXML
-    TableColumn<System, Boolean> columnChoose;
+    TableColumn<FanUnit, Boolean> columnChoose;
     @FXML
-    TableColumn<System,String> columnNumberSystem;
+    TableColumn<FanUnit,String> columnNumberSystem;
     @FXML
-    TableColumn<System,String> columnAirFlow;
+    TableColumn<FanUnit,String> columnAirFlow;
     @FXML
-    TableColumn<System,String> columnAirDrop;
+    TableColumn<FanUnit,String> columnAirDrop;
     @FXML
-    TableColumn<System, TypeMontage> columnTypeMontage;
+    TableColumn<FanUnit, TypeMontage> columnTypeMontage;
     @FXML
-    TableColumn<System,SubType> columnSubType;
+    TableColumn<FanUnit,SubType> columnSubType;
     @FXML
     TableColumn<Fan,String> columnModel;
     @FXML
@@ -61,15 +63,12 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<Fan,Double> columnPrice;
 
-    ObservableList<SubType> genderList = FXCollections.observableArrayList(//
-            SubType.values());
-
-    private ObservableList<System> inputData;
+    private ObservableList<FanUnit> inputData;
 
     @FXML
     public void checkBoxInitialize() {
         boolean checkBtn = checkBox.isSelected();
-        for (System n : inputData) {
+        for (FanUnit n : inputData) {
             n.setCheck(checkBtn);
         }
     }
@@ -77,6 +76,9 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
+        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver.exe");
+        WebDriver driver = new ChromeDriver();
+        driver.get("http://www.google.com");
     }
 
     @SneakyThrows
@@ -93,7 +95,7 @@ public class TableController implements Initializable {
         int row = 1;
         while(worksheet.getCell(row++, 0).getValueType() != CellValueType.NULL){
             rows = new ArrayList<>();
-            for (int column = 1; column < lastColumn; column++) {
+            for (int column = 0; column < lastColumn; column++) {
                 ExcelCell cell = worksheet.getCell(row, column);
                 if (cell.getValueType() != CellValueType.NULL)
                     rows.add(cell.getValue().toString());
@@ -105,9 +107,9 @@ public class TableController implements Initializable {
     }
 
     private void fillTable(@NonNull ArrayList<ArrayList<String>> dataSource) {
-        ArrayList<System> list = new ArrayList<>();
+        ArrayList<FanUnit> list = new ArrayList<>();
         for (ArrayList<String> row : dataSource) {
-            list.add(new System(row));
+            list.add(new FanUnit(row));
         }
         inputData = FXCollections.observableArrayList(list);
         tableService.fillInputData(inputData, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
@@ -119,7 +121,7 @@ public class TableController implements Initializable {
         ExcelWorksheet worksheet = file.addWorksheet("sheet");
         setHeader(worksheet);
         for (int row = 0; row < table.getItems().size(); row++) {
-            System cells = table.getItems().get(row);
+            FanUnit cells = table.getItems().get(row);
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
                 Integer column = entry.getKey();
                 String value = entry.getValue();
@@ -159,5 +161,9 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
+    }
+
+    public void clear() {
+        inputData.clear();
     }
 }
