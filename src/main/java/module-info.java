@@ -7,6 +7,7 @@ module com.systemair.bcastfans {
     requires validatorfx;
     requires org.kordamp.bootstrapfx.core;
     requires lombok;
+    requires gembox.spreadsheet;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;

@@ -14,7 +14,20 @@
         <junit.version>5.7.1</junit.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>com.gembox</id>
+            <name>GemBox API</name>
+            <url>https://gemboxsoftware.com/repo/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
+        <dependency>
+            <groupId>com.gembox</groupId>
+            <artifactId>gembox-spreadsheet</artifactId>
+            <version>1.1.1292</version> <!-- You can choose other version -->
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -68,6 +81,12 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
