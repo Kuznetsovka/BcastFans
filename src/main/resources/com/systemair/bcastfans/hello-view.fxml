@@ -12,8 +12,30 @@
     <Label text="BCastFans" wrapText="true">
         <font>
             <Font name="Chiller" size="24.0" />
-        </font></Label>
-<!--    <Button onAction="#onHelloButtonClick" text="Считать" />-->
+        </font>
+    </Label>
+    <HBox spacing="20.0">
+        <VBox prefHeight="60.0" prefWidth="293.0" spacing="10.0">
+            <HBox spacing="10.0">
+                <Label text="Отрицательный допуск" />
+                <TextField fx:id="fieldNegativeLimit" />
+            </HBox>
+            <HBox spacing="10.0">
+                <Label text="Положительный допуск" />
+                <TextField fx:id="fieldPositiveLimit" />
+            </HBox>
+        </VBox>
+        <HBox alignment="TOP_RIGHT" spacing="20.0">
+            <VBox spacing="10.0">
+                <Button layoutX="611.0" layoutY="753.0" mnemonicParsing="false" onAction="#load" text="Load ..." />
+                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#save" text="Save as ..." />
+            </VBox>
+            <VBox spacing="10.0">
+                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#clear" text="Clear" />
+                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
+            </VBox>
+        </HBox>
+    </HBox>
     <TableView fx:id="table" maxHeight="500" prefWidth="900">
         <columns>
             <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
@@ -21,27 +43,18 @@
                     <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize" prefHeight="17.0" prefWidth="23.0" />
                 </graphic>
             </TableColumn>
-            <TableColumn fx:id="columnNumberSystem" prefWidth="32.0" text="#"/>
+            <TableColumn fx:id="columnNumberSystem" prefWidth="32.0" text="#" />
             <TableColumn fx:id="columnAirFlow" text="Расход" />
-            <TableColumn fx:id="columnAirDrop" prefWidth="86.0" text="Потери"/>
-            <TableColumn fx:id="columnTypeMontage" prefWidth="112.0" text="Тип монтажа"/>
-            <TableColumn fx:id="columnSubType" prefWidth="112.0" text="Тип установки"/>
+            <TableColumn fx:id="columnAirDrop" prefWidth="86.0" text="Потери" />
+            <TableColumn fx:id="columnTypeMontage" prefWidth="112.0" text="Тип монтажа" />
+            <TableColumn fx:id="columnSubType" prefWidth="112.0" text="Тип установки" />
         </columns>
         <columns>
-            <TableColumn fx:id="columnModel" prefWidth="75.0" text="Модель"/>
-            <TableColumn fx:id="columnArticle" prefWidth="75.0" text="Артикул"/>
-            <TableColumn fx:id="columnPower" prefWidth="75.0" text="Мощность"/>
-            <TableColumn fx:id="columnPhase" prefWidth="75.0" text="Фазность"/>
-            <TableColumn fx:id="columnPrice" prefWidth="75.0" text="Цена"/>
+            <TableColumn fx:id="columnModel" prefWidth="75.0" text="Модель" />
+            <TableColumn fx:id="columnArticle" prefWidth="75.0" text="Артикул" />
+            <TableColumn fx:id="columnPower" prefWidth="75.0" text="Мощность" />
+            <TableColumn fx:id="columnPhase" prefWidth="75.0" text="Фазность" />
+            <TableColumn fx:id="columnPrice" prefWidth="75.0" text="Цена" />
         </columns>
     </TableView>
-    <HBox alignment="TOP_CENTER" spacing="20.0">
-        <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-        </padding>
-        <Button layoutX="611.0" layoutY="753.0" mnemonicParsing="false" onAction="#load" text="Load ..." />
-        <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#save" text="Save as ..." />
-        <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#clear" text="Clear" />
-        <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
-    </HBox>
 </VBox>

@@ -6,6 +6,7 @@ import com.systemair.bcastfans.service.BrowserService;
 import javafx.collections.ObservableList;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.TextField;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -16,8 +17,8 @@ import java.util.ResourceBundle;
 
 public class BrowserController implements Initializable {
     private static final String PATH_TO_DRIVER = "C:\\ProgramData\\DriverChrome\\chromedriver.exe";
-    private WebDriver driver;
     private static final String HOME_URL = "https://www.systemair.com/ru/";
+    private WebDriver driver;
     private final BrowserService browserService = new BrowserService();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -41,15 +42,30 @@ public class BrowserController implements Initializable {
     }
 
     private void showAlert(String alertTxt) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Error");
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
     }
 
-    public ObservableList<FanUnit> calculate(ObservableList<FanUnit> inputData) {
-        inputData.get(0).setFan(new Fan("name","model",20.0,"3",100.0));
-        return inputData;
+    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data) {
+        double negativeLimit = Double.parseDouble(fieldNegativeLimit.getText());
+        double positiveLimit = Double.parseDouble(fieldPositiveLimit.getText());
+        if (!data.isEmpty()){
+            browserService.setBrowser(driver);
+            browserService.setNegativeLimit(negativeLimit);
+            browserService.setPositiveLimit(positiveLimit);
+        }
+        data.forEach(u -> u.setFan(
+                browserService.calculate(
+                        u.getAirFlow(),
+                        u.getAirDrop(),
+                        u.getTypeMontage(),
+                        u.getSubType()
+                )
+        ));
+        //data.get(0).setFan(new Fan("name","model",20.0,"3",100.0));
+        return data;
     }
 }

@@ -1,7 +1,6 @@
 package com.systemair.bcastfans.controller;
 
 import com.gembox.spreadsheet.*;
-import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -13,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import lombok.Getter;
@@ -35,6 +35,10 @@ public class TableController implements Initializable {
     }
     private TableService tableService = new TableService();
     private BrowserController browserService = new BrowserController();
+    @FXML
+    public TextField fieldNegativeLimit;
+    @FXML
+    public TextField fieldPositiveLimit;
     @FXML
     TableView<FanUnit> table;
     @FXML
@@ -62,13 +66,13 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<FanUnit,String> columnPrice;
 
-    private ObservableList<FanUnit> inputData;
+    private ObservableList<FanUnit> data;
 
     @FXML
     public void checkBoxInitialize() {
         boolean checkBtn = checkBox.isSelected();
-        for (FanUnit n : inputData) {
-            n.setCheck(checkBtn);
+        for (FanUnit f : data) {
+            f.setCheck(checkBtn);
         }
     }
 
@@ -107,8 +111,8 @@ public class TableController implements Initializable {
         for (ArrayList<String> row : dataSource) {
             list.add(new FanUnit(row));
         }
-        inputData = FXCollections.observableArrayList(list);
-        tableService.fillInputData(inputData, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
+        data = FXCollections.observableArrayList(list);
+        tableService.fillInputData(data, table,columnNumberSystem,columnAirFlow,columnAirDrop,columnTypeMontage,columnSubType);
     }
 
     @SneakyThrows
@@ -157,11 +161,11 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
-        inputData = browserService.calculate(inputData);
-        tableService.fillResultData(inputData,table,columnModel,columnArticle,columnPower,columnPhase,columnPrice);
+        data = browserService.calculate(fieldNegativeLimit,fieldPositiveLimit, data);
+        tableService.fillResultData(data,table,columnModel,columnArticle,columnPower,columnPhase,columnPrice);
     }
 
     public void clear() {
-        inputData.clear();
+        data.clear();
     }
 }
