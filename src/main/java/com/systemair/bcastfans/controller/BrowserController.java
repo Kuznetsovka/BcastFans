@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.controller;
 
-import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.service.BrowserService;
 import javafx.collections.ObservableList;
@@ -20,6 +19,7 @@ public class BrowserController implements Initializable {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private WebDriver driver;
     private final BrowserService browserService = new BrowserService();
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeBrowser();
@@ -32,9 +32,9 @@ public class BrowserController implements Initializable {
             chromeOptions.setHeadless(false);//выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
             driver.get(HOME_URL);
-        } catch(SessionNotCreatedException e) {
+        } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
-        } catch(IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
         }
         System.exit(0);
@@ -52,7 +52,7 @@ public class BrowserController implements Initializable {
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data) {
         double negativeLimit = Double.parseDouble(fieldNegativeLimit.getText());
         double positiveLimit = Double.parseDouble(fieldPositiveLimit.getText());
-        if (!data.isEmpty()){
+        if (!data.isEmpty()) {
             browserService.setBrowser(driver);
             browserService.setNegativeLimit(negativeLimit);
             browserService.setPositiveLimit(positiveLimit);

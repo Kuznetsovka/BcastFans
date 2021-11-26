@@ -7,9 +7,10 @@ module com.systemair.bcastfans {
     requires validatorfx;
     requires org.kordamp.bootstrapfx.core;
     requires lombok;
-    requires gembox.spreadsheet;
     requires org.seleniumhq.selenium.api;
     requires org.seleniumhq.selenium.chrome_driver;
+    requires org.apache.poi.poi;
+    requires org.jetbrains.annotations;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;
