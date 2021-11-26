@@ -18,15 +18,18 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
@@ -92,7 +95,7 @@ public class TableController implements Initializable {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             workbook = new HSSFWorkbook(inputStream);
             HSSFSheet worksheet = workbook.getSheetAt(0);
-            int lastColumn = worksheet.getRow(0).getLastCellNum()-1;
+            int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
             ArrayList<ArrayList<String>> cells = new ArrayList<>();
             ArrayList<String> rows;
             int row = 0;
@@ -146,29 +149,27 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void save() {
-        HSSFWorkbook workbook = new HSSFWorkbook();
         int lastRow = table.getItems().size();
         int lastColumn = table.getColumns().size();
-        HSSFSheet worksheet = initializeWorksheet(workbook,lastRow);
-        setHeader(worksheet,lastColumn);
-
-            for (int i = 1; i < lastRow; i++) {
-                FanUnit cells = table.getItems().get(i);
-                for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
-                    Integer column = entry.getKey();
-                    String value = entry.getValue();
-                    if (value != null)
-                        try {
-                            Cell[] cell = new Cell[lastColumn];
-                            for (int j = 0; j < lastColumn; j++) {
-                                cell[j] = worksheet.getRow(i).createCell(0, CellType.STRING);
-                            }
-                        worksheet.getRow(i).getCell(column).setCellValue(value);
-                        } catch(Exception e){
-                            System.out.println("row " + i + "column " + column);
-                        }
-                }
+        HSSFWorkbook workbook = new HSSFWorkbook();
+        HSSFSheet worksheet = workbook.createSheet("sheet");
+        worksheet = initializeWorksheet(worksheet, lastRow);
+        setHeader(worksheet, lastColumn);
+        Cell[] cell = new Cell[lastColumn];
+        for (int i = 0; i < lastRow; i++) {
+            FanUnit cells = table.getItems().get(i);
+            for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
+                Integer column = entry.getKey();
+                String value = entry.getValue();
+                cell[column] = worksheet.getRow(i + 1).createCell(column, CellType.STRING);
+                if (value != null)
+                    try {
+                        cell[column].setCellValue(value);
+                    } catch (Exception e) {
+                        System.out.println("row " + i + "column " + column);
+                    }
             }
+        }
 
 
         FileChooser fileChooser = new FileChooser();
@@ -181,15 +182,11 @@ public class TableController implements Initializable {
         );
         File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
         saveFile.getParentFile().mkdirs();
-        try (FileOutputStream outFile = new FileOutputStream(saveFile)) {
-            workbook.write(outFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        FileOutputStream outFile = new FileOutputStream(saveFile);
+        workbook.write(outFile);
     }
 
-    private HSSFSheet initializeWorksheet(HSSFWorkbook workbook,int lastRow) {
-        HSSFSheet worksheet = workbook.createSheet("sheet");
+    private HSSFSheet initializeWorksheet(HSSFSheet worksheet, int lastRow) {
         for (int i = 0; i < lastRow; i++) {
             worksheet.createRow(i);
         }
@@ -198,8 +195,10 @@ public class TableController implements Initializable {
 
     private void setHeader(HSSFSheet worksheet, int lastColumn) {
         Cell[] cell = new Cell[lastColumn];
+        HSSFCellStyle style = createStyleForTitle(workbook);
         for (int i = 0; i < lastColumn; i++) {
-            cell[i] = worksheet.getRow(0).createCell(0, CellType.STRING);
+            cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
+            //cell[i].setCellStyle(style);
         }
 
         cell[0].setCellValue("Считать?");
@@ -222,5 +221,13 @@ public class TableController implements Initializable {
 
     public void clear() {
         data.clear();
+    }
+
+    private static HSSFCellStyle createStyleForTitle(HSSFWorkbook workbook) {
+        HSSFFont font = workbook.createFont();
+        font.setBold(true);
+        HSSFCellStyle style = workbook.createCellStyle();
+        style.setFont(font);
+        return style;
     }
 }
