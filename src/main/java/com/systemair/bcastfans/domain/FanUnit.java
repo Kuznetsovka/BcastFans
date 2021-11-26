@@ -9,9 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FanUnit {
-    private SimpleStringProperty name;
-    private SimpleStringProperty airFlow;
-    private SimpleStringProperty airDrop;
+    private final SimpleStringProperty name;
+    private final SimpleStringProperty airFlow;
+    private final SimpleStringProperty airDrop;
+    private SimpleStringProperty model;
+    private SimpleStringProperty article;
+    private SimpleStringProperty power;
+    private SimpleStringProperty phase;
+    private SimpleStringProperty price;
     private TypeMontage typeMontage;
     private SubType subType;
     private CheckBox check = new CheckBox();
@@ -46,6 +51,11 @@ public class FanUnit {
 
     public void setFan(Fan fan) {
         this.fan = fan;
+        this.model = new SimpleStringProperty(fan.getModel());
+        this.article = new SimpleStringProperty(fan.getArticle());
+        this.power = new SimpleStringProperty(fan.getPower().toString());
+        this.phase = new SimpleStringProperty(fan.getPhase());
+        this.price = new SimpleStringProperty(fan.getPrice().toString());
     }
 
     public CheckBox getCheck() {
@@ -106,6 +116,71 @@ public class FanUnit {
 
     public void setSubType(SubType subType) {
         this.subType = subType;
+    }
+
+    public String getModel() {
+        return fan.getModel();
+    }
+
+    public SimpleStringProperty modelProperty() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        fan.setModel(model);
+        this.model.set(model);
+    }
+
+    public String getArticle() {
+        return fan.getArticle();
+    }
+
+    public SimpleStringProperty articleProperty() {
+        return article;
+    }
+
+    public void setArticle(String article) {
+        fan.setArticle(article);
+        this.article.set(article);
+    }
+
+    public String getPower() {
+        return fan.getPower().toString();
+    }
+
+    public SimpleStringProperty powerProperty() {
+        return power;
+    }
+
+    public void setPower(String power) {
+        fan.setPower(Double.valueOf(power));
+        this.power.set(power);
+    }
+
+    public String getPhase() {
+        return fan.getPhase();
+    }
+
+    public SimpleStringProperty phaseProperty() {
+        return phase;
+    }
+
+    public void setPhase(String phase) {
+        fan.setPhase(phase);
+        this.phase.set(phase);
+    }
+
+    public String getPrice() {
+        return fan.getPrice().toString();
+    }
+
+    public SimpleStringProperty priceProperty() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        fan.setPrice(Double.valueOf(price));
+        this.price.set(price);
     }
 
     public Map<Integer, String> getRow() {

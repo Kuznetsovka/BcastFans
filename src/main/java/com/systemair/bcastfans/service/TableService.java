@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -21,9 +22,7 @@ public class TableService {
 
         // ==== Name ====
 
-        columnNumberSystem.setCellValueFactory(
-                new PropertyValueFactory<>("name"));
-        columnNumberSystem.setCellFactory(TextFieldTableCell.forTableColumn());
+        setCellFactoryForColumn(columnNumberSystem, "name");
         columnNumberSystem.setOnEditCommit(
                 (TableColumn.CellEditEvent<FanUnit, String> t) -> (
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
@@ -31,9 +30,7 @@ public class TableService {
 
         // ==== airFlow ====
 
-        columnAirFlow.setCellValueFactory(
-                new PropertyValueFactory<>("airFlow"));
-        columnAirFlow.setCellFactory(TextFieldTableCell.forTableColumn());
+        setCellFactoryForColumn(columnAirFlow, "airFlow");
         columnAirFlow.setOnEditCommit(
                 (TableColumn.CellEditEvent<FanUnit, String> t) -> (
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
@@ -41,9 +38,7 @@ public class TableService {
 
         // ==== airDrop ====
 
-        columnAirDrop.setCellValueFactory(
-                new PropertyValueFactory<>("airDrop"));
-        columnAirDrop.setCellFactory(TextFieldTableCell.forTableColumn());
+        setCellFactoryForColumn(columnAirDrop, "airDrop");
         columnAirDrop.setOnEditCommit(
                 (TableColumn.CellEditEvent<FanUnit, String> t) -> (
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
@@ -96,6 +91,58 @@ public class TableService {
 
             system.setSubType(newSubType);
         });
+
+        tableInputData.setItems(inputData);
+    }
+
+    private void setCellFactoryForColumn (TableColumn<FanUnit, String> column, String name)  {
+        column.setCellValueFactory(
+                new PropertyValueFactory<>(name));
+        column.setCellFactory(TextFieldTableCell.forTableColumn());
+    }
+
+    public void fillResultData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnModel, TableColumn<FanUnit, String> columnArticle, TableColumn<FanUnit, String> columnPower, TableColumn<FanUnit, String> columnPhase, TableColumn<FanUnit, String> columnPrice) {
+        tableInputData.setEditable(true);
+
+        // ==== Model ====
+
+        setCellFactoryForColumn(columnModel, "model");
+        columnModel.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setModel(t.getNewValue()));
+
+        // ==== Article ====
+
+        setCellFactoryForColumn(columnArticle, "article");
+        columnArticle.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setArticle(t.getNewValue()));
+
+        // ==== Power ====
+
+        setCellFactoryForColumn(columnPower, "power");
+        columnPower.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setPower(t.getNewValue()));
+
+        // ==== Phase ====
+
+        setCellFactoryForColumn(columnPhase, "phase");
+        columnPhase.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setPhase(t.getNewValue()));
+
+        // ==== Price ====
+
+        setCellFactoryForColumn(columnPrice, "price");
+        columnPrice.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setPrice(t.getNewValue()));
 
         tableInputData.setItems(inputData);
     }

@@ -10,7 +10,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,10 +19,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.openqa.selenium.SessionNotCreatedException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -39,6 +34,7 @@ public class TableController implements Initializable {
         SpreadsheetInfo.setLicense("FREE-LIMITED-KEY");
     }
     private TableService tableService = new TableService();
+    private BrowserController browserService = new BrowserController();
     @FXML
     TableView<FanUnit> table;
     @FXML
@@ -56,15 +52,15 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<FanUnit,SubType> columnSubType;
     @FXML
-    TableColumn<Fan,String> columnModel;
+    TableColumn<FanUnit,String> columnModel;
     @FXML
-    TableColumn<Fan,String> columnArticle;
+    TableColumn<FanUnit,String> columnArticle;
     @FXML
-    TableColumn<Fan,Double> columnPower;
+    TableColumn<FanUnit,String> columnPower;
     @FXML
-    TableColumn<Fan,String> columnPhase;
+    TableColumn<FanUnit,String> columnPhase;
     @FXML
-    TableColumn<Fan,Double> columnPrice;
+    TableColumn<FanUnit,String> columnPrice;
 
     private ObservableList<FanUnit> inputData;
 
@@ -79,33 +75,6 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
-        initializeBrowser();
-    }
-
-    private void initializeBrowser() {
-        System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver96.exe");
-        try {
-            ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(false);//выбор фонового режима true
-            WebDriver driver = new ChromeDriver(chromeOptions);
-            driver.get("https://www.systemair.com/ru/");
-            //driver.close();
-        } catch(SessionNotCreatedException e) {
-            showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
-        } catch(IllegalArgumentException e) {
-            showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
-        } finally {
-            System.exit(0);
-        }
-    }
-
-    private void showAlert(String alertTxt) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Error");
-        alert.setHeaderText("Description:");
-        alert.setContentText(alertTxt);
-        alert.showAndWait();
-
     }
 
     @SneakyThrows
@@ -188,6 +157,8 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
+        inputData = browserService.calculate(inputData);
+        tableService.fillResultData(inputData,table,columnModel,columnArticle,columnPower,columnPhase,columnPrice);
     }
 
     public void clear() {
