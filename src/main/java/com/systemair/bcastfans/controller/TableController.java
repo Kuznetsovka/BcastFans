@@ -20,9 +20,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -87,33 +86,41 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void load() {
+        loadWorkbook();
+        XSSFSheet worksheet = workbook.getSheetAt(0);
+        ArrayList<ArrayList<String>> cells = loadCellsFromWorksheet(worksheet);
+        fillGUITableFromExcel(cells);
+    }
+
+    @NotNull
+    private ArrayList<ArrayList<String>> loadCellsFromWorksheet(XSSFSheet worksheet) {
+        int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
+        int row = 1;
+        ArrayList<ArrayList<String>> cells = new ArrayList<>();
+        ArrayList<String> rows;
+        while (worksheet.getLastRowNum() != row++) {
+            rows = new ArrayList<>();
+            for (int column = 0; column < lastColumn; column++) {
+                XSSFCell cell = worksheet.getRow(row).getCell(column);
+                if (cell != null)
+                    rows.add(UtilClass.parseCell(cell));
+            }
+            if (!rows.isEmpty())
+                cells.add(rows);
+        }
+        return cells;
+    }
+
+    private void loadWorkbook() throws IOException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
-        try (FileInputStream inputStream = new FileInputStream(file)) {
-            workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet worksheet = workbook.getSheetAt(0);
-            int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
-            ArrayList<ArrayList<String>> cells = new ArrayList<>();
-            ArrayList<String> rows;
-            int row = 1;
-            while (worksheet.getLastRowNum()!=row++) {
-                rows = new ArrayList<>();
-                for (int column = 0; column < lastColumn; column++) {
-                    XSSFCell cell = worksheet.getRow(row).getCell(column);
-                    if (cell != null)
-                        rows.add(UtilClass.parseCell(cell));
-                }
-                if (!rows.isEmpty())
-                    cells.add(rows);
-            }
-            fillTable(cells);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        FileInputStream inputStream = new FileInputStream(file);
+        workbook = new XSSFWorkbook(inputStream);
+        inputStream.close();
     }
 
-    private void fillTable(@NonNull ArrayList<ArrayList<String>> dataSource) {
+    private void fillGUITableFromExcel(@NonNull ArrayList<ArrayList<String>> dataSource) {
         ArrayList<FanUnit> list = new ArrayList<>();
         for (ArrayList<String> row : dataSource) {
             list.add(new FanUnit(row));
@@ -124,45 +131,42 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void save() {
-        int lastRow = table.getItems().size();
+        int countSystems = table.getItems().size();
         int lastColumn = table.getColumns().size();
-        XSSFWorkbook  workbook = new XSSFWorkbook ();
+        XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet worksheet = workbook.createSheet("sheet");
-        initializeWorksheet(worksheet, lastRow);
+        createCellsInWorksheet(worksheet, countSystems);
         setHeader(worksheet, lastColumn);
-        XSSFCell[] cell = new XSSFCell[lastColumn];
-        for (int i = 0; i < lastRow; i++) {
-            FanUnit cells = table.getItems().get(i);
-            for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
-                Integer column = entry.getKey();
-                String value = entry.getValue();
-                cell[column] = worksheet.getRow(i + 1).createCell(column, CellType.STRING);
-                if (value != null)
-                    try {
-                        cell[column].setCellValue(value);
-                    } catch (Exception e) {
-                        System.out.println("row " + i + "column " + column);
-                    }
-            }
-        }
-
-
+        fillWorksheetFromGUI(countSystems, lastColumn, worksheet);
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
-                new FileChooser.ExtensionFilter("XLS files (*.xls)", "*.xls"),
                 new FileChooser.ExtensionFilter("ODS files (*.ods)", "*.ods"),
                 new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"),
                 new FileChooser.ExtensionFilter("HTML files (*.html)", "*.html")
         );
         File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
-        saveFile.getParentFile().mkdirs();
         FileOutputStream outFile = new FileOutputStream(saveFile.getAbsoluteFile());
         workbook.write(outFile);
         workbook.close();
     }
 
-    private void initializeWorksheet(XSSFSheet worksheet, int lastRow) {
+    private void fillWorksheetFromGUI(int countSystems, int lastColumn, XSSFSheet worksheet) {
+        XSSFCell[] cell = new XSSFCell[lastColumn];
+        for (int count = 0; count < countSystems; count++) {
+            FanUnit cells = table.getItems().get(count);
+            for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
+                Integer column = entry.getKey();
+                String value = entry.getValue();
+                cell[column] = worksheet.getRow(count + 1).createCell(column, CellType.STRING);
+                if (value != null)
+                    cell[column].setCellValue(value);
+
+            }
+        }
+    }
+
+    private void createCellsInWorksheet(XSSFSheet worksheet, int lastRow) {
         for (int i = 0; i < lastRow + 1; i++) {
             worksheet.createRow(i);
         }
@@ -170,12 +174,9 @@ public class TableController implements Initializable {
 
     private void setHeader(XSSFSheet worksheet, int lastColumn) {
         XSSFCell[] cell = new XSSFCell[lastColumn];
-        //XSSFCellStyle style = createStyleForTitle(workbook);
         for (int i = 0; i < lastColumn; i++) {
             cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
-           // cell[i].setCellStyle(style);
         }
-
         cell[0].setCellValue("Считать?");
         cell[1].setCellValue("N");
         cell[2].setCellValue("Расход");
@@ -198,11 +199,11 @@ public class TableController implements Initializable {
         data.clear();
     }
 
-//    private static XSSFCellStyle createStyleForTitle(XSSFWorkbook workbook) {
-//        XSSFFont font = workbook.createFont();
-//        font.setBold(true);
-//        XSSFCellStyle style = workbook.createCellStyle();
-//        style.setFont(font);
-//        return style;
-//    }
+    private static XSSFCellStyle createStyleForTitle(XSSFWorkbook workbook) {
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        XSSFCellStyle style = workbook.createCellStyle();
+        style.setFont(font);
+        return style;
+    }
 }
