@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.controller;
 
+import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -101,7 +102,7 @@ public class TableController implements Initializable {
                 for (int column = 0; column < lastColumn; column++) {
                     XSSFCell cell = worksheet.getRow(row).getCell(column);
                     if (cell != null)
-                        rows.add(parseCell(cell));
+                        rows.add(UtilClass.parseCell(cell));
                 }
                 if (!rows.isEmpty())
                     cells.add(rows);
@@ -110,23 +111,6 @@ public class TableController implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String parseCell(XSSFCell cell) {
-        if (cell == null) return "";
-        switch (cell.getCellType()) {
-            case BLANK:
-                return "";
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            case STRING:
-                return cell.getStringCellValue();
-            case ERROR:
-                return ""; //TODO Вывод ошибки
-        }
-        return "";
     }
 
     private void fillTable(@NonNull ArrayList<ArrayList<String>> dataSource) {
