@@ -18,13 +18,10 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -72,7 +69,7 @@ public class TableController implements Initializable {
     TableColumn<FanUnit, String> columnPrice;
 
     private ObservableList<FanUnit> data;
-    private HSSFWorkbook workbook;
+    private XSSFWorkbook workbook;
 
     @FXML
     public void checkBoxInitialize() {
@@ -93,17 +90,17 @@ public class TableController implements Initializable {
         fileChooser.setTitle("Open file");
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
         try (FileInputStream inputStream = new FileInputStream(file)) {
-            workbook = new HSSFWorkbook(inputStream);
-            HSSFSheet worksheet = workbook.getSheetAt(0);
+            workbook = new XSSFWorkbook(inputStream);
+            XSSFSheet worksheet = workbook.getSheetAt(0);
             int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
             ArrayList<ArrayList<String>> cells = new ArrayList<>();
             ArrayList<String> rows;
-            int row = 0;
-            while (worksheet.getRow(row++).getCell(0).getCellType() != CellType.BLANK) {
+            int row = 1;
+            while (worksheet.getLastRowNum()!=row++) {
                 rows = new ArrayList<>();
                 for (int column = 0; column < lastColumn; column++) {
-                    Cell cell = worksheet.getRow(row).getCell(column);
-                    if (cell.getCellType() != CellType.BLANK)
+                    XSSFCell cell = worksheet.getRow(row).getCell(column);
+                    if (cell != null)
                         rows.add(parseCell(cell));
                 }
                 if (!rows.isEmpty())
@@ -115,19 +112,13 @@ public class TableController implements Initializable {
         }
     }
 
-    private String parseCell(Cell cell) {
+    private String parseCell(XSSFCell cell) {
         if (cell == null) return "";
-        CellType cellType = cell.getCellType();
-        switch (cellType) {
-            case _NONE:
+        switch (cell.getCellType()) {
             case BLANK:
                 return "";
             case BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue());
-            case FORMULA:
-                cell.getCellFormula();
-                FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
-                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
             case NUMERIC:
                 return String.valueOf(cell.getNumericCellValue());
             case STRING:
@@ -151,11 +142,11 @@ public class TableController implements Initializable {
     public void save() {
         int lastRow = table.getItems().size();
         int lastColumn = table.getColumns().size();
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet worksheet = workbook.createSheet("sheet");
-        worksheet = initializeWorksheet(worksheet, lastRow);
+        XSSFWorkbook  workbook = new XSSFWorkbook ();
+        XSSFSheet worksheet = workbook.createSheet("sheet");
+        initializeWorksheet(worksheet, lastRow);
         setHeader(worksheet, lastColumn);
-        Cell[] cell = new Cell[lastColumn];
+        XSSFCell[] cell = new XSSFCell[lastColumn];
         for (int i = 0; i < lastRow; i++) {
             FanUnit cells = table.getItems().get(i);
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
@@ -182,23 +173,23 @@ public class TableController implements Initializable {
         );
         File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
         saveFile.getParentFile().mkdirs();
-        FileOutputStream outFile = new FileOutputStream(saveFile);
+        FileOutputStream outFile = new FileOutputStream(saveFile.getAbsoluteFile());
         workbook.write(outFile);
+        workbook.close();
     }
 
-    private HSSFSheet initializeWorksheet(HSSFSheet worksheet, int lastRow) {
-        for (int i = 0; i < lastRow; i++) {
+    private void initializeWorksheet(XSSFSheet worksheet, int lastRow) {
+        for (int i = 0; i < lastRow + 1; i++) {
             worksheet.createRow(i);
         }
-        return worksheet;
     }
 
-    private void setHeader(HSSFSheet worksheet, int lastColumn) {
-        Cell[] cell = new Cell[lastColumn];
-        HSSFCellStyle style = createStyleForTitle(workbook);
+    private void setHeader(XSSFSheet worksheet, int lastColumn) {
+        XSSFCell[] cell = new XSSFCell[lastColumn];
+        //XSSFCellStyle style = createStyleForTitle(workbook);
         for (int i = 0; i < lastColumn; i++) {
             cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
-            //cell[i].setCellStyle(style);
+           // cell[i].setCellStyle(style);
         }
 
         cell[0].setCellValue("Считать?");
@@ -223,11 +214,11 @@ public class TableController implements Initializable {
         data.clear();
     }
 
-    private static HSSFCellStyle createStyleForTitle(HSSFWorkbook workbook) {
-        HSSFFont font = workbook.createFont();
-        font.setBold(true);
-        HSSFCellStyle style = workbook.createCellStyle();
-        style.setFont(font);
-        return style;
-    }
+//    private static XSSFCellStyle createStyleForTitle(XSSFWorkbook workbook) {
+//        XSSFFont font = workbook.createFont();
+//        font.setBold(true);
+//        XSSFCellStyle style = workbook.createCellStyle();
+//        style.setFont(font);
+//        return style;
+//    }
 }

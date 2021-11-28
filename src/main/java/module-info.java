@@ -9,8 +9,9 @@ module com.systemair.bcastfans {
     requires lombok;
     requires org.seleniumhq.selenium.api;
     requires org.seleniumhq.selenium.chrome_driver;
-    requires org.apache.poi.poi;
     requires org.jetbrains.annotations;
+    requires poi;
+    requires poi.ooxml;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;
