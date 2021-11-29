@@ -1,5 +1,5 @@
 package com.systemair.bcastfans.intarface;
 
-public interface EnumInterface {
+public interface Describable {
     String getDescription();
 }

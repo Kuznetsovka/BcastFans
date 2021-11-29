@@ -1,9 +1,12 @@
 package com.systemair.bcastfans.domain;
 
-import com.systemair.bcastfans.intarface.EnumInterface;
+import com.systemair.bcastfans.intarface.Describable;
 
-public enum TypeMontage implements EnumInterface {
-    ROUND("Круглый"),RECTANGLE("Прямоугольный"),ROUND_AND_RECTANGLE("Круг & Прямог."),ROOF("Крышный");
+public enum TypeMontage implements Describable {
+        ROUND("Круглый"),
+        RECTANGLE("Прямоугольный"),
+        ROUND_AND_RECTANGLE("Круг & Прямог."),
+        ROOF("Крышный");
     private final String description;
 
     TypeMontage(String desc){
@@ -20,8 +23,7 @@ public enum TypeMontage implements EnumInterface {
                 return desc;
             }
         }
-        //TODO Exception
-        return null;
+        throw new IllegalArgumentException("Тип монтажа не соответствует доступным значениям!");
     }
 
     @Override

@@ -1,12 +1,13 @@
 package com.systemair.bcastfans.domain;
 
-import com.systemair.bcastfans.intarface.EnumInterface;
+import com.systemair.bcastfans.intarface.Describable;
 
-public enum SubType implements EnumInterface {
+public enum SubType implements Describable {
         NONE(""),
         KITCHEN("Кухонный"),
         SILENT("Шумоизолированный"),
-        EC("EC"),ON_ROOF("На крыше"),
+        EC("EC"),
+        ON_ROOF("На крыше"),
         SMOKE_EXTRACT("Дымоудаление"),
         SILENT_AND_EC("Шумоизолированный & EC"),
         KITCHEN_AND_EC("Кухонный & EC");
