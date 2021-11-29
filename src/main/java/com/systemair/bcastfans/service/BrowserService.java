@@ -41,14 +41,10 @@ public class BrowserService {
             driver.navigate().to(HOME_URL);
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']"))).click();
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//button[@data-id='2']"))).click();
-
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {
             showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
-        } finally {
-            if (driver!= null)
-                driver.close();
         }
     }
 
@@ -86,5 +82,7 @@ public class BrowserService {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
+        if (driver!= null)
+            driver.close();
     }
 }
