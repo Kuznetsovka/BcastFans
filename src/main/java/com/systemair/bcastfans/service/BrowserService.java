@@ -19,9 +19,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
-import static com.systemair.bcastfans.HttpCodeResponse.responseCode;
-import static java.lang.Thread.sleep;
-
 
 @Getter
 @Setter
@@ -40,16 +37,11 @@ public class BrowserService {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(false);//выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            sleep(500);
-            driver.get(HOME_URL);
-            sleep(500);
-            responseCode(driver,HOME_URL);
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            driver.navigate().to(HOME_URL);
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']"))).click();
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//button[@data-id='2']"))).click();
-            //WebElement btnStart =  wait.until(presenceOfElementLocated(By.xpath(".//button[@data-id='2']")));
-            //btnStart.click();
-            int a=1;
+
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {

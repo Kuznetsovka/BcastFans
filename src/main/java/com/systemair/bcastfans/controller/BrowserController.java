@@ -11,9 +11,9 @@ public class BrowserController {
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data) {
         int negativeLimit = getDoubleValueFromField(fieldNegativeLimit);
         int positiveLimit = getDoubleValueFromField(fieldPositiveLimit);
-        browserService.initializeBrowser();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
+        browserService.initializeBrowser();
         if (!data.isEmpty())
             data.forEach(u -> u.setFan(
                     browserService.calculate(
