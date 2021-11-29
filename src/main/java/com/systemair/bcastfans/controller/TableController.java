@@ -75,6 +75,7 @@ public class TableController implements Initializable {
         for (FanUnit f : data) {
             f.setCheck(checkBtn);
         }
+        fieldNegativeLimit.setOnKeyPressed(event -> putMinusBeforeValue());
     }
 
     @Override
@@ -104,7 +105,7 @@ public class TableController implements Initializable {
     public void save() {
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet worksheet = workbook.createSheet("sheet");
-        excelService.createCellsInWorksheet(worksheet,table);
+        excelService.createCellsInWorksheet(worksheet, table);
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
         FileOutputStream outFile = UtilClass.getFileOutputStream(table);
@@ -121,4 +122,9 @@ public class TableController implements Initializable {
         data.clear();
     }
 
+    public void putMinusBeforeValue() {
+        String text = fieldNegativeLimit.getText();
+        if (!text.contains("-"))
+            fieldNegativeLimit.setText("-" + text);
+    }
 }

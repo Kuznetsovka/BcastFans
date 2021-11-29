@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
-
+<?import javafx.scene.text.Font?>
 <VBox alignment="CENTER" prefHeight="239.0" prefWidth="870.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
@@ -18,11 +17,11 @@
         <VBox prefHeight="60.0" prefWidth="293.0" spacing="10.0">
             <HBox spacing="10.0">
                 <Label text="Отрицательный допуск" />
-                <TextField fx:id="fieldNegativeLimit" />
+                <TextField fx:id="fieldNegativeLimit" text="-5"/>
             </HBox>
             <HBox spacing="10.0">
                 <Label text="Положительный допуск" />
-                <TextField fx:id="fieldPositiveLimit" />
+                <TextField fx:id="fieldPositiveLimit"  text="100" />
             </HBox>
         </VBox>
         <HBox alignment="TOP_RIGHT" spacing="20.0">
