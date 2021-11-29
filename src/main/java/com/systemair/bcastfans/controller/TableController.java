@@ -81,6 +81,7 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
+        UtilClass.initProperties();
     }
 
     @SneakyThrows

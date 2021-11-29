@@ -3,15 +3,18 @@ package com.systemair.bcastfans;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 
 public class UtilClass {
-    public static String TEST_PATH = "\\\\ru-cluster-docs\\desktop\\d920kkal\\Desktop\\test\\TEST";
+    public static String PATH_TEST;
+    public static String PATH_DRIVER;
+
     public static String parseCell(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
@@ -32,7 +35,9 @@ public class UtilClass {
     @NotNull
     public static FileOutputStream getFileOutputStream(TableView<FanUnit> table) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(TEST_PATH));
+        Properties property = System.getProperties();
+
+        fileChooser.setInitialDirectory(new File(property.getProperty("path.test")));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
                 new FileChooser.ExtensionFilter("XLS files (*.xls)", "*.xls"),
@@ -42,5 +47,16 @@ public class UtilClass {
         );
         File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
         return new FileOutputStream(saveFile.getAbsoluteFile());
+    }
+
+    @SneakyThrows
+    public static void initProperties() {
+        Properties properties = new Properties();
+        String absolutePath = System.getProperty("user.dir") + "/src/main/resources/config.properties";
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath),
+                StandardCharsets.UTF_8));
+        properties.load(in);
+        PATH_TEST = properties.getProperty("path.test");
+        PATH_DRIVER = properties.getProperty("path.driver");
     }
 }

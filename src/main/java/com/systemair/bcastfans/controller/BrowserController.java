@@ -9,8 +9,8 @@ public class BrowserController {
     private final BrowserService browserService = new BrowserService();
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data) {
-        int negativeLimit = getDoubleValueFromField(fieldNegativeLimit);
-        int positiveLimit = getDoubleValueFromField(fieldPositiveLimit);
+        String negativeLimit = fieldNegativeLimit.getText();
+        String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
         browserService.initializeBrowser();

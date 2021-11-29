@@ -19,20 +19,20 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
+import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
 
 @Getter
 @Setter
 public class BrowserService {
-    private static final String PATH_TO_DRIVER = "C:\\ProgramData\\DriverChrome\\chromedriver_win32_93\\chromedriver.exe";
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private WebDriver driver;
-    private double positiveLimit;
-    private double negativeLimit;
+    private String positiveLimit;
+    private String negativeLimit;
     boolean flagWarning;
 
     @SneakyThrows
     public void initializeBrowser() {
-        System.setProperty("webdriver.chrome.driver", PATH_TO_DRIVER);
+        System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
         try {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(false);//выбор фонового режима true
@@ -41,6 +41,10 @@ public class BrowserService {
             driver.navigate().to(HOME_URL);
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']"))).click();
             wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//button[@data-id='2']"))).click();
+            WebElement wb = driver.findElement(By.xpath(".//span[text() = 'Отрицательный допуск']/following::input[1]"));
+            wb.sendKeys("-5");
+            driver.findElement(By.xpath(".//span[text() = 'Отрицательный допуск']/following::input[1]")).sendKeys("-10");
+            driver.findElement(By.xpath(".//span[text() = 'Положительный допуск']/following::input[1]"));
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {

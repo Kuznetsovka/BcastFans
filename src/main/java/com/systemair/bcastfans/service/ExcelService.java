@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.systemair.bcastfans.UtilClass.TEST_PATH;
+import static com.systemair.bcastfans.UtilClass.PATH_TEST;
 
 public class ExcelService {
 
@@ -29,7 +29,7 @@ public class ExcelService {
         Workbook workbook = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
-        fileChooser.setInitialDirectory(new File(TEST_PATH));
+        fileChooser.setInitialDirectory(new File(PATH_TEST));
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
         if (file != null) {
             FileInputStream inputStream = new FileInputStream(file);
