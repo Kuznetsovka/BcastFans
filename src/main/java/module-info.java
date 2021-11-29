@@ -10,6 +10,8 @@ module com.systemair.bcastfans {
     requires org.seleniumhq.selenium.api;
     requires org.seleniumhq.selenium.chrome_driver;
     requires org.jetbrains.annotations;
+    requires org.seleniumhq.selenium.http;
+    requires org.seleniumhq.selenium.support;
     requires poi;
     requires poi.ooxml;
 
