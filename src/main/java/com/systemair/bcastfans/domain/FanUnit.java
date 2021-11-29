@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.domain;
 
-import com.systemair.bcastfans.intarface.EnumInterface;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
 

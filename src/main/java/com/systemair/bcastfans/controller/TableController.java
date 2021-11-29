@@ -4,6 +4,7 @@ import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,28 +15,25 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.FileChooser;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.xssf.usermodel.*;
-import org.jetbrains.annotations.NotNull;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 @Getter
 @Setter
 public class TableController implements Initializable {
     private TableService tableService = new TableService();
+    private ExcelService excelService = new ExcelService();
     private BrowserController browserService = new BrowserController();
     @FXML
     public TextField fieldNegativeLimit;
@@ -69,7 +67,7 @@ public class TableController implements Initializable {
     TableColumn<FanUnit, String> columnPrice;
 
     private ObservableList<FanUnit> data;
-    private XSSFWorkbook workbook;
+    private Workbook workbook;
 
     @FXML
     public void checkBoxInitialize() {
@@ -86,38 +84,11 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void load() {
-        loadWorkbook();
-        XSSFSheet worksheet = workbook.getSheetAt(0);
-        ArrayList<ArrayList<String>> cells = loadCellsFromWorksheet(worksheet);
+        workbook = excelService.loadWorkbook(table);
+        if (workbook == null) return;
+        Sheet worksheet = workbook.getSheetAt(0);
+        ArrayList<ArrayList<String>> cells = excelService.loadCellsFromWorksheet(worksheet);
         fillGUITableFromExcel(cells);
-    }
-
-    @NotNull
-    private ArrayList<ArrayList<String>> loadCellsFromWorksheet(XSSFSheet worksheet) {
-        int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
-        int row = 1;
-        ArrayList<ArrayList<String>> cells = new ArrayList<>();
-        ArrayList<String> rows;
-        while (worksheet.getLastRowNum() != row++) {
-            rows = new ArrayList<>();
-            for (int column = 0; column < lastColumn; column++) {
-                XSSFCell cell = worksheet.getRow(row).getCell(column);
-                if (cell != null)
-                    rows.add(UtilClass.parseCell(cell));
-            }
-            if (!rows.isEmpty())
-                cells.add(rows);
-        }
-        return cells;
-    }
-
-    private void loadWorkbook() throws IOException {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open file");
-        File file = fileChooser.showOpenDialog(table.getScene().getWindow());
-        FileInputStream inputStream = new FileInputStream(file);
-        workbook = new XSSFWorkbook(inputStream);
-        inputStream.close();
     }
 
     private void fillGUITableFromExcel(@NonNull ArrayList<ArrayList<String>> dataSource) {
@@ -131,63 +102,14 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void save() {
-        int countSystems = table.getItems().size();
-        int lastColumn = table.getColumns().size();
         XSSFWorkbook workbook = new XSSFWorkbook();
         XSSFSheet worksheet = workbook.createSheet("sheet");
-        createCellsInWorksheet(worksheet, countSystems);
-        setHeader(worksheet, lastColumn);
-        fillWorksheetFromGUI(countSystems, lastColumn, worksheet);
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
-                new FileChooser.ExtensionFilter("ODS files (*.ods)", "*.ods"),
-                new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"),
-                new FileChooser.ExtensionFilter("HTML files (*.html)", "*.html")
-        );
-        File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
-        FileOutputStream outFile = new FileOutputStream(saveFile.getAbsoluteFile());
+        excelService.createCellsInWorksheet(worksheet,table);
+        excelService.setHeader(worksheet, table);
+        excelService.fillWorksheetFromGUI(worksheet, table);
+        FileOutputStream outFile = UtilClass.getFileOutputStream(table);
         workbook.write(outFile);
         workbook.close();
-    }
-
-    private void fillWorksheetFromGUI(int countSystems, int lastColumn, XSSFSheet worksheet) {
-        XSSFCell[] cell = new XSSFCell[lastColumn];
-        for (int count = 0; count < countSystems; count++) {
-            FanUnit cells = table.getItems().get(count);
-            for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
-                Integer column = entry.getKey();
-                String value = entry.getValue();
-                cell[column] = worksheet.getRow(count + 1).createCell(column, CellType.STRING);
-                if (value != null)
-                    cell[column].setCellValue(value);
-
-            }
-        }
-    }
-
-    private void createCellsInWorksheet(XSSFSheet worksheet, int lastRow) {
-        for (int i = 0; i < lastRow + 1; i++) {
-            worksheet.createRow(i);
-        }
-    }
-
-    private void setHeader(XSSFSheet worksheet, int lastColumn) {
-        XSSFCell[] cell = new XSSFCell[lastColumn];
-        for (int i = 0; i < lastColumn; i++) {
-            cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
-        }
-        cell[0].setCellValue("Считать?");
-        cell[1].setCellValue("N");
-        cell[2].setCellValue("Расход");
-        cell[3].setCellValue("Потери");
-        cell[4].setCellValue("Тип монтажа");
-        cell[5].setCellValue("Тип установки");
-        cell[6].setCellValue("Модель");
-        cell[7].setCellValue("Артикул");
-        cell[8].setCellValue("Мощность");
-        cell[9].setCellValue("Фазность");
-        cell[10].setCellValue("Цена");
     }
 
     public void calculate() {
@@ -199,11 +121,4 @@ public class TableController implements Initializable {
         data.clear();
     }
 
-    private static XSSFCellStyle createStyleForTitle(XSSFWorkbook workbook) {
-        XSSFFont font = workbook.createFont();
-        font.setBold(true);
-        XSSFCellStyle style = workbook.createCellStyle();
-        style.setFont(font);
-        return style;
-    }
 }
