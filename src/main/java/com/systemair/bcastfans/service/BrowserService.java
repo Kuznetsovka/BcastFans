@@ -18,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
+import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
 import static org.openqa.selenium.PageLoadStrategy.EAGER;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
@@ -77,13 +78,13 @@ public class BrowserService {
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
-        if (typeMontage == TypeMontage.ROUND && subType == SubType.SMOKE_EXTRACT)
+        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
             showAlert("Не допустимая конфигурация, Круглых + Дымоудаление не существует!");
-        if (typeMontage == TypeMontage.ROUND && subType == SubType.KITCHEN)
+        if (typeMontage == ROUND && subType == SubType.KITCHEN)
             showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!");
-        //selectTypeMontage(typeMontage);
-//        selectSubType(subType);
-//        fillingFlowAndDrop(G, P);
+        selectTypeMontage(typeMontage);
+        selectSubType(subType);
+        fillFlowAndDrop(airFlow, airDrop);
 //        pauseWhileLoadWithWarning("sc-eXEjpC exqJWP");
 //        if (flagWarning) {
 //            showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!");
@@ -100,8 +101,139 @@ public class BrowserService {
         return fan;
     }
 
+    private void fillFlowAndDrop(String airFlow, String airDrop) {
+        inputTextByXpath(".//span[text() = 'Расход воздуха']/following::input[1]", airFlow);
+        inputTextByXpath(".//span[text() = 'Внешнее давление']/following::input[1]", airDrop);
+        clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+    }
+
+    private void selectSubType(SubType subType) {
+        /*
+            0 - все
+            1 - стандартные
+            2 - 120°С Кухонные
+            3 - 200°С Кухонные
+            4 - 300°С Дымоудаление
+            5 - 400°С Дымоудаление
+            6 - 600°С Дымоудаление
+            7 - Взывозащита
+            8 - Агрессивная среда
+            9 - Агрессивная среда + Взывозащита
+         */
+        List<WebElement> listSubType = driver.findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
+        List<WebElement> listSilentEC = driver.findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
+        switch (subType){
+            case NONE:
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+            case KITCHEN:
+                listSubType.get(2).click();
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+            case KITCHEN_AND_EC:
+                listSubType.get(2).click();
+                onCheckbox(true,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+            case EC:
+                listSubType.get(1).click();
+                onCheckbox(true,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+            case SILENT:
+                listSubType.get(1).click();
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(true,listSilentEC.get(1));
+                break;
+            case SILENT_AND_EC:
+                listSubType.get(1).click();
+                onCheckbox(true,listSilentEC.get(0));
+                onCheckbox(true,listSilentEC.get(1));
+                break;
+            case ON_ROOF:
+                listSubType.get(1).click();
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+            case SMOKE_EXTRACT:
+                listSubType.get(5).click();
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
+                break;
+        }
+
+    }
+
+    private void onCheckbox(boolean onAction, WebElement webElement) {
+        /*
+        "kClLXW" - выкл.
+        "eITjnS" - вкл.
+         */
+        if (onAction) {
+            if (webElement.getAttribute("class").contains("kClLXW")) webElement.click();
+        } else {
+            if (webElement.getAttribute("class").contains("eITjnS")) webElement.click();
+        }
+    }
+
     private void selectTypeMontage(TypeMontage typeMontage) {
-        List<WebElement> listTypeMontage = driver.findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
+        /*
+            Круглые - 0
+            Прямоугольные - 1
+            Крышные - 2
+            Осевые - 3
+            Центробежные - 4
+        */
+        List<WebElement> listTypeMontage = driver.findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        switch (typeMontage) {
+            case ROUND:
+                selectTypeFan(0,listTypeMontage);
+                break;
+            case RECTANGLE:
+                selectTypeFan(1,listTypeMontage);
+                break;
+            case ROOF:
+                selectTypeFan(2,listTypeMontage);
+                break;
+            case ROUND_AND_RECTANGLE:
+                selectTwoTypeFan(0, 1, listTypeMontage);
+                break;
+        }
+
+    }
+
+    private void selectTwoTypeFan(int i1, int i2, List<WebElement> list) {
+        /*
+            "gHdNtY" - вкл.
+            "cxjQFd" - выкл.
+         */
+        for (int i = 0; i < list.size() ; i++) {
+            if (i == i1 || i == i2) {
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                    list.get(i).click();
+            } else {
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                    list.get(i).click();
+            }
+        }
+    }
+
+    private void selectTypeFan(int index, List<WebElement> list) {
+        /*
+        "gHdNtY" - вкл.
+        "cxjQFd" - выкл.
+         */
+        for (int i = 0; i < list.size() ; i++) {
+            if (i == index) {
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                    list.get(i).click();
+            } else {
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                    list.get(i).click();
+            }
+        }
     }
 
     private void showAlert(String alertTxt) {
