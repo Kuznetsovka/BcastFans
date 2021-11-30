@@ -46,16 +46,37 @@ public class BrowserService {
                     .pollingEvery(Duration.ofSeconds(2))
                     .ignoring(NoSuchElementException.class);
             driver.navigate().to(HOME_URL);
-            clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
-            clickElementIfExistsByXpath(".//button[@data-id='2']");
-            clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
-            inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
-            inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
+            prepareStartPageBeforeCalculation();
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {
             showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
         }
+    }
+
+    private void prepareStartPageBeforeCalculation() {
+        // Согласие на добавление Cookies
+        clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
+        // Нажатие на вкладку  Подбор
+        clickElementIfExistsByXpath(".//button[@data-id='2']");
+        // Открытие вкладки Дополнительные параметры поиска
+        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
+        // Внесение данных Отрицательный допуск
+        inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
+        // Внесение данных Положительный допуск
+        inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
+        // Проверка и изменение единиц измерения Расход воздуха на м³/ч
+        changeValueComboBox(".//span[text() = 'Расход воздуха']/following::div[1]/div[1]","//span[1]","м³/ч");
+        // Проверка и изменение единиц измерения Внешнее давление на Па
+        changeValueComboBox(".//span[text() = 'Внешнее давление']/following::div[1]/div[1]","//span[1]","Па");
+        // Проверка и изменение значения Частота на 50 Гц
+        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]/div[1]","//span[1]","50 Гц ");
+        // Проверка и изменение значения Регулятор скорости на По умолчанию
+        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]/*/div[1]","//span[1]","По умолчанию ");
+        // Проверка и изменение единиц измерения Макс. температура воздуха на °С
+        changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]/*/div[1]","//span[1]","°C");
+        // Проверка и изменение значения Макс. температура воздуха на 40
+        inputTextByXpath(".//span[text() = 'Макс. температура воздуха']/following::input[1]","40");
     }
 
     private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
@@ -105,6 +126,16 @@ public class BrowserService {
         inputTextByXpath(".//span[text() = 'Расход воздуха']/following::input[1]", airFlow);
         inputTextByXpath(".//span[text() = 'Внешнее давление']/following::input[1]", airDrop);
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+    }
+
+    private void changeValueComboBox(String xpath, String checkingXpath ,String newValue){
+        By by = By.xpath(xpath);
+        WebElement checkingWb = driver.findElement(By.xpath(xpath + checkingXpath));
+        if (checkingWb.getText().equals(newValue)) return;
+        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+        List<WebElement> list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
+        WebElement changingElement = list.stream().filter(webElement -> webElement.getText().equals(newValue)).findFirst().get();
+        wait.until(ExpectedConditions.elementToBeClickable(changingElement)).click();
     }
 
     private void selectSubType(SubType subType) {
