@@ -5,7 +5,6 @@ import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -32,20 +31,16 @@ public class UtilClass {
         return "";
     }
 
-    @NotNull
     public static FileOutputStream getFileOutputStream(TableView<FanUnit> table) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
-        Properties property = System.getProperties();
 
-        fileChooser.setInitialDirectory(new File(property.getProperty("path.test")));
+        fileChooser.setInitialDirectory(new File(PATH_TEST));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
-                new FileChooser.ExtensionFilter("XLS files (*.xls)", "*.xls"),
-                new FileChooser.ExtensionFilter("ODS files (*.ods)", "*.ods"),
-                new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv"),
-                new FileChooser.ExtensionFilter("HTML files (*.html)", "*.html")
+                new FileChooser.ExtensionFilter("XLS files (*.xls)", "*.xls")
         );
         File saveFile = fileChooser.showSaveDialog(table.getScene().getWindow());
+        if (saveFile == null) return null;
         return new FileOutputStream(saveFile.getAbsoluteFile());
     }
 

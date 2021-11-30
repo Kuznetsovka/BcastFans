@@ -110,6 +110,7 @@ public class TableController implements Initializable {
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
         FileOutputStream outFile = UtilClass.getFileOutputStream(table);
+        if (outFile == null) return;
         workbook.write(outFile);
         workbook.close();
     }

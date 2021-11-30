@@ -7,25 +7,26 @@ import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.openqa.selenium.By;
-import org.openqa.selenium.SessionNotCreatedException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
 import java.util.List;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
+import static org.openqa.selenium.PageLoadStrategy.EAGER;
+import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 @Getter
 @Setter
 public class BrowserService {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private WebDriver driver;
+    private Wait<WebDriver> wait;
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
@@ -36,20 +37,43 @@ public class BrowserService {
         try {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(false);//выбор фонового режима true
+            chromeOptions.setPageLoadStrategy(EAGER);
             driver = new ChromeDriver(chromeOptions);
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            // Ожидание 30 секунд, опрос каждые 5 секунд
+            wait = new FluentWait<>(driver)
+                    .withTimeout(Duration.ofSeconds(30))
+                    .pollingEvery(Duration.ofSeconds(2))
+                    .ignoring(NoSuchElementException.class);
             driver.navigate().to(HOME_URL);
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']"))).click();
-            wait.until(ExpectedConditions.elementToBeClickable(By.xpath(".//button[@data-id='2']"))).click();
-            WebElement wb = driver.findElement(By.xpath(".//span[text() = 'Отрицательный допуск']/following::input[1]"));
-            wb.sendKeys("-5");
-            driver.findElement(By.xpath(".//span[text() = 'Отрицательный допуск']/following::input[1]")).sendKeys("-10");
-            driver.findElement(By.xpath(".//span[text() = 'Положительный допуск']/following::input[1]"));
+            clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
+            clickElementIfExistsByXpath(".//button[@data-id='2']");
+            clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
+            inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
+            inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {
             showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
         }
+    }
+
+    private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
+        By by = By.xpath(xpath);
+        wait.until(visibilityOfElementLocated(by));
+        if (attributeAndValue.length > 0) {
+            String attribute = attributeAndValue[0];
+            String value = attributeAndValue[1];
+            if (driver.findElement(by).getAttribute(attribute).equals(value)) return;
+        }
+        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+    }
+
+    private void inputTextByXpath(String xpath,String newValue) {
+        WebElement wb = driver.findElement(By.xpath(xpath));
+        if (wb.getText().equals(newValue)) return;
+        wb.sendKeys(Keys.CONTROL + "a");
+        wb.sendKeys(Keys.DELETE);
+        wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
