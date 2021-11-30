@@ -44,7 +44,7 @@ public class BrowserService {
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(30))
                     .pollingEvery(Duration.ofSeconds(2))
-                    .ignoring(NoSuchElementException.class);
+                    .ignoring(NoSuchElementException.class,ElementClickInterceptedException.class);
             driver.navigate().to(HOME_URL);
             prepareStartPageBeforeCalculation();
         } catch (SessionNotCreatedException e) {
@@ -62,19 +62,20 @@ public class BrowserService {
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
         // Внесение данных Отрицательный допуск
+        driver.findElements(By.xpath("sc-ifAKCX fmlpBd")).get(2).click();
         inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
         // Внесение данных Положительный допуск
         inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
         // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-        changeValueComboBox(".//span[text() = 'Расход воздуха']/following::div[1]/div[1]","//span[1]","м³/ч");
+        changeValueComboBox(".//span[text() = 'Расход воздуха']/following::div[1]//i[1]",".//span[text() = 'Расход воздуха']/following::div[1]//span[1]","м³/ч");
         // Проверка и изменение единиц измерения Внешнее давление на Па
-        changeValueComboBox(".//span[text() = 'Внешнее давление']/following::div[1]/div[1]","//span[1]","Па");
+        changeValueComboBox(".//span[text() = 'Внешнее давление']/following::div[1]//i[1]",".//span[text() = 'Внешнее давление']/following::div[1]//span[1]","Па");
         // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]/div[1]","//span[1]","50 Гц ");
+        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]//i[1]",".//span[text() = 'Частота']/following::div[1]//span[1]","50 Гц ","sc-gzVnrw");
         // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]/*/div[1]","//span[1]","По умолчанию ");
+        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]//i[1]",".//span[text() = 'Регулятор скорости']/following::div[1]//span[1]","По умолчанию ");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-        changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]/*/div[1]","//span[1]","°C");
+        changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]//i[1]",".//span[text() = 'Макс. температура воздуха']/following::div[1]//span[1]","°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
         inputTextByXpath(".//span[text() = 'Макс. температура воздуха']/following::input[1]","40");
     }
@@ -128,14 +129,22 @@ public class BrowserService {
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
     }
 
-    private void changeValueComboBox(String xpath, String checkingXpath ,String newValue){
+    private void changeValueComboBox(String xpath, String checkingXpath, String newValue,String ... xpathLists){
         By by = By.xpath(xpath);
-        WebElement checkingWb = driver.findElement(By.xpath(xpath + checkingXpath));
+        WebElement checkingWb = driver.findElement(By.xpath(checkingXpath));
         if (checkingWb.getText().equals(newValue)) return;
-        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
-        List<WebElement> list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
+        driver.findElement(by).click();
+        List<WebElement> list;
+        if (xpathLists.length > 0)
+            list = getListByXpath(xpathLists);
+        else
+            list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().equals(newValue)).findFirst().get();
         wait.until(ExpectedConditions.elementToBeClickable(changingElement)).click();
+    }
+
+    private List<WebElement> getListByXpath(String[] xpathLists) {
+        return driver.findElements(By.xpath("//div[contains(@class, '" + xpathLists[0] + "')]"));
     }
 
     private void selectSubType(SubType subType) {
