@@ -211,10 +211,10 @@ public class BrowserService {
          */
         for (int i = 0; i < list.size() ; i++) {
             if (i == i1 || i == i2) {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     list.get(i).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
                     list.get(i).click();
             }
         }
@@ -227,10 +227,10 @@ public class BrowserService {
          */
         for (int i = 0; i < list.size() ; i++) {
             if (i == index) {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     list.get(i).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
                     list.get(i).click();
             }
         }
