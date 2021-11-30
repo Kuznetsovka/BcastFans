@@ -62,7 +62,6 @@ public class BrowserService {
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
         // Внесение данных Отрицательный допуск
-        driver.findElements(By.xpath("sc-ifAKCX fmlpBd")).get(2).click();
         inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
         // Внесение данных Положительный допуск
         inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
@@ -78,6 +77,15 @@ public class BrowserService {
         changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]//i[1]",".//span[text() = 'Макс. температура воздуха']/following::div[1]//span[1]","°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
         inputTextByXpath(".//span[text() = 'Макс. температура воздуха']/following::input[1]","40");
+
+        /*
+
+JavascriptExecutor js = (JavascriptExecutor)driver;
+js.executeScript("arguments[0].click()", searchButton);
+JavascriptExecutor js = (JavascriptExecutor)driver;
+js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
+         */
+
     }
 
     private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
@@ -133,7 +141,7 @@ public class BrowserService {
         By by = By.xpath(xpath);
         WebElement checkingWb = driver.findElement(By.xpath(checkingXpath));
         if (checkingWb.getText().equals(newValue)) return;
-        driver.findElement(by).click();
+        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
         List<WebElement> list;
         if (xpathLists.length > 0)
             list = getListByXpath(xpathLists);
