@@ -10,7 +10,6 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -19,7 +18,7 @@ import java.util.List;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
-import static org.openqa.selenium.PageLoadStrategy.EAGER;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 @Getter
@@ -38,7 +37,6 @@ public class BrowserService {
         try {
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(false);//выбор фонового режима true
-            chromeOptions.setPageLoadStrategy(EAGER);
             driver = new ChromeDriver(chromeOptions);
             // Ожидание 30 секунд, опрос каждые 5 секунд
             wait = new FluentWait<>(driver)
@@ -70,22 +68,13 @@ public class BrowserService {
         // Проверка и изменение единиц измерения Внешнее давление на Па
         changeValueComboBox(".//span[text() = 'Внешнее давление']/following::div[1]//i[1]",".//span[text() = 'Внешнее давление']/following::div[1]//span[1]","Па");
         // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]//i[1]",".//span[text() = 'Частота']/following::div[1]//span[1]","50 Гц ","sc-gzVnrw");
+        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]//i[1]",".//span[text() = 'Частота']/following::div[1]//span[1]","50 Гц","sc-gzVnrw");
         // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]//i[1]",".//span[text() = 'Регулятор скорости']/following::div[1]//span[1]","По умолчанию ");
+        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]//i[1]",".//span[text() = 'Регулятор скорости']/following::div[1]//span[1]","По умолчанию");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
         changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]//i[1]",".//span[text() = 'Макс. температура воздуха']/following::div[1]//span[1]","°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
         inputTextByXpath(".//span[text() = 'Макс. температура воздуха']/following::input[1]","40");
-
-        /*
-
-JavascriptExecutor js = (JavascriptExecutor)driver;
-js.executeScript("arguments[0].click()", searchButton);
-JavascriptExecutor js = (JavascriptExecutor)driver;
-js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
-         */
-
     }
 
     private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
@@ -96,7 +85,7 @@ js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
             String value = attributeAndValue[1];
             if (driver.findElement(by).getAttribute(attribute).equals(value)) return;
         }
-        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+        wait.until(elementToBeClickable(by)).click();
     }
 
     private void inputTextByXpath(String xpath,String newValue) {
@@ -137,22 +126,23 @@ js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
     }
 
-    private void changeValueComboBox(String xpath, String checkingXpath, String newValue,String ... xpathLists){
+    private void changeValueComboBox(String xpath, String checkingXpath, String newValue,String ... xpathLists) {
         By by = By.xpath(xpath);
         WebElement checkingWb = driver.findElement(By.xpath(checkingXpath));
         if (checkingWb.getText().equals(newValue)) return;
-        wait.until(ExpectedConditions.elementToBeClickable(by)).click();
+        wait.until(elementToBeClickable(by)).click();
         List<WebElement> list;
         if (xpathLists.length > 0)
-            list = getListByXpath(xpathLists);
+            list = getListByXpath(xpathLists[0]);
         else
             list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
-        WebElement changingElement = list.stream().filter(webElement -> webElement.getText().equals(newValue)).findFirst().get();
-        wait.until(ExpectedConditions.elementToBeClickable(changingElement)).click();
+        WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
+        if (changingElement == null) showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
+        wait.until(elementToBeClickable(changingElement)).click();
     }
 
-    private List<WebElement> getListByXpath(String[] xpathLists) {
-        return driver.findElements(By.xpath("//div[contains(@class, '" + xpathLists[0] + "')]"));
+    private List<WebElement> getListByXpath(String xpathLists) {
+        return driver.findElements(By.xpath(".//div[contains(@class, '" + xpathLists + "')]"));
     }
 
     private void selectSubType(SubType subType) {
@@ -220,9 +210,9 @@ js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
         "eITjnS" - вкл.
          */
         if (onAction) {
-            if (webElement.getAttribute("class").contains("kClLXW")) webElement.click();
-        } else {
             if (webElement.getAttribute("class").contains("eITjnS")) webElement.click();
+        } else {
+            if (webElement.getAttribute("class").contains("kClLXW")) webElement.click();
         }
     }
 
@@ -259,10 +249,10 @@ js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
          */
         for (int i = 0; i < list.size() ; i++) {
             if (i == i1 || i == i2) {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     list.get(i).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
                     list.get(i).click();
             }
         }
@@ -275,10 +265,10 @@ js.executeScript("$x(\"(//input[@value='Google Search'])[2]\").click()");
          */
         for (int i = 0; i < list.size() ; i++) {
             if (i == index) {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     list.get(i).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("gHdNtY"))
                     list.get(i).click();
             }
         }
