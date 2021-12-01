@@ -112,7 +112,7 @@ public class BrowserService {
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
-            //showAlert("Не допустимая конфигурация!"); //TODO Подумать может не кидать Warning, а идти дайльше
+            //showAlert("Не допустимая конфигурация!"); //TODO Подумать может не кидать Warning, а идти дальше
             flagWarning = false;
             return new Fan();
         }
@@ -127,16 +127,23 @@ public class BrowserService {
 
     private Fan fillTableUnit(SubType subType, TypeMontage typeMontage) {
         WebElement btnMoreUnit;
+        int currentRow = 1;
         List<Fan> tableUnits;
         Fan result = null;
+        List<WebElement> row;
         do {
             if (isExist(By.xpath("By"))) {
                 btnMoreUnit = wait.until(elementToBeClickable(By.xpath("By")));
                 btnMoreUnit.click();
             }
-            List<WebElement> table = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody"));
-            for (WebElement fan : table) {
-                //List<WebElement> row = fan.findElements();
+            int lastRows = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+            for (int i = 1; i <= lastRows; i++) {
+                row = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr["+ i +"]/td[@class='sc-jhAzac cmXxfZ']"));
+                String model =  row.get(0).findElement(By.tagName("a")).getText();
+                String phase =  row.get(0).findElement(By.tagName("small")).getText();
+                String article =  row.get(1).getText();
+                String price =  row.get(2).getText();
+                String power =  row.get(5).getText();
 
             }
         } while (result == null);
