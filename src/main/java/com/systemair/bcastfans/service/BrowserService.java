@@ -46,7 +46,7 @@ public class BrowserService {
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
-                    .ignoring(NoSuchElementException.class,ElementClickInterceptedException.class);
+                    .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
             driver.navigate().to(HOME_URL);
             prepareStartPageBeforeCalculation();
         } catch (SessionNotCreatedException e) {
@@ -62,26 +62,26 @@ public class BrowserService {
         // Нажатие на вкладку  Подбор
         clickElementIfExistsByXpath(".//button[@data-id='2']");
         // Открытие вкладки Дополнительные параметры поиска
-        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
+        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
         // Внесение данных Отрицательный допуск
         inputTextByLabel("Отрицательный допуск", negativeLimit);
         // Внесение данных Положительный допуск
         inputTextByLabel("Положительный допуск", positiveLimit);
         // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-        changeValueComboBox("Расход воздуха","м³/ч");
+        changeValueComboBox("Расход воздуха", "м³/ч");
         // Проверка и изменение единиц измерения Внешнее давление на Па
-        changeValueComboBox("Внешнее давление","Па");
+        changeValueComboBox("Внешнее давление", "Па");
         // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBox("Частота","50 Гц");
+        changeValueComboBox("Частота", "50 Гц");
         // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBox("Регулятор скорости","По умолчанию");
+        changeValueComboBox("Регулятор скорости", "По умолчанию");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-        changeValueComboBox("Макс. температура воздуха","°C");
+        changeValueComboBox("Макс. температура воздуха", "°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
-        inputTextByLabel("Макс. температура воздуха","40");
+        inputTextByLabel("Макс. температура воздуха", "40");
     }
 
-    private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
+    private void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
         By by = By.xpath(xpath);
         wait.until(visibilityOfElementLocated(by));
         if (attributeAndValue.length > 0) {
@@ -119,15 +119,43 @@ public class BrowserService {
         grouping();
         hidingDiagram();
         sorting();
-//        fillTableUnit(currentRow, subType, typeMontage);
+        Fan fan = fillTableUnit(subType, typeMontage);
 //        if (isDownloadFile)
 //            saveFile();
-        Fan fan = new Fan();
-        return fan;
+        return (fan != null) ? fan : new Fan();
+    }
+
+    private Fan fillTableUnit(SubType subType, TypeMontage typeMontage) {
+        WebElement btnMoreUnit;
+        List<Fan> tableUnits;
+        Fan result = null;
+        do {
+            if (isExist(By.xpath("By"))) {
+                btnMoreUnit = wait.until(elementToBeClickable(By.xpath("By")));
+                btnMoreUnit.click();
+            }
+            List<WebElement> table = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody"));
+            for (WebElement fan : table) {
+                //List<WebElement> row = fan.findElements();
+
+            }
+        } while (result == null);
+
+//        If tableUnit.Cells(4).innerText <> vbNullString Then
+//        If (subType = 4 And (typeMontage = 1 Or typeMontage = 2 Or typeMontage = 4)) Then
+//        Call filterModel(currentRow, tableUnit, typeMontage, i)
+//        If model <> vbNullString Then Exit Sub
+//        Else
+//        Call fillTableUnitByUnit(currentRow, tableUnit, i)
+//        If model <> vbNullString Then Exit Sub
+//        End If
+//        End If
+//        Next tableUnit
+        return result;
     }
 
     private void sorting() {
-        changeValueComboBox("Сортировать по:","Цена (По возрастающей)");
+        changeValueComboBox("Сортировать по:", "Цена (По возрастающей)");
     }
 
     private void hidingDiagram() {
@@ -136,14 +164,14 @@ public class BrowserService {
     }
 
     private void grouping() {
-        changeValueComboBox("Группировать по:","Нет");
+        changeValueComboBox("Группировать по:", "Нет");
     }
 
     private void fillFlowAndDrop(String airFlow, String airDrop) {
         inputTextByLabel("Расход воздуха", airFlow);
         inputTextByLabel("Внешнее давление", airDrop);
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-        if(isWarning())
+        if (isWarning())
             flagWarning = true;
     }
 
@@ -163,8 +191,8 @@ public class BrowserService {
         return isExists;
     }
 
-    private WebElement getWebElementByXpath(String xpath){
-        List<WebElement> webElements = wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath),0));
+    private WebElement getWebElementByXpath(String xpath) {
+        List<WebElement> webElements = wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0));
         if (webElements.size() == 0) return null;
         return webElements.get(0);
     }
@@ -179,7 +207,8 @@ public class BrowserService {
         wait.until(elementToBeClickable(by)).click();
         List<WebElement> list = getListDivsByNameClass("sc-gzVnrw");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
-        if (changingElement == null) showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
+        if (changingElement == null)
+            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
         wait.until(elementToBeClickable(changingElement)).click();
     }
 
@@ -202,45 +231,45 @@ public class BrowserService {
          */
         List<WebElement> listSubType = driver.findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
         List<WebElement> listSilentEC = driver.findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
-        switch (subType){
+        switch (subType) {
             case NONE:
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN:
                 listSubType.get(2).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN_AND_EC:
                 listSubType.get(2).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(true,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(true, listSilentEC.get(1));
                 break;
             case EC:
                 listSubType.get(1).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(true,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(true, listSilentEC.get(1));
                 break;
             case SILENT:
                 listSubType.get(1).click();
-                onCheckbox(true,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(true, listSilentEC.get(0));
+                onCheckbox(false, listSilentEC.get(1));
                 break;
             case SILENT_AND_EC:
                 listSubType.get(1).click();
-                onCheckbox(true,listSilentEC.get(0));
-                onCheckbox(true,listSilentEC.get(1));
+                onCheckbox(true, listSilentEC.get(0));
+                onCheckbox(true, listSilentEC.get(1));
                 break;
             case ON_ROOF:
                 listSubType.get(1).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(false, listSilentEC.get(1));
                 break;
             case SMOKE_EXTRACT:
                 listSubType.get(5).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false, listSilentEC.get(0));
+                onCheckbox(false, listSilentEC.get(1));
                 break;
         }
 
@@ -252,9 +281,9 @@ public class BrowserService {
         "eITjnS" - вкл.
          */
         if (onAction) {
-            if (isContainsInClass(webElement,"kClLXW")) webElement.click();
+            if (isContainsInClass(webElement, "kClLXW")) webElement.click();
         } else {
-            if (isContainsInClass(webElement,"eITjnS")) webElement.click();
+            if (isContainsInClass(webElement, "eITjnS")) webElement.click();
         }
     }
 
@@ -263,7 +292,7 @@ public class BrowserService {
         "ineogT" - выкл.
         "hBEpsK" - вкл.
          */
-        if (isContainsInClass(webElement,"hBEpsK")) webElement.click();
+        if (isContainsInClass(webElement, "hBEpsK")) webElement.click();
     }
 
     private boolean isContainsInClass(WebElement webElement, String text) {
@@ -281,13 +310,13 @@ public class BrowserService {
         List<WebElement> listTypeMontage = driver.findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
         switch (typeMontage) {
             case ROUND:
-                selectTypeFan(0,listTypeMontage);
+                selectTypeFan(0, listTypeMontage);
                 break;
             case RECTANGLE:
-                selectTypeFan(1,listTypeMontage);
+                selectTypeFan(1, listTypeMontage);
                 break;
             case ROOF:
-                selectTypeFan(2,listTypeMontage);
+                selectTypeFan(2, listTypeMontage);
                 break;
             case ROUND_AND_RECTANGLE:
                 selectTwoTypeFan(0, 1, listTypeMontage);
@@ -301,7 +330,7 @@ public class BrowserService {
             "gHdNtY" - вкл.
             "cxjQFd" - выкл.
          */
-        for (int i = 0; i < list.size() ; i++) {
+        for (int i = 0; i < list.size(); i++) {
             if (i == i1 || i == i2) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     wait.until(elementToBeClickable(list.get(i))).click();
@@ -317,7 +346,7 @@ public class BrowserService {
         "gHdNtY" - вкл.
         "cxjQFd" - выкл.
          */
-        for (int i = 0; i < list.size() ; i++) {
+        for (int i = 0; i < list.size(); i++) {
             if (i == index) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
                     wait.until(elementToBeClickable(list.get(i))).click();
@@ -334,7 +363,7 @@ public class BrowserService {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
-        if (driver!= null)
+        if (driver != null)
             driver.close();
     }
 }
