@@ -48,7 +48,7 @@ public class BrowserService {
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {
-            showAlert("Драйвер не найден по уазанному пути!" + "\n" + e.getMessage());
+            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage());
         }
     }
 
@@ -60,21 +60,21 @@ public class BrowserService {
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class","fa fa-chevron-down");
         // Внесение данных Отрицательный допуск
-        inputTextByXpath(".//span[text() = 'Отрицательный допуск']/following::input[1]", negativeLimit);
+        inputTextByLabel("Отрицательный допуск", negativeLimit);
         // Внесение данных Положительный допуск
-        inputTextByXpath(".//span[text() = 'Положительный допуск']/following::input[1]", positiveLimit);
+        inputTextByLabel("Положительный допуск", positiveLimit);
         // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-        changeValueComboBox(".//span[text() = 'Расход воздуха']/following::div[1]//i[1]",".//span[text() = 'Расход воздуха']/following::div[1]//span[1]","м³/ч");
+        changeValueComboBox("Расход воздуха","м³/ч");
         // Проверка и изменение единиц измерения Внешнее давление на Па
-        changeValueComboBox(".//span[text() = 'Внешнее давление']/following::div[1]//i[1]",".//span[text() = 'Внешнее давление']/following::div[1]//span[1]","Па");
+        changeValueComboBox("Внешнее давление","Па");
         // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBox(".//span[text() = 'Частота']/following::div[1]//i[1]",".//span[text() = 'Частота']/following::div[1]//span[1]","50 Гц","sc-gzVnrw");
+        changeValueComboBox("Частота","50 Гц");
         // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBox(".//span[text() = 'Регулятор скорости']/following::div[1]//i[1]",".//span[text() = 'Регулятор скорости']/following::div[1]//span[1]","По умолчанию");
+        changeValueComboBox("Регулятор скорости","По умолчанию");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-        changeValueComboBox(".//span[text() = 'Макс. температура воздуха']/following::div[1]//i[1]",".//span[text() = 'Макс. температура воздуха']/following::div[1]//span[1]","°C");
+        changeValueComboBox("Макс. температура воздуха","°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
-        inputTextByXpath(".//span[text() = 'Макс. температура воздуха']/following::input[1]","40");
+        inputTextByLabel("Макс. температура воздуха","40");
     }
 
     private void clickElementIfExistsByXpath(String xpath,String ... attributeAndValue) {
@@ -88,7 +88,8 @@ public class BrowserService {
         wait.until(elementToBeClickable(by)).click();
     }
 
-    private void inputTextByXpath(String xpath,String newValue) {
+    private void inputTextByLabel(String findTextLabel, String newValue) {
+        String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
         WebElement wb = driver.findElement(By.xpath(xpath));
         if (wb.getText().equals(newValue)) return;
         wb.sendKeys(Keys.CONTROL + "a");
@@ -105,12 +106,13 @@ public class BrowserService {
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
-            showAlert("Не допустимая конфигурация!");
+            //showAlert("Не допустимая конфигурация!"); //TODO Подумать может не кидать Warning, а идти дайльше
             flagWarning = false;
             return new Fan();
         }
-//        grouping();
-//        sorted();
+        grouping();
+        hidingDiagram();
+        sorting();
 //        fillTableUnit(currentRow, subType, typeMontage);
 //        if (isDowmloadFile)
 //            saveFile();
@@ -119,23 +121,45 @@ public class BrowserService {
         return fan;
     }
 
-    private void fillFlowAndDrop(String airFlow, String airDrop) {
-        inputTextByXpath(".//span[text() = 'Расход воздуха']/following::input[1]", airFlow);
-        inputTextByXpath(".//span[text() = 'Внешнее давление']/following::input[1]", airDrop);
-        clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-
+    private void sorting() {
+        changeValueComboBox("Сортировать по:","Цена (По возрастающей)");
     }
 
-    private void changeValueComboBox(String xpath, String checkingXpath, String newValue,String ... xpathLists) {
-        By by = By.xpath(xpath);
-        WebElement checkingWb = driver.findElement(By.xpath(checkingXpath));
+    private void hidingDiagram() {
+        // Скрыть диаграммы
+        onCheckboxDiagram(false,getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
+    }
+
+    private void grouping() {
+        changeValueComboBox("Группировать по:","Нет");
+    }
+
+    private void fillFlowAndDrop(String airFlow, String airDrop) {
+        inputTextByLabel("Расход воздуха", airFlow);
+        inputTextByLabel("Внешнее давление", airDrop);
+        clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+        if(isWarning())
+            flagWarning = true;
+    }
+
+    private boolean isWarning() {
+        return getWebElementByXpath(".//span[@type='warning']") != null;
+    }
+
+    private WebElement getWebElementByXpath(String xpath){
+        List<WebElement> webElements = driver.findElements(By.xpath(xpath));
+        return webElements.size() > 0 ? webElements.get(0) : null;
+    }
+
+    private void changeValueComboBox(String findTextLabel, String newValue) {
+        String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
+        By checkingXpath = By.xpath(xpath);
+        By by = By.xpath(xpath + "/following::i[1]");
+        WebElement checkingWb = driver.findElement(checkingXpath);
         if (checkingWb.getText().equals(newValue)) return;
+        wait.until(visibilityOfElementLocated(by));
         wait.until(elementToBeClickable(by)).click();
-        List<WebElement> list;
-        if (xpathLists.length > 0)
-            list = getListByXpath(xpathLists[0]);
-        else
-            list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
+        List<WebElement> list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null) showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
         wait.until(elementToBeClickable(changingElement)).click();
@@ -156,7 +180,7 @@ public class BrowserService {
             6 - 600°С Дымоудаление
             7 - Взывозащита
             8 - Агрессивная среда
-            9 - Агрессивная среда + Взывозащита
+            9 - Агрессивная среда + Взрывозащита
          */
         List<WebElement> listSubType = driver.findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
         List<WebElement> listSilentEC = driver.findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
@@ -172,18 +196,18 @@ public class BrowserService {
                 break;
             case KITCHEN_AND_EC:
                 listSubType.get(2).click();
-                onCheckbox(true,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(true,listSilentEC.get(1));
                 break;
             case EC:
                 listSubType.get(1).click();
-                onCheckbox(true,listSilentEC.get(0));
-                onCheckbox(false,listSilentEC.get(1));
+                onCheckbox(false,listSilentEC.get(0));
+                onCheckbox(true,listSilentEC.get(1));
                 break;
             case SILENT:
                 listSubType.get(1).click();
-                onCheckbox(false,listSilentEC.get(0));
-                onCheckbox(true,listSilentEC.get(1));
+                onCheckbox(true,listSilentEC.get(0));
+                onCheckbox(false,listSilentEC.get(1));
                 break;
             case SILENT_AND_EC:
                 listSubType.get(1).click();
@@ -210,10 +234,26 @@ public class BrowserService {
         "eITjnS" - вкл.
          */
         if (onAction) {
-            if (webElement.getAttribute("class").contains("eITjnS")) webElement.click();
+            if (isContainsInClass(webElement,"kClLXW")) webElement.click();
         } else {
-            if (webElement.getAttribute("class").contains("kClLXW")) webElement.click();
+            if (isContainsInClass(webElement,"eITjnS")) webElement.click();
         }
+    }
+
+    private void onCheckboxDiagram(boolean onAction, WebElement webElement) {
+        /*
+        "ineogT" - выкл.
+        "hBEpsK" - вкл.
+         */
+        if (onAction) {
+            if (isContainsInClass(webElement,"ineogT")) webElement.click();
+        } else {
+            if (isContainsInClass(webElement,"hBEpsK")) webElement.click();
+        }
+    }
+
+    private boolean isContainsInClass(WebElement webElement, String text) {
+        return webElement.getAttribute("class").contains(text);
     }
 
     private void selectTypeMontage(TypeMontage typeMontage) {
