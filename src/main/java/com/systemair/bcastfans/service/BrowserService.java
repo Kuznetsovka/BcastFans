@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -18,6 +19,7 @@ import java.util.List;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
+import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
@@ -83,18 +85,21 @@ public class BrowserService {
         if (attributeAndValue.length > 0) {
             String attribute = attributeAndValue[0];
             String value = attributeAndValue[1];
-            if (driver.findElement(by).getAttribute(attribute).equals(value)) return;
+            if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
         }
         wait.until(elementToBeClickable(by)).click();
     }
 
+    @SneakyThrows
     private void inputTextByLabel(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
-        WebElement wb = driver.findElement(By.xpath(xpath));
+        WebElement wb = getWebElementByXpath(xpath);
         if (wb.getText().equals(newValue)) return;
         wb.sendKeys(Keys.CONTROL + "a");
         wb.sendKeys(Keys.DELETE);
-        wb.sendKeys(newValue);
+        wb.sendKeys(wb.getText(),newValue);
+        sleep(500);
+        //wait.until(elementToBeClickable(wb)).click();
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -114,9 +119,8 @@ public class BrowserService {
         hidingDiagram();
         sorting();
 //        fillTableUnit(currentRow, subType, typeMontage);
-//        if (isDowmloadFile)
+//        if (isDownloadFile)
 //            saveFile();
-//        model = "";
         Fan fan = new Fan();
         return fan;
     }
@@ -142,30 +146,33 @@ public class BrowserService {
             flagWarning = true;
     }
 
+    @SneakyThrows
     private boolean isWarning() {
-        return getWebElementByXpath(".//span[@type='warning']") != null;
+        sleep(1000);
+        return driver.findElements(By.xpath(".//span[@type='warning']")).size() > 0;
     }
 
     private WebElement getWebElementByXpath(String xpath){
-        List<WebElement> webElements = driver.findElements(By.xpath(xpath));
-        return webElements.size() > 0 ? webElements.get(0) : null;
+        List<WebElement> webElements = wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath),0));
+        if (webElements.size() == 0) return null;
+        return webElements.get(0);
     }
 
     private void changeValueComboBox(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
-        By checkingXpath = By.xpath(xpath);
-        By by = By.xpath(xpath + "/following::i[1]");
-        WebElement checkingWb = driver.findElement(checkingXpath);
+        By by = By.xpath(xpath + "/ancestor::div[1]");
+        WebElement checkingWb = getWebElementByXpath(xpath);
+        if (checkingWb == null) return;
         if (checkingWb.getText().equals(newValue)) return;
         wait.until(visibilityOfElementLocated(by));
         wait.until(elementToBeClickable(by)).click();
-        List<WebElement> list = driver.findElements(By.xpath(".//div[@class='sc-bZQynM eMtmfk']//div"));
+        List<WebElement> list = getListDivsByNameClass("sc-gzVnrw");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null) showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
         wait.until(elementToBeClickable(changingElement)).click();
     }
 
-    private List<WebElement> getListByXpath(String xpathLists) {
+    private List<WebElement> getListDivsByNameClass(String xpathLists) {
         return driver.findElements(By.xpath(".//div[contains(@class, '" + xpathLists + "')]"));
     }
 
@@ -290,10 +297,10 @@ public class BrowserService {
         for (int i = 0; i < list.size() ; i++) {
             if (i == i1 || i == i2) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
-                    list.get(i).click();
+                    wait.until(elementToBeClickable(list.get(i))).click();
             } else {
                 if (list.get(i).getAttribute("class").contains("gHdNtY"))
-                    list.get(i).click();
+                    wait.until(elementToBeClickable(list.get(i))).click();
             }
         }
     }
@@ -306,10 +313,10 @@ public class BrowserService {
         for (int i = 0; i < list.size() ; i++) {
             if (i == index) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
-                    list.get(i).click();
+                    wait.until(elementToBeClickable(list.get(i))).click();
             } else {
                 if (list.get(i).getAttribute("class").contains("gHdNtY"))
-                    list.get(i).click();
+                    wait.until(elementToBeClickable(list.get(i))).click();
             }
         }
     }
