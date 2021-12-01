@@ -10,9 +10,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Fan {
-    private String model;
-    private String article;
-    private Double power;
-    private String phase;
-    private Double price;
+    private String model = "";
+    private String article = "";
+    private Double power = 0.0;
+    private String phase = "";
+    private Double price = 0.0;
 }

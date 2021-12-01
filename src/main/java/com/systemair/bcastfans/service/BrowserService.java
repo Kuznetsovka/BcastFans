@@ -104,19 +104,18 @@ public class BrowserService {
         selectTypeMontage(typeMontage);
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
-//        pauseWhileLoadWithWarning("sc-eXEjpC exqJWP");
-//        if (flagWarning) {
-//            showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!");
-//            flagWarning = false;
-//            return new Fan();
-//        }
+        if (flagWarning) {
+            showAlert("Не допустимая конфигурация!");
+            flagWarning = false;
+            return new Fan();
+        }
 //        grouping();
 //        sorted();
 //        fillTableUnit(currentRow, subType, typeMontage);
 //        if (isDowmloadFile)
 //            saveFile();
 //        model = "";
-        Fan fan = new Fan("","",10.0,"",100.0);
+        Fan fan = new Fan();
         return fan;
     }
 
@@ -124,6 +123,7 @@ public class BrowserService {
         inputTextByXpath(".//span[text() = 'Расход воздуха']/following::input[1]", airFlow);
         inputTextByXpath(".//span[text() = 'Внешнее давление']/following::input[1]", airDrop);
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+
     }
 
     private void changeValueComboBox(String xpath, String checkingXpath, String newValue,String ... xpathLists) {
