@@ -29,6 +29,8 @@ public class BrowserService {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private WebDriver driver;
     private Wait<WebDriver> wait;
+    private static final int MAX_LIMIT_TIMEOUT = 30;
+    private static final int LIMIT_REPEAT_TIMEOUT = 2;
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
@@ -42,8 +44,8 @@ public class BrowserService {
             driver = new ChromeDriver(chromeOptions);
             // Ожидание 30 секунд, опрос каждые 5 секунд
             wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(30))
-                    .pollingEvery(Duration.ofSeconds(2))
+                    .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
+                    .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class,ElementClickInterceptedException.class);
             driver.navigate().to(HOME_URL);
             prepareStartPageBeforeCalculation();
@@ -97,9 +99,8 @@ public class BrowserService {
         if (wb.getText().equals(newValue)) return;
         wb.sendKeys(Keys.CONTROL + "a");
         wb.sendKeys(Keys.DELETE);
-        wb.sendKeys(wb.getText(),newValue);
+        wb.sendKeys(newValue);
         sleep(500);
-        //wait.until(elementToBeClickable(wb)).click();
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -131,7 +132,7 @@ public class BrowserService {
 
     private void hidingDiagram() {
         // Скрыть диаграммы
-        onCheckboxDiagram(false,getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
+        onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
     }
 
     private void grouping() {
@@ -148,8 +149,18 @@ public class BrowserService {
 
     @SneakyThrows
     private boolean isWarning() {
-        sleep(1000);
-        return driver.findElements(By.xpath(".//span[@type='warning']")).size() > 0;
+        return isExist(By.xpath(".//span[@type='warning']"));
+    }
+
+    private boolean isExist(By by) {
+        boolean isExists;
+        try {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            isExists = driver.findElements(by).size() > 0;
+        } finally {
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
+        }
+        return isExists;
     }
 
     private WebElement getWebElementByXpath(String xpath){
@@ -247,16 +258,12 @@ public class BrowserService {
         }
     }
 
-    private void onCheckboxDiagram(boolean onAction, WebElement webElement) {
+    private void onCheckboxDiagram(WebElement webElement) {
         /*
         "ineogT" - выкл.
         "hBEpsK" - вкл.
          */
-        if (onAction) {
-            if (isContainsInClass(webElement,"ineogT")) webElement.click();
-        } else {
-            if (isContainsInClass(webElement,"hBEpsK")) webElement.click();
-        }
+        if (isContainsInClass(webElement,"hBEpsK")) webElement.click();
     }
 
     private boolean isContainsInClass(WebElement webElement, String text) {
