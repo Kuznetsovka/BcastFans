@@ -232,45 +232,46 @@ public class BrowserService {
             8 - Агрессивная среда
             9 - Агрессивная среда + Взрывозащита
          */
-        List<WebElement> listSubType = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
-        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
+        WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-cIShpX htEzPC']"));
+        List<WebElement> listSubType = listSubTypeParent.findElements(By.tagName("div"));
+        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-tilXH')]"));
         switch (subType) {
             case NONE:
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN:
-                listSubType.get(2).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(2))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN_AND_EC:
-                listSubType.get(2).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(2))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
             case EC:
-                listSubType.get(1).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(1))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
             case SILENT:
-                listSubType.get(1).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(1))).click();
                 onCheckbox(true, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case SILENT_AND_EC:
-                listSubType.get(1).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(1))).click();
                 onCheckbox(true, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
             case ON_ROOF:
-                listSubType.get(1).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(1))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case SMOKE_EXTRACT:
-                listSubType.get(5).click();
+                sbc.getWait().until(elementToBeClickable(listSubType.get(5))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
@@ -310,7 +311,7 @@ public class BrowserService {
             Осевые - 3
             Центробежные - 4
         */
-        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[@class = 'sc-iELTvK cXNwon']"));
         switch (typeMontage) {
             case ROUND:
                 selectTypeFan(0, listTypeMontage);
