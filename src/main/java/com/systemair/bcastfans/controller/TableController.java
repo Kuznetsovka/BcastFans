@@ -21,7 +21,6 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
@@ -105,14 +104,15 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void save() {
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        XSSFSheet worksheet = workbook.createSheet("sheet");
+        Workbook workbook = new XSSFWorkbook();
+        Sheet worksheet = workbook.createSheet("sheet");
         excelService.createCellsInWorksheet(worksheet, table);
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
         FileOutputStream outFile = UtilClass.getFileOutputStream(table);
         if (outFile == null) return;
         workbook.write(outFile);
+        outFile.close();
         workbook.close();
     }
 

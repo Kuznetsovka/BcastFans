@@ -44,9 +44,13 @@ public class ExcelService {
     }
 
     public Sheet fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
-        int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
+        int lastColumn = table.getColumns().size();
         int countSystems = table.getItems().size();
         Cell[] cell = new XSSFCell[lastColumn];
+        for (int i = 0; i < lastColumn; i++) {
+            cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
+        }
+
         for (int count = 0; count < countSystems; count++) {
             FanUnit cells = table.getItems().get(count);
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
