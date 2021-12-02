@@ -43,14 +43,10 @@ public class ExcelService {
         return workbook;
     }
 
-    public Sheet fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
+    public void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
         int lastColumn = table.getColumns().size();
         int countSystems = table.getItems().size();
         Cell[] cell = new XSSFCell[lastColumn];
-        for (int i = 0; i < lastColumn; i++) {
-            cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
-        }
-
         for (int count = 0; count < countSystems; count++) {
             FanUnit cells = table.getItems().get(count);
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
@@ -62,7 +58,6 @@ public class ExcelService {
             }
         }
         worksheet.autoSizeColumn(1);
-        return worksheet;
     }
 
     public void createCellsInWorksheet(Sheet worksheet, TableView<FanUnit> table) {

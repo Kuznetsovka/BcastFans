@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.SingletonBrowserClass;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -7,17 +8,15 @@ import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
-import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
 import java.util.List;
 
-import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
+import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
 import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
@@ -26,45 +25,12 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
 @Getter
 @Setter
 public class BrowserService {
-    private static final String HOME_URL = "https://www.systemair.com/ru/";
-    private WebDriver driver;
-    private Wait<WebDriver> wait;
-    private static final int MAX_LIMIT_TIMEOUT = 30;
-    private static final int LIMIT_REPEAT_TIMEOUT = 2;
+    private static SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
 
-    @SneakyThrows
-    public void initializeBrowser() {
-        System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
-        try {
-            ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(true);//выбор фонового режима true
-            driver = new ChromeDriver(chromeOptions);
-            // Ожидание 30 секунд, опрос каждые 5 секунд
-            wait = new FluentWait<>(driver)
-                    .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
-                    .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
-                    .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
-            driver.navigate().to(HOME_URL);
-            clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
-            // Нажатие на вкладку  Подбор
-            clickElementIfExistsByXpath(".//button[@data-id='2']");
-            // Открытие вкладки Дополнительные параметры поиска
-            clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
-        } catch (SessionNotCreatedException e) {
-            showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
-        } catch (IllegalArgumentException e) {
-            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage());
-        }
-    }
-
     public void prepareStartPageBeforeCalculation() {
-        //TODO Ппроверка доступности страницы
-        // Согласие на добавление Cookies
-        // Внесение данных Отрицательный допуск
-        if (driver == null) initializeBrowser();
         inputTextByLabel("Отрицательный допуск", negativeLimit);
         // Внесение данных Положительный допуск
         inputTextByLabel("Положительный допуск", positiveLimit);
@@ -84,13 +50,13 @@ public class BrowserService {
 
     private void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
         By by = By.xpath(xpath);
-        wait.until(visibilityOfElementLocated(by));
+        sbc.getWait().until(visibilityOfElementLocated(by));
         if (attributeAndValue.length > 0) {
             String attribute = attributeAndValue[0];
             String value = attributeAndValue[1];
             if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
         }
-        wait.until(elementToBeClickable(by)).click();
+        sbc.getWait().until(elementToBeClickable(by)).click();
     }
 
     @SneakyThrows
@@ -133,12 +99,12 @@ public class BrowserService {
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         do {
 //            if (isExist(By.xpath("By"))) {
-//                btnMoreUnit = wait.until(elementToBeClickable(By.xpath("By")));
+//                btnMoreUnit = sbc1.getWait().until(elementToBeClickable(By.xpath("By")));
 //                btnMoreUnit.click();
 //            }
-            int lastRows = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+            int lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
             for (int i = 1; i <= lastRows; i++) {
-                row = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + i + "]/td[contains(@class,'sc-jhAzac')]"));
+                row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + i + "]/td[contains(@class,'sc-jhAzac')]"));
                 String price = row.get(4).getText();
                 String model = row.get(2).findElement(By.tagName("a")).getText();
                 if (price.equals("")) continue;
@@ -157,14 +123,14 @@ public class BrowserService {
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
-       //WebElement wb = row.get(1).findElement(By.tagName("button"));
+        //WebElement wb = row.get(1).findElement(By.tagName("button"));
         By by = By.xpath(".//button[@class = 'sc-bxivhb kcrVkO']");
-//        WebElement wb = driver.findElements(by).get(0).findElements(By.tagName("i")).get(1);
-//        wait.until(visibilityOfElementLocated(by));
+//        WebElement wb = sbc1.getDriver().findElements(by).get(0).findElements(By.tagName("i")).get(1);
+//        sbc1.getWait().until(visibilityOfElementLocated(by));
 //        try {
-//            wait.until(elementToBeClickable(by)).click();
+//            sbc1.getWait().until(elementToBeClickable(by)).click();
 //            } catch (ElementClickInterceptedException ignored){}
-//        List<WebElement> webLinks = wait.until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+//        List<WebElement> webLinks = sbc1.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), "webLinks.get(0).getAttribute(href)", "webLinks.get(1).getAttribute(href)");
     }
 
@@ -197,16 +163,16 @@ public class BrowserService {
     private boolean isExist(By by) {
         boolean isExists;
         try {
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-            isExists = driver.findElements(by).size() > 0;
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            isExists = sbc.getDriver().findElements(by).size() > 0;
         } finally {
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
         }
         return isExists;
     }
 
     private WebElement getWebElementByXpath(String xpath) {
-        List<WebElement> webElements = wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0));
+        List<WebElement> webElements = sbc.getWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0));
         if (webElements.size() == 0) return null;
         return webElements.get(0);
     }
@@ -219,13 +185,13 @@ public class BrowserService {
         WebElement checkingWb = getWebElementByXpath(checkXpath);
         if (checkingWb == null) return;
         if (checkingWb.getText().equals(newValue)) return;
-        wait.until(visibilityOfElementLocated(by));
-        wait.until(elementToBeClickable(by)).click();
+        sbc.getWait().until(visibilityOfElementLocated(by));
+        sbc.getWait().until(elementToBeClickable(by)).click();
         List<WebElement> list = getListDivsByNameClass("sc-bZQynM");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
             showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
-        wait.until(elementToBeClickable(changingElement)).click();
+        sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
     private void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
@@ -234,17 +200,17 @@ public class BrowserService {
         WebElement checkingWb = getWebElementByXpath(xpath);
         if (checkingWb == null) return;
         if (checkingWb.getText().equals(newValue)) return;
-        wait.until(visibilityOfElementLocated(by));
-        wait.until(elementToBeClickable(by)).click();
+        sbc.getWait().until(visibilityOfElementLocated(by));
+        sbc.getWait().until(elementToBeClickable(by)).click();
         List<WebElement> list = getListDivsByNameClass("sc-gzVnrw");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
             showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
-        wait.until(elementToBeClickable(changingElement)).click();
+        sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
     private List<WebElement> getListDivsByNameClass(String xpathLists) {
-        return driver.findElements(By.xpath(".//div[contains(@class, '" + xpathLists + "')]"));
+        return sbc.getDriver().findElements(By.xpath(".//div[contains(@class, '" + xpathLists + "')]"));
     }
 
     private void selectSubType(SubType subType) {
@@ -260,8 +226,8 @@ public class BrowserService {
             8 - Агрессивная среда
             9 - Агрессивная среда + Взрывозащита
          */
-        List<WebElement> listSubType = driver.findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
-        List<WebElement> listSilentEC = driver.findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
+        List<WebElement> listSubType = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
+        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
         switch (subType) {
             case NONE:
                 onCheckbox(false, listSilentEC.get(0));
@@ -338,7 +304,7 @@ public class BrowserService {
             Осевые - 3
             Центробежные - 4
         */
-        List<WebElement> listTypeMontage = driver.findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
         switch (typeMontage) {
             case ROUND:
                 selectTypeFan(0, listTypeMontage);
@@ -364,10 +330,10 @@ public class BrowserService {
         for (int i = 0; i < list.size(); i++) {
             if (i == i1 || i == i2) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
-                    wait.until(elementToBeClickable(list.get(i))).click();
+                    sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             } else {
                 if (list.get(i).getAttribute("class").contains("gHdNtY"))
-                    wait.until(elementToBeClickable(list.get(i))).click();
+                    sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
     }
@@ -380,21 +346,29 @@ public class BrowserService {
         for (int i = 0; i < list.size(); i++) {
             if (i == index) {
                 if (list.get(i).getAttribute("class").contains("cxjQFd"))
-                    wait.until(elementToBeClickable(list.get(i))).click();
+                    sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             } else {
                 if (list.get(i).getAttribute("class").contains("gHdNtY"))
-                    wait.until(elementToBeClickable(list.get(i))).click();
+                    sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
     }
 
-    private void showAlert(String alertTxt) {
+    public static void showAlert(String alertTxt) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Error");
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
-        if (driver != null)
-            driver.close();
+        if (sbc.getDriver() != null)
+            sbc.getDriver().close();
+    }
+
+    public void initializeBrowser() {
+        clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
+        // Нажатие на вкладку  Подбор
+        clickElementIfExistsByXpath(".//button[@data-id='2']");
+        // Открытие вкладки Дополнительные параметры поиска
+        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
     }
 }

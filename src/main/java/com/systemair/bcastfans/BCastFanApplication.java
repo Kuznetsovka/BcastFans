@@ -17,6 +17,13 @@ public class BCastFanApplication extends Application {
         stage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        SingletonBrowserClass sbc= SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
+        sbc.getDriver().close();
+    }
+
     public static void main(String[] args) {
         launch();
     }
