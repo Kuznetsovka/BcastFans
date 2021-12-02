@@ -13,7 +13,7 @@ public class BrowserController {
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
-        browserService.initializeBrowser();
+        browserService.prepareStartPageBeforeCalculation();
         if (!data.isEmpty())
             data.forEach(u -> u.setFan(
                     browserService.calculate(
@@ -29,5 +29,9 @@ public class BrowserController {
 
     private int getDoubleValueFromField(TextField value) {
         return !value.getText().isEmpty() ? Integer.parseInt(value.getText()) : 0;
+    }
+
+    public void initializeBrowser() {
+        browserService.initializeBrowser();
     }
 }

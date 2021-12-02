@@ -40,7 +40,7 @@ public class BrowserService {
         System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
         try {
             ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(false);//выбор фонового режима true
+            chromeOptions.setHeadless(true);//выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
             // Ожидание 30 секунд, опрос каждые 5 секунд
             wait = new FluentWait<>(driver)
@@ -48,7 +48,11 @@ public class BrowserService {
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
             driver.navigate().to(HOME_URL);
-            prepareStartPageBeforeCalculation();
+            clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
+            // Нажатие на вкладку  Подбор
+            clickElementIfExistsByXpath(".//button[@data-id='2']");
+            // Открытие вкладки Дополнительные параметры поиска
+            clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
         } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
         } catch (IllegalArgumentException e) {
@@ -56,27 +60,24 @@ public class BrowserService {
         }
     }
 
-    private void prepareStartPageBeforeCalculation() {
+    public void prepareStartPageBeforeCalculation() {
+        //TODO Ппроверка доступности страницы
         // Согласие на добавление Cookies
-        clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
-        // Нажатие на вкладку  Подбор
-        clickElementIfExistsByXpath(".//button[@data-id='2']");
-        // Открытие вкладки Дополнительные параметры поиска
-        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
         // Внесение данных Отрицательный допуск
+        if (driver == null) initializeBrowser();
         inputTextByLabel("Отрицательный допуск", negativeLimit);
         // Внесение данных Положительный допуск
         inputTextByLabel("Положительный допуск", positiveLimit);
         // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-        changeValueComboBox("Расход воздуха", "м³/ч");
+        changeValueComboBoxByLabel("Расход воздуха", "м³/ч");
         // Проверка и изменение единиц измерения Внешнее давление на Па
-        changeValueComboBox("Внешнее давление", "Па");
+        changeValueComboBoxByLabel("Внешнее давление", "Па");
         // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBox("Частота", "50 Гц");
+        changeValueComboBoxByLabel("Частота", "50 Гц");
         // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBox("Регулятор скорости", "По умолчанию");
+        changeValueComboBoxByLabel("Регулятор скорости", "По умолчанию");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-        changeValueComboBox("Макс. температура воздуха", "°C");
+        changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
         // Проверка и изменение значения Макс. температура воздуха на 40
         inputTextByLabel("Макс. температура воздуха", "40");
     }
@@ -120,8 +121,6 @@ public class BrowserService {
         hidingDiagram();
         sorting();
         Fan fan = fillTableUnit(subType, typeMontage);
-//        if (isDownloadFile)
-//            saveFile();
         return (fan != null) ? fan : new Fan();
     }
 
@@ -131,38 +130,46 @@ public class BrowserService {
         List<Fan> tableUnits;
         Fan result = null;
         List<WebElement> row;
+        //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         do {
-            if (isExist(By.xpath("By"))) {
-                btnMoreUnit = wait.until(elementToBeClickable(By.xpath("By")));
-                btnMoreUnit.click();
-            }
+//            if (isExist(By.xpath("By"))) {
+//                btnMoreUnit = wait.until(elementToBeClickable(By.xpath("By")));
+//                btnMoreUnit.click();
+//            }
             int lastRows = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
             for (int i = 1; i <= lastRows; i++) {
-                row = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr["+ i +"]/td[@class='sc-jhAzac cmXxfZ']"));
-                String model =  row.get(0).findElement(By.tagName("a")).getText();
-                String phase =  row.get(0).findElement(By.tagName("small")).getText();
-                String article =  row.get(1).getText();
-                String price =  row.get(2).getText();
-                String power =  row.get(5).getText();
-
+                row = driver.findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + i + "]/td[contains(@class,'sc-jhAzac')]"));
+                String price = row.get(4).getText();
+                String model = row.get(2).findElement(By.tagName("a")).getText();
+                if (price.equals("")) continue;
+                if (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) continue;
+                if (model.contains("150")) continue;
+                result = getResultFan(row, i);
             }
         } while (result == null);
-
-//        If tableUnit.Cells(4).innerText <> vbNullString Then
-//        If (subType = 4 And (typeMontage = 1 Or typeMontage = 2 Or typeMontage = 4)) Then
-//        Call filterModel(currentRow, tableUnit, typeMontage, i)
-//        If model <> vbNullString Then Exit Sub
-//        Else
-//        Call fillTableUnitByUnit(currentRow, tableUnit, i)
-//        If model <> vbNullString Then Exit Sub
-//        End If
-//        End If
-//        Next tableUnit
         return result;
     }
 
+    @SneakyThrows
+    private Fan getResultFan(List<WebElement> row, int index) {
+        String model = row.get(2).findElement(By.tagName("a")).getText();
+        String phase = row.get(2).findElement(By.tagName("small")).getText();
+        String article = row.get(3).getText();
+        String price = row.get(4).getText();
+        String power = row.get(7).getText();
+       //WebElement wb = row.get(1).findElement(By.tagName("button"));
+        By by = By.xpath(".//button[@class = 'sc-bxivhb kcrVkO']");
+//        WebElement wb = driver.findElements(by).get(0).findElements(By.tagName("i")).get(1);
+//        wait.until(visibilityOfElementLocated(by));
+//        try {
+//            wait.until(elementToBeClickable(by)).click();
+//            } catch (ElementClickInterceptedException ignored){}
+//        List<WebElement> webLinks = wait.until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), "webLinks.get(0).getAttribute(href)", "webLinks.get(1).getAttribute(href)");
+    }
+
     private void sorting() {
-        changeValueComboBox("Сортировать по:", "Цена (По возрастающей)");
+        changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
     }
 
     private void hidingDiagram() {
@@ -171,7 +178,7 @@ public class BrowserService {
     }
 
     private void grouping() {
-        changeValueComboBox("Группировать по:", "Нет");
+        changeValueComboBoxByLabel("Группировать по:", "Нет");
     }
 
     private void fillFlowAndDrop(String airFlow, String airDrop) {
@@ -204,7 +211,24 @@ public class BrowserService {
         return webElements.get(0);
     }
 
-    private void changeValueComboBox(String findTextLabel, String newValue) {
+
+    private void changeValueComboBoxByVerticalLabel(String findTextLabel, String newValue) {
+        String checkXpath = ".//div[text() = '" + findTextLabel + "']/following::div[1]/div[1]/span[1]";
+        String xpath = checkXpath + "/following::i[1]";
+        By by = By.xpath(xpath);
+        WebElement checkingWb = getWebElementByXpath(checkXpath);
+        if (checkingWb == null) return;
+        if (checkingWb.getText().equals(newValue)) return;
+        wait.until(visibilityOfElementLocated(by));
+        wait.until(elementToBeClickable(by)).click();
+        List<WebElement> list = getListDivsByNameClass("sc-bZQynM");
+        WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
+        if (changingElement == null)
+            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
+        wait.until(elementToBeClickable(changingElement)).click();
+    }
+
+    private void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
         By by = By.xpath(xpath + "/ancestor::div[1]");
         WebElement checkingWb = getWebElementByXpath(xpath);

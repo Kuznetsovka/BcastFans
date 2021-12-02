@@ -15,4 +15,6 @@ public class Fan {
     private Double power = 0.0;
     private String phase = "";
     private Double price = 0.0;
+    private String fullLink = "";
+    private String shortLink = "";
 }

@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 public class TableController implements Initializable {
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
-    private BrowserController browserService = new BrowserController();
+    private BrowserController browserController = new BrowserController();
     @FXML
     public TextField fieldNegativeLimit;
     @FXML
@@ -82,6 +82,7 @@ public class TableController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
         UtilClass.initProperties();
+        browserController.initializeBrowser();
     }
 
     @SneakyThrows
@@ -116,7 +117,7 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
-        data = browserService.calculate(fieldNegativeLimit, fieldPositiveLimit, data);
+        data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data);
         tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
     }
 
