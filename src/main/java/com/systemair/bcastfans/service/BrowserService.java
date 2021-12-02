@@ -15,12 +15,13 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
 import static java.lang.Thread.sleep;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
+import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 @Getter
 @Setter
@@ -91,19 +92,17 @@ public class BrowserService {
     }
 
     private Fan fillTableUnit(SubType subType, TypeMontage typeMontage) {
+        By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         int currentRow = 1;
         List<Fan> tableUnits;
         Fan result = null;
         List<WebElement> row;
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
+        int startRow = 1;
         do {
-//            if (isExist(By.xpath("By"))) {
-//                btnMoreUnit = sbc1.getWait().until(elementToBeClickable(By.xpath("By")));
-//                btnMoreUnit.click();
-//            }
             int lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
-            for (int i = 1; i <= lastRows; i++) {
+            for (int i = startRow; i <= lastRows; i++) {
                 row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + i + "]/td[contains(@class,'sc-jhAzac')]"));
                 String price = row.get(4).getText();
                 String model = row.get(2).findElement(By.tagName("a")).getText();
@@ -111,6 +110,14 @@ public class BrowserService {
                 if (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) continue;
                 if (model.contains("150")) continue;
                 result = getResultFan(row, i);
+            }
+            if (isExist(moreFansButtonBy,2)) {
+                btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+                sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+                startRow += lastRows;
+            } else {
+                result = new Fan();
+                break;
             }
         } while (result == null);
         return result;
@@ -157,14 +164,14 @@ public class BrowserService {
 
     @SneakyThrows
     private boolean isWarning() {
-        return isExist(By.xpath(".//span[@type='warning']"));
+        return isExist(By.xpath(".//span[@type='warning']"),0);
     }
 
-    private boolean isExist(By by) {
+    private boolean isExist(By by,int moreThen) {
         boolean isExists;
         try {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-            isExists = sbc.getDriver().findElements(by).size() > 0;
+            isExists = sbc.getDriver().findElements(by).size() > moreThen;
         } finally {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
         }
@@ -172,9 +179,8 @@ public class BrowserService {
     }
 
     private WebElement getWebElementByXpath(String xpath) {
-        List<WebElement> webElements = sbc.getWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0));
-        if (webElements.size() == 0) return null;
-        return webElements.get(0);
+        List<Optional<WebElement>> webElements = sbc.getWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0)).stream().map(Optional::of).collect(Collectors.toList());
+        return webElements.get(0).orElseThrow(IllegalArgumentException::new);
     }
 
 
