@@ -8,6 +8,7 @@
 
 * Java
 * Maven
+* Библиотеки для работы с Excel Apache Poi
 * Selenium
 * Библиотеки для создания PDF-файлов [Apache PDFBox](https://pdfbox.apache.org) и [Boxable](http://dhorions.github.io/boxable)
 * JUnit5
