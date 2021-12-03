@@ -6,7 +6,6 @@ import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -126,12 +125,10 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
-        Platform.runLater(() -> {
             data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, isStop);
             tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
             isStop = false;
             showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
-        });
     }
 
     public void clear() {

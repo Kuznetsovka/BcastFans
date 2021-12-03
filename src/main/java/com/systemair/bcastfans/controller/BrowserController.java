@@ -17,22 +17,22 @@ public class BrowserController {
         browserService.setPositiveLimit(positiveLimit);
         browserService.prepareStartPageBeforeCalculation();
         if (!data.isEmpty())
-            data.forEach( u -> {
-                if(isStop) {
+            data.forEach(u -> {
+                if (isStop) {
                     return;
                 }
                 u.setFan(browserService.calculate(
-                            u.getAirFlow(),
-                            u.getAirDrop(),
-                            u.getTypeMontage(),
-                            u.getSubType()));
+                        u.getAirFlow(),
+                        u.getAirDrop(),
+                        u.getTypeMontage(),
+                        u.getSubType()));
                 progressBar(data, pb, labelProgressBar, u);
             });
         return data;
     }
 
     private void progressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar, FanUnit u) {
-        pb.setProgress((double) (data.indexOf(u) + 1)/ data.size());
+        pb.setProgress((double) (data.indexOf(u) + 1) / data.size());
         labelProgressBar.setVisible(true);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", data.indexOf(u) + 1, data.size()));
     }
