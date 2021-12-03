@@ -7,11 +7,12 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
+
 public class BCastFanApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 880, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 880, 500);
         stage.setTitle("Считать");
         stage.setScene(scene);
         stage.show();
@@ -22,6 +23,7 @@ public class BCastFanApplication extends Application {
         super.stop();
         SingletonBrowserClass sbc= SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
         sbc.getDriver().close();
+
     }
 
     public static void main(String[] args) {

@@ -10,10 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import lombok.Getter;
 import lombok.NonNull;
@@ -34,6 +31,9 @@ public class TableController implements Initializable {
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
     private BrowserController browserController = new BrowserController();
+
+    @FXML
+    public ProgressBar progressBar;
     @FXML
     public TextField fieldNegativeLimit;
     @FXML

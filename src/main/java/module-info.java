@@ -23,4 +23,7 @@ module com.systemair.bcastfans {
     opens com.systemair.bcastfans.controller to javafx.fxml;
     exports com.systemair.bcastfans.intarface;
     opens com.systemair.bcastfans.intarface to javafx.fxml;
+
+    exports com.systemair.bcastfans.demo;
+    opens com.systemair.bcastfans.demo to javafx.fxml;
 }
