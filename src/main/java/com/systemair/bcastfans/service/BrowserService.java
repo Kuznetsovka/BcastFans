@@ -8,9 +8,7 @@ import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
@@ -26,15 +24,22 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 @Getter
 @Setter
 public class BrowserService {
-    private static SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
+    private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
 
-    public void prepareStartPageBeforeCalculation() {
-        inputTextByLabel("Отрицательный допуск", negativeLimit);
-        // Внесение данных Положительный допуск
-        inputTextByLabel("Положительный допуск", positiveLimit);
+    public synchronized void prepareStartPageBeforeCalculation() {
+        try {
+            // Внесение данных Отрицательный допуск
+            inputTextByLabel("Отрицательный допуск", negativeLimit);
+            // Внесение данных Положительный допуск
+            inputTextByLabel("Положительный допуск", positiveLimit);
+            // Проверка и изменение значения Макс. температура воздуха на 40
+            inputTextByLabel("Макс. температура воздуха", "40");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // Проверка и изменение единиц измерения Расход воздуха на м³/ч
         changeValueComboBoxByLabel("Расход воздуха", "м³/ч");
         // Проверка и изменение единиц измерения Внешнее давление на Па
@@ -45,23 +50,29 @@ public class BrowserService {
         changeValueComboBoxByLabel("Регулятор скорости", "По умолчанию");
         // Проверка и изменение единиц измерения Макс. температура воздуха на °С
         changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
-        // Проверка и изменение значения Макс. температура воздуха на 40
-        inputTextByLabel("Макс. температура воздуха", "40");
+
     }
 
-    private void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
-        By by = By.xpath(xpath);
-        sbc.getWait().until(visibilityOfElementLocated(by));
-        if (attributeAndValue.length > 0) {
-            String attribute = attributeAndValue[0];
-            String value = attributeAndValue[1];
-            if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
+    private synchronized void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
+        try {
+            By by = By.xpath(xpath);
+            sbc.getWait().until(visibilityOfElementLocated(by));
+            if (attributeAndValue.length > 0) {
+                String attribute = attributeAndValue[0];
+                String value = attributeAndValue[1];
+                if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
+            }
+            sbc.getWait().until(elementToBeClickable(by)).click();
+        } catch (ElementClickInterceptedException e) {
+            e.printStackTrace();
         }
-        sbc.getWait().until(elementToBeClickable(by)).click();
+    }
+    private synchronized void clickElementWithScroll(WebElement webElement) {
+        ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
+        sbc.getWait().until(elementToBeClickable(webElement)).click();
     }
 
-    @SneakyThrows
-    private void inputTextByLabel(String findTextLabel, String newValue) {
+    private synchronized void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
         WebElement wb = getWebElementByXpath(xpath);
         if (wb.getText().equals(newValue)) return;
@@ -159,8 +170,12 @@ public class BrowserService {
     }
 
     private void fillFlowAndDrop(String airFlow, String airDrop) {
-        inputTextByLabel("Расход воздуха", airFlow);
-        inputTextByLabel("Внешнее давление", airDrop);
+        try {
+            inputTextByLabel("Расход воздуха", airFlow);
+            inputTextByLabel("Внешнее давление", airDrop);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
         if (isWarning())
             flagWarning = true;
@@ -236,45 +251,44 @@ public class BrowserService {
             8 - Агрессивная среда
             9 - Агрессивная среда + Взрывозащита
          */
-        List<WebElement> listSubType = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-ktHwxA')]"));
-        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath("//div[contains(@class, 'sc-tilXH')]"));
+        WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-cIShpX htEzPC']"));
+        List<WebElement> listSubType = listSubTypeParent.findElements(By.tagName("div"));
+        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-tilXH')]"));
         switch (subType) {
             case NONE:
+            case ON_ROOF:
+                clickElementWithScroll(listSubType.get(1));
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN:
-                listSubType.get(2).click();
+                clickElementWithScroll(listSubType.get(2));
+                sbc.getWait().until(elementToBeClickable(listSubType.get(2))).click();
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case KITCHEN_AND_EC:
-                listSubType.get(2).click();
+                clickElementWithScroll(listSubType.get(2));
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
             case EC:
-                listSubType.get(1).click();
+                clickElementWithScroll(listSubType.get(1));
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
             case SILENT:
-                listSubType.get(1).click();
+                clickElementWithScroll(listSubType.get(1));
                 onCheckbox(true, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;
             case SILENT_AND_EC:
-                listSubType.get(1).click();
+                clickElementWithScroll(listSubType.get(1));
                 onCheckbox(true, listSilentEC.get(0));
                 onCheckbox(true, listSilentEC.get(1));
                 break;
-            case ON_ROOF:
-                listSubType.get(1).click();
-                onCheckbox(false, listSilentEC.get(0));
-                onCheckbox(false, listSilentEC.get(1));
-                break;
             case SMOKE_EXTRACT:
-                listSubType.get(5).click();
+                clickElementWithScroll(listSubType.get(5));
                 onCheckbox(false, listSilentEC.get(0));
                 onCheckbox(false, listSilentEC.get(1));
                 break;

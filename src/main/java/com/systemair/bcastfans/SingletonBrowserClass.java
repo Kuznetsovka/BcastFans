@@ -20,8 +20,8 @@ public class SingletonBrowserClass {
     private static SingletonBrowserClass instanceOfSingletonBrowserClass = null;
 
     private static final String HOME_URL = "https://www.systemair.com/ru/";
-    private WebDriver driver;
-    private Wait<WebDriver> wait;
+    private static WebDriver driver;
+    private static Wait<WebDriver> wait;
     public static final int MAX_LIMIT_TIMEOUT = 30;
     public static final int LIMIT_REPEAT_TIMEOUT = 2;
 
@@ -54,18 +54,18 @@ public class SingletonBrowserClass {
         }
     }
 
-    public static SingletonBrowserClass getInstanceOfSingletonBrowserClass() {
+    public synchronized static SingletonBrowserClass getInstanceOfSingletonBrowserClass() {
         if (instanceOfSingletonBrowserClass == null) {
             instanceOfSingletonBrowserClass = new SingletonBrowserClass();
         }
         return instanceOfSingletonBrowserClass;
     }
 
-    public WebDriver getDriver() {
+    public synchronized WebDriver getDriver() {
         return driver;
     }
 
-    public Wait<WebDriver> getWait() {
+    public synchronized Wait<WebDriver> getWait() {
         return wait;
     }
 

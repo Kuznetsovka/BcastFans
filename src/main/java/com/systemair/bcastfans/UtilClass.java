@@ -2,14 +2,18 @@ package com.systemair.bcastfans;
 
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
-
+import java.util.function.UnaryOperator;
+@Getter
 public class UtilClass {
     public static String PATH_TEST;
     public static String PATH_DRIVER;
@@ -54,4 +58,35 @@ public class UtilClass {
         PATH_TEST = properties.getProperty("path.test");
         PATH_DRIVER = properties.getProperty("path.driver");
     }
+
+    public static UnaryOperator<TextFormatter.Change> filter = change -> {
+        if(change.getControlNewText().matches("\\d{0,11}")) {
+            return change;
+        }
+
+        return null;
+    };
+
+    public static StringConverter<String> converter = new StringConverter<>() {
+        @Override
+        public String toString(String s) {
+            if(s == null || s.isBlank()) return "";
+
+            if(s.matches("\\d{3}")) {
+                return s;
+            }
+
+            return "";
+        }
+
+        @Override
+        public String fromString(String s) {
+            if(s == null || s.isBlank()) return "";
+
+            if(s.matches("\\d{3}")) {
+                return s;
+            }
+            throw new RuntimeException("Converter error");
+        }
+    };
 }

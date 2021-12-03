@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 
+import static javafx.application.Platform.runLater;
+
 public class BrowserController {
     private final BrowserService browserService = new BrowserService();
 
@@ -17,28 +19,32 @@ public class BrowserController {
         browserService.setPositiveLimit(positiveLimit);
         browserService.prepareStartPageBeforeCalculation();
         if (!data.isEmpty())
-            data.forEach(u -> {
-                if (isStop) {
-                    return;
-                }
-                u.setFan(browserService.calculate(
-                        u.getAirFlow(),
-                        u.getAirDrop(),
-                        u.getTypeMontage(),
-                        u.getSubType()));
-                progressBar(data, pb, labelProgressBar, u);
-            });
+            data.stream().
+                    filter(u -> u.getCheck().isSelected()).
+                    forEach(
+                            u -> {
+                                {
+                                    if (isStop) {
+                                        return;
+                                    }
+                                    u.setFan(browserService.calculate(
+                                            u.getAirFlow(),
+                                            u.getAirDrop(),
+                                            u.getTypeMontage(),
+                                            u.getSubType()));
+                                    new Thread(() -> runLater(() -> progressBar(data.indexOf(u), data.size(), pb, labelProgressBar, u))).start();
+                                }
+                                System.out.printf("Установка %d посчитана", data.indexOf(u));
+                                ;
+                            });
         return data;
     }
 
-    private void progressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar, FanUnit u) {
-        pb.setProgress((double) (data.indexOf(u) + 1) / data.size());
+    private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar, FanUnit u) {
+        pb.setVisible(true);
+        pb.setProgress((double) (index + 1) / size);
         labelProgressBar.setVisible(true);
-        labelProgressBar.setText(String.format("Посчитано %d установок из %d", data.indexOf(u) + 1, data.size()));
-    }
-
-    private int getDoubleValueFromField(TextField value) {
-        return !value.getText().isEmpty() ? Integer.parseInt(value.getText()) : 0;
+        labelProgressBar.setText(String.format("Посчитано %d установок из %d", index + 1, size));
     }
 
     public void initializeBrowser() {

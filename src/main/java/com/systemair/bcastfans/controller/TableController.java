@@ -26,6 +26,8 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
+import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
@@ -73,9 +75,29 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<FanUnit, String> columnPrice;
 
+    UnaryOperator<TextFormatter.Change> formatter = change -> {
+        if (change.getText().matches("^[0-9]$|^[0-9][0-9]$|^(100)$")) {
+            return change; //if change is a number
+        } else {
+            change.setText(""); //else make no change
+            return change;
+        }
+    };
+
+//    UnaryOperator<TextFormatter.Change> negativeFormatter = change -> {
+//        if(change.getText().matches("/-^[0-9]$|^[0-9][0-9]$|^(-50)$")){
+//        } else if (!fieldNegativeLimit.getText().contains("-")) {
+//            fieldNegativeLimit.setText("-");
+//        }else {
+//            change.setText("");
+//        }
+//        return change;
+//    };
+
     private ObservableList<FanUnit> data;
     private Workbook workbook;
     private boolean isStop;
+
 
     @FXML
     public void checkBoxInitialize() {
@@ -83,12 +105,13 @@ public class TableController implements Initializable {
         for (FanUnit f : data) {
             f.setCheck(checkBtn);
         }
-        fieldNegativeLimit.setOnKeyPressed(event -> putMinusBeforeValue());
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
+        //fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
+        fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         browserController.initializeBrowser();
     }
 
@@ -124,11 +147,19 @@ public class TableController implements Initializable {
         workbook.close();
     }
 
+    @SneakyThrows
     public void calculate() {
-            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, isStop);
-            tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
-            isStop = false;
-            showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        new Thread(()->
+            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, isStop));
+        try {
+            countDownLatch.await ();
+        } catch (InterruptedException e) {
+            e.printStackTrace ();
+        }
+        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+        isStop = false;
+        showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
     }
 
     public void clear() {
@@ -136,13 +167,6 @@ public class TableController implements Initializable {
         labelProgressBar.setVisible(false);
         progressBar.setProgress(0.0);
     }
-
-    public void putMinusBeforeValue() {
-        String text = fieldNegativeLimit.getText();
-        if (!text.contains("-"))
-            fieldNegativeLimit.setText("-" + text);
-    }
-
 
     public void stop(ActionEvent actionEvent) {
         isStop = true;
