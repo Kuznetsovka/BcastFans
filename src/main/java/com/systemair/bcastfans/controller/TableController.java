@@ -6,12 +6,15 @@ import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -25,13 +28,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+import static com.systemair.bcastfans.service.BrowserService.showAlert;
+
 @Getter
 @Setter
 public class TableController implements Initializable {
+
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
     private BrowserController browserController = new BrowserController();
-
+    @FXML
+    public VBox vb;
+    @FXML
+    public Label labelProgressBar;
     @FXML
     public ProgressBar progressBar;
     @FXML
@@ -67,6 +76,7 @@ public class TableController implements Initializable {
 
     private ObservableList<FanUnit> data;
     private Workbook workbook;
+    private boolean isStop;
 
     @FXML
     public void checkBoxInitialize() {
@@ -116,17 +126,28 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
-        data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data);
-        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+        Platform.runLater(() -> {
+            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, isStop);
+            tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+            isStop = false;
+            showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+        });
     }
 
     public void clear() {
         data.clear();
+        labelProgressBar.setVisible(false);
+        progressBar.setProgress(0.0);
     }
 
     public void putMinusBeforeValue() {
         String text = fieldNegativeLimit.getText();
         if (!text.contains("-"))
             fieldNegativeLimit.setText("-" + text);
+    }
+
+
+    public void stop(ActionEvent actionEvent) {
+        isStop = true;
     }
 }

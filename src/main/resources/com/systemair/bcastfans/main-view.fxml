@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="800.0" prefHeight="500.0" prefWidth="870.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
+<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="1000.0" prefHeight="500.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -25,41 +25,47 @@
             </HBox>
         </VBox>
 
-        <HBox alignment="TOP_CENTER" prefWidth="200.0" spacing="20.0">
-            <VBox spacing="10.0">
-                <Button layoutX="611.0" layoutY="753.0" mnemonicParsing="false" onAction="#load" text="Load ..." />
-                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#save" text="Save as ..." />
-            </VBox>
-            <VBox spacing="10.0">
-                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#clear" text="Clear" />
-                <Button layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#calculate" text="Calculate" />
-            </VBox>
-        </HBox>
+        <HBox alignment="TOP_CENTER" prefWidth="200.0" spacing="20.0" />
 
         <VBox prefWidth="260.0" spacing="20.0">
-            <ProgressBar fx:id="progressBar" progress="0.0"/>
-            <Label text="Посчитано установок:" visible="false"/>
+                <ProgressBar fx:id="progressBar" progress="0.0" />
+                <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false" />
         </VBox>
     </HBox>
-    <TableView fx:id="table" maxHeight="500" prefWidth="900">
-        <columns>
-            <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
-                <graphic>
-                    <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize" prefHeight="17.0" prefWidth="23.0" />
-                </graphic>
-            </TableColumn>
-            <TableColumn fx:id="columnNumberSystem" prefWidth="32.0" text="#" />
-            <TableColumn fx:id="columnAirFlow" text="Расход" />
-            <TableColumn fx:id="columnAirDrop" prefWidth="86.0" text="Потери" />
-            <TableColumn fx:id="columnTypeMontage" prefWidth="112.0" text="Тип монтажа" />
-            <TableColumn fx:id="columnSubType" prefWidth="112.0" text="Тип установки" />
-        </columns>
-        <columns>
-            <TableColumn fx:id="columnModel" prefWidth="75.0" text="Модель" />
-            <TableColumn fx:id="columnArticle" prefWidth="75.0" text="Артикул" />
-            <TableColumn fx:id="columnPower" prefWidth="75.0" text="Мощность" />
-            <TableColumn fx:id="columnPhase" prefWidth="75.0" text="Фазность" />
-            <TableColumn fx:id="columnPrice" prefWidth="75.0" text="Цена" />
-        </columns>
-    </TableView>
+    <HBox prefHeight="500.0">
+        <children>
+            <TableView fx:id="table" maxHeight="500" minWidth="830" prefHeight="324.0" prefWidth="830.0">
+                <columns>
+                    <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
+                        <graphic>
+                            <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize" prefHeight="20.0" prefWidth="10.0" />
+                        </graphic>
+                    </TableColumn>
+                    <TableColumn fx:id="columnNumberSystem" prefWidth="50.0" text="#" />
+                    <TableColumn fx:id="columnAirFlow" prefWidth="75.0" text="Расход" />
+                    <TableColumn fx:id="columnAirDrop" prefWidth="50.0" text="Потери" />
+                    <TableColumn fx:id="columnTypeMontage" prefWidth="120.0" text="Тип монтажа" />
+                    <TableColumn fx:id="columnSubType" prefWidth="120.0" text="Тип установки" />
+                </columns>
+                <columns>
+                    <TableColumn fx:id="columnModel" prefWidth="140.0" text="Модель" />
+                    <TableColumn fx:id="columnArticle" prefWidth="60.0" text="Артикул" />
+                    <TableColumn fx:id="columnPower" prefWidth="70.0" text="Мощность" />
+                    <TableColumn fx:id="columnPhase" prefWidth="60.0" text="Фазность" />
+                    <TableColumn fx:id="columnPrice" prefWidth="50.0" text="Цена" />
+                </columns>
+            </TableView>
+            <VBox spacing="10.0">
+                <VBox spacing="20.0">
+                    <children>
+                        <Button mnemonicParsing="false" onAction="#save" prefWidth="80.0" text="Save as" />
+                        <Button mnemonicParsing="false" onAction="#load" prefWidth="80.0" text="Load" />
+                    </children>
+                </VBox>
+                <Button mnemonicParsing="false" onAction="#clear" prefWidth="80.0" text="Clear" />
+                <Button alignment="CENTER" layoutX="701.0" layoutY="753.0" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0" text="Calculate"/>
+                <Button mnemonicParsing="false" text="СТОП" onAction="#stop" />
+            </VBox>
+        </children>
+    </HBox>
 </VBox>

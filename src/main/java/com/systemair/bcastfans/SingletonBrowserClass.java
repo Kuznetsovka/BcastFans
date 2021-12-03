@@ -1,5 +1,6 @@
 package com.systemair.bcastfans;
 
+import javafx.scene.control.Alert;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.SessionNotCreatedException;
@@ -47,9 +48,9 @@ public class SingletonBrowserClass {
             driver.navigate().to(HOME_URL);
         } catch (
                 SessionNotCreatedException e) {
-            showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage());
+            showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
         } catch (IllegalArgumentException e) {
-            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage());
+            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage(), Alert.AlertType.WARNING);
         }
     }
 

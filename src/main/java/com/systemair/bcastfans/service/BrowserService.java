@@ -73,9 +73,9 @@ public class BrowserService {
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
         if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert("Не допустимая конфигурация, Круглых + Дымоудаление не существует!");
+            showAlert("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
         if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!");
+            showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
         selectTypeMontage(typeMontage);
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
@@ -87,40 +87,44 @@ public class BrowserService {
         grouping();
         hidingDiagram();
         sorting();
-        Fan fan = fillTableUnit(subType, typeMontage);
+        Fan fan = fillTableUnit(subType);
         return (fan != null) ? fan : new Fan();
     }
 
-    private Fan fillTableUnit(SubType subType, TypeMontage typeMontage) {
+    private Fan fillTableUnit(SubType subType) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
-        int currentRow = 1;
-        List<Fan> tableUnits;
         Fan result = null;
         List<WebElement> row;
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
-        int startRow = 1;
+        int countRow = 1;
+        int lastRows = 0;
         do {
-            int lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
-            for (int i = startRow; i <= lastRows; i++) {
-                row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + i + "]/td[contains(@class,'sc-jhAzac')]"));
-                String price = row.get(4).getText();
-                String model = row.get(2).findElement(By.tagName("a")).getText();
-                if (price.equals("")) continue;
-                if (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) continue;
-                if (model.contains("150")) continue;
-                result = getResultFan(row, i);
+            if (countRow > lastRows)
+                lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+            row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]"));
+            String price = row.get(4).getText();
+            String model = row.get(2).findElement(By.tagName("a")).getText();
+
+            if (isContinueFan(price,subType,model)){
+                countRow++;
+                continue;
             }
-            if (isExist(moreFansButtonBy,2)) {
+
+            if (isExistElementMoreThen(moreFansButtonBy, 2) && countRow == lastRows) {
                 btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
                 sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-                startRow += lastRows;
-            } else {
-                result = new Fan();
-                break;
+                countRow += lastRows;
             }
+            result = getResultFan(row, countRow);
         } while (result == null);
         return result;
+    }
+
+    private boolean isContinueFan(String price, SubType subType, String model) {
+        return ( (price.equals("") ) ||
+                ( subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB")) ) ||
+                ( model.contains("150") ) );
     }
 
     @SneakyThrows
@@ -164,10 +168,10 @@ public class BrowserService {
 
     @SneakyThrows
     private boolean isWarning() {
-        return isExist(By.xpath(".//span[@type='warning']"),0);
+        return isExistElementMoreThen(By.xpath(".//span[@type='warning']"), 0);
     }
 
-    private boolean isExist(By by,int moreThen) {
+    private boolean isExistElementMoreThen(By by, int moreThen) {
         boolean isExists;
         try {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
@@ -196,7 +200,7 @@ public class BrowserService {
         List<WebElement> list = getListDivsByNameClass("sc-bZQynM");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
+            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
@@ -211,7 +215,7 @@ public class BrowserService {
         List<WebElement> list = getListDivsByNameClass("sc-gzVnrw");
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!");
+            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
@@ -360,9 +364,9 @@ public class BrowserService {
         }
     }
 
-    public static void showAlert(String alertTxt) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Error");
+    public static void showAlert(String alertTxt, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(type.toString());
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
