@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
+import java.util.logging.Logger;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
@@ -73,6 +74,8 @@ public class TableController implements Initializable {
     TableColumn<FanUnit, String> columnPhase;
     @FXML
     TableColumn<FanUnit, String> columnPrice;
+
+    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
 
     UnaryOperator<TextFormatter.Change> formatter = change -> {
         if (change.getText().matches("^[0-9]$|^[0-9][0-9]$|^(100)$")) {
@@ -155,7 +158,7 @@ public class TableController implements Initializable {
             t2.interrupt();
         });
         thread.start();
-        //thread.interrupt();
+        thread.interrupt();
     }
 
     public void clear() {

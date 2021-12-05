@@ -6,12 +6,23 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
+import lombok.SneakyThrows;
 
+import java.io.BufferedInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Logger;
+
+import static com.systemair.bcastfans.UtilClass.PATH_TEST;
 import static javafx.application.Platform.runLater;
 
 public class BrowserController {
     private final BrowserService browserService = new BrowserService();
     private static boolean isStop = false;
+    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
         isStop = false;
@@ -29,19 +40,19 @@ public class BrowserController {
                                 if (isStop) {
                                     return;
                                 }
-                                System.out.println("Начало расчета вентилятора " + index);
+                                LOGGER.info("Начало расчета вентилятора " + index);
                                 u.setFan(browserService.calculate(
                                         u.getAirFlow(),
                                         u.getAirDrop(),
                                         u.getTypeMontage(),
                                         u.getSubType()));
-                                System.out.println("Установка " + index + " посчитана!");
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar, u)));
                                 t2.start();
-                                System.out.println("Установка " + index + " поток прогресс бара завершен!");
+                                LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
                                 t2.interrupt();
-                                System.out.printf("Установка %d посчитана", index);
-                                System.out.println();
+                                LOGGER.info("Установка " + index + " посчитана");
+                                String fileName = PATH_TEST + "/" + u.getName() + " " + u.getModel() + ".pdf";
+                                downloadUsingNIO(u.getFan().getShortLink(), fileName);
                             });
         return data;
     }
@@ -51,7 +62,7 @@ public class BrowserController {
         pb.setProgress((double) (index) / size);
         labelProgressBar.setVisible(true);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
-        System.out.println("Установка " + (index) + " добавлена в прогресс бар!");
+        LOGGER.info("Установка " + (index) + " добавлена в прогресс бар!");
     }
 
     public void initializeBrowser() {
@@ -60,5 +71,31 @@ public class BrowserController {
 
     public void stopCalculation() {
         isStop = true;
+    }
+
+    // качаем файл с помощью Stream
+    private static void downloadUsingStream(String urlStr, String file) throws IOException {
+        URL url = new URL(urlStr);
+        BufferedInputStream bis = new BufferedInputStream(url.openStream());
+        FileOutputStream fis = new FileOutputStream(file);
+        byte[] buffer = new byte[1024];
+        int count = 0;
+        while((count = bis.read(buffer,0,1024)) != -1)
+        {
+            fis.write(buffer, 0, count);
+        }
+        fis.close();
+        bis.close();
+    }
+
+    // качаем файл с помощью NIO
+    @SneakyThrows
+    private static void downloadUsingNIO(String urlStr, String file) {
+        URL url = new URL(urlStr);
+        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+        FileOutputStream fos = new FileOutputStream(file);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
     }
 }

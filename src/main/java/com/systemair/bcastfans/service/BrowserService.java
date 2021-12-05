@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.SingletonBrowserClass;
+import com.systemair.bcastfans.controller.BrowserController;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -14,6 +15,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
@@ -28,36 +30,37 @@ public class BrowserService {
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
+    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
 
     public void prepareStartPageBeforeCalculation() {
         try {
             // Внесение данных Отрицательный допуск
             inputTextByLabel("Отрицательный допуск", negativeLimit);
-            System.out.println("Заполнен отрицательный допуск");
+            LOGGER.info("Заполнен отрицательный допуск");
             // Внесение данных Положительный допуск
             inputTextByLabel("Положительный допуск", positiveLimit);
-            System.out.println("Заполнен положительный допуск");
+            LOGGER.info("Заполнен положительный допуск");
             // Проверка и изменение значения Макс. температура воздуха на 40
             inputTextByLabel("Макс. температура воздуха", "40");
-            System.out.println("Заполнена макс. температура воздуха");
+            LOGGER.info("Заполнена макс. температура воздуха");
+            // Проверка и изменение единиц измерения Расход воздуха на м³/ч
+            changeValueComboBoxByLabel("Расход воздуха", "м³/ч");
+            LOGGER.info("Изменены единицы измерения расхода воздуха");
+            // Проверка и изменение единиц измерения Внешнее давление на Па
+            changeValueComboBoxByLabel("Внешнее давление", "Па");
+            LOGGER.info("Изменены единицы измерения внешнего давления");
+            // Проверка и изменение значения Частота на 50 Гц
+            changeValueComboBoxByLabel("Частота", "50 Гц");
+            LOGGER.info("Изменено значение частоты");
+            // Проверка и изменение значения Регулятор скорости на По умолчанию
+            changeValueComboBoxByLabel("Регулятор скорости", "По умолчанию");
+            LOGGER.info("Изменено значение регулятора скорости");
+            // Проверка и изменение единиц измерения Макс. температура воздуха на °С
+            changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
+            LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-        changeValueComboBoxByLabel("Расход воздуха", "м³/ч");
-        System.out.println("Изменены единицы измерения расхода воздуха");
-        // Проверка и изменение единиц измерения Внешнее давление на Па
-        changeValueComboBoxByLabel("Внешнее давление", "Па");
-        System.out.println("Изменены единицы измерения внешнего давления");
-        // Проверка и изменение значения Частота на 50 Гц
-        changeValueComboBoxByLabel("Частота", "50 Гц");
-        System.out.println("Изменено значение частоты");
-        // Проверка и изменение значения Регулятор скорости на По умолчанию
-        changeValueComboBoxByLabel("Регулятор скорости", "По умолчанию");
-        System.out.println("Изменено значение регулятора скорости");
-        // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-        changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
-        System.out.println("Изменено единицы измерения макс. температуры воздуха");
 
     }
 
@@ -75,6 +78,7 @@ public class BrowserService {
             e.printStackTrace();
         }
     }
+
     private void clickElementWithScroll(WebElement webElement) {
         ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
         sbc.getWait().until(elementToBeClickable(webElement)).click();
@@ -126,7 +130,7 @@ public class BrowserService {
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
 
-            if (isContinueFan(price,subType,model)){
+            if (isContinueFan(price, subType, model)) {
                 countRow++;
                 continue;
             }
@@ -136,16 +140,16 @@ public class BrowserService {
                 sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
                 countRow += lastRows;
             }
-            System.out.println("Выбран вентилятор с индексом " + countRow);
+            LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row, countRow);
         } while (result == null);
         return result;
     }
 
     private boolean isContinueFan(String price, SubType subType, String model) {
-        return ( (price.equals("") ) ||
-                ( subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB")) ) ||
-                ( model.contains("150") ) );
+        return ((price.equals("")) ||
+                (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) ||
+                (model.contains("150")));
     }
 
     @SneakyThrows
@@ -155,31 +159,32 @@ public class BrowserService {
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
-        //WebElement wb = row.get(1).findElement(By.tagName("button"));
+        WebElement wb = row.get(1).findElement(By.tagName("button"));
+        sbc.getWait().until(elementToBeClickable(wb)).click();
         By by = By.xpath(".//button[@class = 'sc-bxivhb kcrVkO']");
 //        WebElement wb = sbc1.getDriver().findElements(by).get(0).findElements(By.tagName("i")).get(1);
 //        sbc1.getWait().until(visibilityOfElementLocated(by));
 //        try {
 //            sbc1.getWait().until(elementToBeClickable(by)).click();
 //            } catch (ElementClickInterceptedException ignored){}
-//        List<WebElement> webLinks = sbc1.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
-        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), "webLinks.get(0).getAttribute(href)", "webLinks.get(1).getAttribute(href)");
+        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), webLinks.get(0).getAttribute("href"), webLinks.get(1).getAttribute("href"));
     }
 
     private void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
-        System.out.println("Сортировка вентиляторов");
+        LOGGER.info("Сортировка вентиляторов");
     }
 
     private void hidingDiagram() {
         // Скрыть диаграммы
         onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
-        System.out.println("Скрытие диаграмм вентиляторов");
+        LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
     private void grouping() {
         changeValueComboBoxByLabel("Группировать по:", "Нет");
-        System.out.println("Группировка вентиляторов");
+        LOGGER.info("Группировка вентиляторов");
     }
 
     private void fillFlowAndDrop(String airFlow, String airDrop) {
@@ -192,7 +197,7 @@ public class BrowserService {
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
         if (isWarning())
             flagWarning = true;
-        System.out.println("Заполнен расход и потери...");
+        LOGGER.info("Заполнен расход и потери...");
     }
 
     @SneakyThrows
@@ -307,7 +312,7 @@ public class BrowserService {
                 onCheckbox(false, listSilentEC.get(1));
                 break;
         }
-        System.out.println("Выбран подтип вентилятора...");
+        LOGGER.info("Выбран подтип вентилятора...");
     }
 
     private void onCheckbox(boolean onAction, WebElement webElement) {
@@ -357,7 +362,7 @@ public class BrowserService {
                 selectTwoTypeFan(0, 1, listTypeMontage);
                 break;
         }
-        System.out.println("Выбран тип монтажа...");
+        LOGGER.info("Выбран тип монтажа...");
 
     }
 
@@ -399,6 +404,7 @@ public class BrowserService {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
+        LOGGER.info(alertTxt);
         if (sbc.getDriver() != null)
             sbc.getDriver().close();
     }
