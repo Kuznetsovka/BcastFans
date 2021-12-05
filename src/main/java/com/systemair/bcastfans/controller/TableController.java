@@ -8,7 +8,6 @@ import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -26,10 +25,10 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.concurrent.CountDownLatch;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
+import static javafx.application.Platform.runLater;
 
 @Getter
 @Setter
@@ -96,8 +95,6 @@ public class TableController implements Initializable {
 
     private ObservableList<FanUnit> data;
     private Workbook workbook;
-    private boolean isStop;
-
 
     @FXML
     public void checkBoxInitialize() {
@@ -149,26 +146,26 @@ public class TableController implements Initializable {
 
     @SneakyThrows
     public void calculate() {
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        new Thread(()->
-            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, isStop));
-        try {
-            countDownLatch.await ();
-        } catch (InterruptedException e) {
-            e.printStackTrace ();
-        }
-        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
-        isStop = false;
-        showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+        Thread thread = new Thread(()-> {
+            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar);
+            System.out.println("Заполнение вентиляторов в таблицу");
+            tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+            Thread t2 = new Thread(() -> runLater(() -> showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION)));
+            t2.start();
+            t2.interrupt();
+        });
+        thread.start();
+        //thread.interrupt();
     }
 
     public void clear() {
         data.clear();
         labelProgressBar.setVisible(false);
         progressBar.setProgress(0.0);
+        progressBar.setVisible(false);
     }
 
-    public void stop(ActionEvent actionEvent) {
-        isStop = true;
+    public void stop() {
+        browserController.stopCalculation();
     }
 }

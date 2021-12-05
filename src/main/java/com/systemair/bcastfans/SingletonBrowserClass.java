@@ -32,7 +32,7 @@ public class SingletonBrowserClass {
             System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(true);//выбор фонового режима true
-//            chromeOptions.addArguments("start-maximized");
+            chromeOptions.addArguments("start-maximized");
 //            chromeOptions.addArguments("--enable-extensions");
 //            //chromeOptions.addArguments("--enable-plugins");
 //            chromeOptions.addArguments("--window-size=1920,1080");
@@ -40,12 +40,14 @@ public class SingletonBrowserClass {
 //            chromeOptions.addArguments("--disable-popup-blocking");
 //            chromeOptions.addArguments("--disable-default-apps");
             driver = new ChromeDriver(chromeOptions);
+            System.out.println("Запуст драйвера!");
             // Ожидание 30 секунд, опрос каждые 5 секунд
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
             driver.navigate().to(HOME_URL);
+            System.out.println("Загрузка страницы");
         } catch (
                 SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
