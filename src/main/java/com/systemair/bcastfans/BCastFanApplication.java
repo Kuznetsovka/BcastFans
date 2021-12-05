@@ -23,7 +23,7 @@ public class BCastFanApplication extends Application {
         super.stop();
         SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
         System.out.println("Закрытие сессии!");
-        sbc.getDriver().close();
+        sbc.getDriver().quit();
     }
 
     public static void main(String[] args) {
