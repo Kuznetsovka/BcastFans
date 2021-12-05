@@ -20,10 +20,10 @@ public class BCastFanApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        super.stop();
         SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
         System.out.println("Закрытие сессии!");
         sbc.getDriver().quit();
+        super.stop();
     }
 
     public static void main(String[] args) {

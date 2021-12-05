@@ -59,6 +59,6 @@ public class BrowserController {
     }
 
     public void stopCalculation() {
-        isStop = false;
+        isStop = true;
     }
 }
