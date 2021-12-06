@@ -75,7 +75,7 @@ public class TableController implements Initializable {
     @FXML
     TableColumn<FanUnit, String> columnPrice;
 
-    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TableController.class.getName());
 
     UnaryOperator<TextFormatter.Change> formatter = change -> {
         if (change.getText().matches("^[0-9]$|^[0-9][0-9]$|^(100)$")) {
@@ -155,10 +155,8 @@ public class TableController implements Initializable {
             tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
             Thread t2 = new Thread(() -> runLater(() -> showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION)));
             t2.start();
-            t2.interrupt();
         });
         thread.start();
-        thread.interrupt();
     }
 
     public void clear() {

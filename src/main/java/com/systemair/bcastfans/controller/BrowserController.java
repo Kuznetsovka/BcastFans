@@ -49,12 +49,19 @@ public class BrowserController {
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar, u)));
                                 t2.start();
                                 LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
-                                t2.interrupt();
                                 LOGGER.info("Установка " + index + " посчитана");
-                                String fileName = PATH_TEST + "/" + u.getName() + " " + u.getModel() + ".pdf";
-                                downloadUsingNIO(u.getFan().getShortLink(), fileName);
+                                String absFileName = getCorrectSavePath(PATH_TEST,u.getName(),u.getModel());
+                                downloadUsingNIO(u.getFan().getShortLink(), absFileName);
+                                LOGGER.info("Установка " + index + " выгружена");
                             });
         return data;
+    }
+
+    private String getCorrectSavePath(String pathTest, String name, String model) {
+        String fileName =  name + " " + model + ".pdf";
+        fileName = fileName.replaceAll ("[^а-яА-Яa-zA-Z0-9 \\.\\-]", "_");
+        return  PATH_TEST + "/" + fileName;
+
     }
 
     private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar, FanUnit u) {

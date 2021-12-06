@@ -1,7 +1,6 @@
 package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.SingletonBrowserClass;
-import com.systemair.bcastfans.controller.BrowserController;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -30,7 +29,7 @@ public class BrowserService {
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
-    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
 
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -160,15 +159,15 @@ public class BrowserService {
         String price = row.get(4).getText();
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
+        sbc.getWait().until(invisibilityOfElementLocated(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']")));// крутелка
         sbc.getWait().until(elementToBeClickable(wb)).click();
-        By by = By.xpath(".//button[@class = 'sc-bxivhb kcrVkO']");
-//        WebElement wb = sbc1.getDriver().findElements(by).get(0).findElements(By.tagName("i")).get(1);
-//        sbc1.getWait().until(visibilityOfElementLocated(by));
-//        try {
-//            sbc1.getWait().until(elementToBeClickable(by)).click();
-//            } catch (ElementClickInterceptedException ignored){}
         List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
-        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), webLinks.get(0).getAttribute("href"), webLinks.get(1).getAttribute("href"));
+        List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
+        //sbc.getWait().until(invisibilityOfElementLocated(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']")));// крутелка
+        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
+        //sbc.getWait().until(elementToBeClickable(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"))).click(); !!! Работает, но долго думает
+        //sbc.getWait().until(visibilityOf(wb)).click();
+        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
     private void sorting() {
@@ -214,6 +213,15 @@ public class BrowserService {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
         }
         return isExists;
+    }
+
+    private void clickWithoutTimeOut(By by) {
+        try {
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            sbc.getDriver().findElement(by).click();
+        } finally {
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
+        }
     }
 
     private WebElement getWebElementByXpath(String xpath) {
@@ -404,9 +412,13 @@ public class BrowserService {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
-        LOGGER.info(alertTxt);
-        if (sbc.getDriver() != null)
-            sbc.getDriver().close();
+        if (type.equals(Alert.AlertType.WARNING)) {
+            LOGGER.warning(alertTxt);
+            if (sbc.getDriver() != null)
+                sbc.getDriver().close();
+        } else if (type.equals(Alert.AlertType.INFORMATION))
+            LOGGER.info(alertTxt);
+
     }
 
     public void initializeBrowser() {

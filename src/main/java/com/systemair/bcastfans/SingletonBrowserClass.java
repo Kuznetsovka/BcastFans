@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
+import java.util.logging.Logger;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
@@ -18,7 +19,7 @@ import static com.systemair.bcastfans.service.BrowserService.showAlert;
 public class SingletonBrowserClass {
 
     private static SingletonBrowserClass instanceOfSingletonBrowserClass = null;
-
+    private static final Logger LOGGER = Logger.getLogger(SingletonBrowserClass.class.getName());
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private static WebDriver driver;
     private static Wait<WebDriver> wait;
@@ -40,14 +41,15 @@ public class SingletonBrowserClass {
 //            chromeOptions.addArguments("--disable-popup-blocking");
 //            chromeOptions.addArguments("--disable-default-apps");
             driver = new ChromeDriver(chromeOptions);
-            System.out.println("Запуст драйвера!");
+            LOGGER.info("Запуст драйвера!");
             // Ожидание 30 секунд, опрос каждые 5 секунд
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
+            LOGGER.info("Загрузка страницы");
             driver.navigate().to(HOME_URL);
-            System.out.println("Загрузка страницы");
+            LOGGER.info("Страница загружена");
         } catch (
                 SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
