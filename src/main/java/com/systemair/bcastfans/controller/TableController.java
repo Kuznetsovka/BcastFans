@@ -83,11 +83,10 @@ public class TableController implements Initializable {
 
     UnaryOperator<TextFormatter.Change> formatter = change -> {
         if (change.getText().matches("^[0-9]$|^[0-9][0-9]$|^(100)$")) {
-            return change; //if change is a number
-        } else {
-            change.setText(""); //else make no change
-            return change;
+            return change; //else make no change
         }
+        change.setText("");
+        return change; //if change is a number
     };
 
     UnaryOperator<TextFormatter.Change> negativeFormatter = change -> {

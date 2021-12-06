@@ -5,7 +5,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
-import javafx.util.StringConverter;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
@@ -72,31 +71,8 @@ public class UtilClass {
         return null;
     };
 
-    public static StringConverter<String> converter = new StringConverter<>() {
-        @Override
-        public String toString(String s) {
-            if(s == null || s.isBlank()) return "";
-
-            if(s.matches("\\d{3}")) {
-                return s;
-            }
-
-            return "";
-        }
-
-        @Override
-        public String fromString(String s) {
-            if(s == null || s.isBlank()) return "";
-
-            if(s.matches("\\d{3}")) {
-                return s;
-            }
-            throw new RuntimeException("Converter error");
-        }
-    };
-
     public static String millisToShortDHMS(long duration) {
-        String res = "";
+        String res;
         long days       = TimeUnit.MILLISECONDS.toDays(duration);
         long hours      = TimeUnit.MILLISECONDS.toHours(duration) -
                 TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(duration));

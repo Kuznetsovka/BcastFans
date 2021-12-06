@@ -102,8 +102,6 @@ public class BrowserService {
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
-
-            //showAlert("Не допустимая конфигурация!"); //TODO Подумать может не кидать Warning, а идти дальше
             flagWarning = false;
             return new Fan();
         }
@@ -140,7 +138,7 @@ public class BrowserService {
                 countRow += lastRows;
             }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
-            result = getResultFan(row, countRow);
+            result = getResultFan(row);
         } while (result == null);
         return result;
     }
@@ -152,7 +150,7 @@ public class BrowserService {
     }
 
     @SneakyThrows
-    private Fan getResultFan(List<WebElement> row, int index) {
+    private Fan getResultFan(List<WebElement> row) {
         String model = row.get(2).findElement(By.tagName("a")).getText();
         String phase = row.get(2).findElement(By.tagName("small")).getText();
         String article = row.get(3).getText();

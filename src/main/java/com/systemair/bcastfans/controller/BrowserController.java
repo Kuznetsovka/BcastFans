@@ -45,13 +45,15 @@ public class BrowserController {
                                         u.getAirDrop(),
                                         u.getTypeMontage(),
                                         u.getSubType()));
-                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar, u)));
+                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
                                 t2.start();
                                 LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
                                 LOGGER.info("Установка " + index + " посчитана");
                                 String absFileName = getCorrectSavePath(u.getName(), u.getModel());
-                                downloadUsingNIO(u.getFan().getShortLink(), absFileName);
-                                LOGGER.info("Установка " + index + " выгружена");
+                                if (!u.getModel().equals("")) {
+                                    downloadUsingNIO(u.getFan().getShortLink(), absFileName);
+                                    LOGGER.info("Установка " + index + " выгружена");
+                                }
                             });
         return data;
     }
@@ -68,12 +70,12 @@ public class BrowserController {
 
     private String getCorrectSavePath(String name, String model) {
         String fileName = name + " " + model + ".pdf";
-        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 \\.\\-]", "_");
+        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
         return PATH_TEST + "/" + fileName;
 
     }
 
-    private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar, FanUnit u) {
+    private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar) {
         pb.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
         LOGGER.info("Установка " + (index) + " добавлена в прогресс бар!");
