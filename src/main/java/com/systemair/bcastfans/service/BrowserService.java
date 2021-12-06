@@ -159,14 +159,10 @@ public class BrowserService {
         String price = row.get(4).getText();
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
-        sbc.getWait().until(invisibilityOfElementLocated(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']")));// крутелка
         sbc.getWait().until(elementToBeClickable(wb)).click();
         List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
         List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
-        //sbc.getWait().until(invisibilityOfElementLocated(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']")));// крутелка
         clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
-        //sbc.getWait().until(elementToBeClickable(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"))).click(); !!! Работает, но долго думает
-        //sbc.getWait().until(visibilityOf(wb)).click();
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
