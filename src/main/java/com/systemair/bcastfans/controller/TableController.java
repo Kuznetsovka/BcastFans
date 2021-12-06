@@ -90,15 +90,14 @@ public class TableController implements Initializable {
         }
     };
 
-//    UnaryOperator<TextFormatter.Change> negativeFormatter = change -> {
-//        if(change.getText().matches("/-^[0-9]$|^[0-9][0-9]$|^(-50)$")){
-//        } else if (!fieldNegativeLimit.getText().contains("-")) {
-//            fieldNegativeLimit.setText("-");
-//        }else {
-//            change.setText("");
-//        }
-//        return change;
-//    };
+    UnaryOperator<TextFormatter.Change> negativeFormatter = change -> {
+        if(change.getText().matches("^[-]|[0]?[0-4]?[0-9]$|^(-50)$")) {
+            return change;
+        } else {
+            change.setText("");
+        }
+        return change;
+    };
 
     private ObservableList<FanUnit> data;
     private Workbook workbook;
@@ -114,7 +113,7 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
-        //fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
+        fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         browserController.initializeBrowser();
     }
