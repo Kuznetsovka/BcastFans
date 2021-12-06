@@ -408,7 +408,7 @@ public class BrowserService {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
-        if (type.equals(Alert.AlertType.WARNING)) {
+        if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.ERROR)) {
             LOGGER.warning(alertTxt);
             if (sbc.getDriver() != null)
                 sbc.getDriver().close();

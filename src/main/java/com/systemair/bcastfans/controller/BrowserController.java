@@ -8,9 +8,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import lombok.SneakyThrows;
 
-import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -26,6 +24,7 @@ public class BrowserController {
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
         isStop = false;
+        initProgressBar(data, pb, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
@@ -50,24 +49,32 @@ public class BrowserController {
                                 t2.start();
                                 LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
                                 LOGGER.info("Установка " + index + " посчитана");
-                                String absFileName = getCorrectSavePath(PATH_TEST,u.getName(),u.getModel());
+                                String absFileName = getCorrectSavePath(u.getName(), u.getModel());
                                 downloadUsingNIO(u.getFan().getShortLink(), absFileName);
                                 LOGGER.info("Установка " + index + " выгружена");
                             });
         return data;
     }
 
-    private String getCorrectSavePath(String pathTest, String name, String model) {
-        String fileName =  name + " " + model + ".pdf";
-        fileName = fileName.replaceAll ("[^а-яА-Яa-zA-Z0-9 \\.\\-]", "_");
-        return  PATH_TEST + "/" + fileName;
+    private void initProgressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
+        new Thread(() -> runLater(() -> {
+                    pb.setProgress(0.0);
+                    pb.setVisible(true);
+                    labelProgressBar.setText("Посчитано 0 установок из " + data.size());
+                    labelProgressBar.setVisible(true);
+                }
+        )).start();
+    }
+
+    private String getCorrectSavePath(String name, String model) {
+        String fileName = name + " " + model + ".pdf";
+        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 \\.\\-]", "_");
+        return PATH_TEST + "/" + fileName;
 
     }
 
     private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar, FanUnit u) {
-        pb.setVisible(true);
         pb.setProgress((double) (index) / size);
-        labelProgressBar.setVisible(true);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
         LOGGER.info("Установка " + (index) + " добавлена в прогресс бар!");
     }
@@ -78,21 +85,6 @@ public class BrowserController {
 
     public void stopCalculation() {
         isStop = true;
-    }
-
-    // качаем файл с помощью Stream
-    private static void downloadUsingStream(String urlStr, String file) throws IOException {
-        URL url = new URL(urlStr);
-        BufferedInputStream bis = new BufferedInputStream(url.openStream());
-        FileOutputStream fis = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int count = 0;
-        while((count = bis.read(buffer,0,1024)) != -1)
-        {
-            fis.write(buffer, 0, count);
-        }
-        fis.close();
-        bis.close();
     }
 
     // качаем файл с помощью NIO

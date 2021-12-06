@@ -25,19 +25,12 @@ public class SingletonBrowserClass {
     public static final int LIMIT_REPEAT_TIMEOUT = 2;
 
     private SingletonBrowserClass() {
-
         try {
             UtilClass.initProperties();
             System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setHeadless(true);//выбор фонового режима true
             chromeOptions.addArguments("start-maximized");
-//            chromeOptions.addArguments("--enable-extensions");
-//            //chromeOptions.addArguments("--enable-plugins");
-//            chromeOptions.addArguments("--window-size=1920,1080");
-//            chromeOptions.addArguments("--enable-precise-memory-info");
-//            chromeOptions.addArguments("--disable-popup-blocking");
-//            chromeOptions.addArguments("--disable-default-apps");
             driver = new ChromeDriver(chromeOptions);
             LOGGER.info("Запуст драйвера!");
             // Ожидание 30 секунд, опрос каждые 5 секунд
@@ -52,12 +45,10 @@ public class SingletonBrowserClass {
             for (int i = 0; i < 4; i++) {
                 builder.sendKeys(Keys.chord(Keys.CONTROL, "-")).perform();
             }
-
-        } catch (
-                SessionNotCreatedException e) {
+        } catch (SessionNotCreatedException e) {
             showAlert("Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
         } catch (IllegalArgumentException e) {
-            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage(), Alert.AlertType.WARNING);
+            showAlert("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + PATH_DRIVER, Alert.AlertType.WARNING);
         }
     }
 

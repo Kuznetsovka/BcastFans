@@ -1,6 +1,7 @@
 package com.systemair.bcastfans;
 
 import com.systemair.bcastfans.domain.FanUnit;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
@@ -12,7 +13,11 @@ import org.apache.poi.ss.usermodel.Cell;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.function.UnaryOperator;
+
+import static com.systemair.bcastfans.service.BrowserService.showAlert;
+
 @Getter
 public class UtilClass {
     public static String PATH_TEST;
@@ -30,7 +35,8 @@ public class UtilClass {
             case STRING:
                 return cell.getStringCellValue();
             case ERROR:
-                return ""; //TODO Вывод ошибки
+                showAlert("В ячейке " + cell.getAddress() + " найджена ошибка!", Alert.AlertType.ERROR);
+                throw new IllegalArgumentException("");
         }
         return "";
     }
@@ -63,7 +69,6 @@ public class UtilClass {
         if(change.getControlNewText().matches("\\d{0,11}")) {
             return change;
         }
-
         return null;
     };
 
@@ -89,4 +94,21 @@ public class UtilClass {
             throw new RuntimeException("Converter error");
         }
     };
+
+    public static String millisToShortDHMS(long duration) {
+        String res = "";
+        long days       = TimeUnit.MILLISECONDS.toDays(duration);
+        long hours      = TimeUnit.MILLISECONDS.toHours(duration) -
+                TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(duration));
+        long minutes    = TimeUnit.MILLISECONDS.toMinutes(duration) -
+                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(duration));
+        long seconds    = TimeUnit.MILLISECONDS.toSeconds(duration) -
+                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
+
+        if (days == 0)
+            res = String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        else
+            res = String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds);
+        return res;
+    }
 }

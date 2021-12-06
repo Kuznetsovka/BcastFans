@@ -23,6 +23,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
@@ -48,6 +50,8 @@ public class TableController implements Initializable {
     public TextField fieldNegativeLimit;
     @FXML
     public TextField fieldPositiveLimit;
+    @FXML
+    public Label labelTimeLong;
     @FXML
     TableView<FanUnit> table;
     @FXML
@@ -150,10 +154,18 @@ public class TableController implements Initializable {
     @SneakyThrows
     public void calculate() {
         Thread thread = new Thread(()-> {
+            Instant start = Instant.now();
             data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar);
-            System.out.println("Заполнение вентиляторов в таблицу");
+            LOGGER.info("Заполнение вентиляторов в таблицу");
             tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
-            Thread t2 = new Thread(() -> runLater(() -> showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION)));
+            Instant finish = Instant.now();
+            String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
+            LOGGER.info("Время выполнения: " + timeLong);
+            Thread t2 = new Thread(() -> runLater(() -> {
+                showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                labelTimeLong.setText("Время выполнения: " + timeLong);
+                labelTimeLong.setVisible(true);
+            }));
             t2.start();
         });
         thread.start();
@@ -164,6 +176,7 @@ public class TableController implements Initializable {
         labelProgressBar.setVisible(false);
         progressBar.setProgress(0.0);
         progressBar.setVisible(false);
+        labelTimeLong.setVisible(false);
     }
 
     public void stop() {

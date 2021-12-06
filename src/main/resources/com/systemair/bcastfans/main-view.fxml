@@ -31,6 +31,7 @@
                <Insets />
             </opaqueInsets></ProgressBar>
                 <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false" />
+         <Label fx:id="labelTimeLong" text="Label" visible="false" />
          <HBox.margin>
             <Insets />
          </HBox.margin>
@@ -40,7 +41,7 @@
         </VBox>
     </HBox>
     <HBox prefHeight="500.0">
-        <children>
+
             <TableView fx:id="table" maxHeight="500" minWidth="830" prefHeight="324.0" prefWidth="830.0">
                 <columns>
                     <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
@@ -64,10 +65,8 @@
             </TableView>
             <VBox spacing="10.0">
                 <VBox spacing="20.0">
-                    <children>
                         <Button mnemonicParsing="false" onAction="#load" prefWidth="80.0" text="Load" />
                         <Button mnemonicParsing="false" onAction="#save" prefWidth="80.0" text="Save as" />
-                    </children>
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
@@ -76,23 +75,22 @@
                </padding>
                 </VBox>
             <VBox prefWidth="100.0">
-               <children>
+
                       <Button mnemonicParsing="false" onAction="#clear" prefWidth="80.0" text="Clear" />
-               </children>
+
                <padding>
                   <Insets bottom="10.0" left="20.0" top="10.0" />
                </padding>
             </VBox>
             <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
-               <children>
+
                       <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0" text="Calculate" />
                       <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0" text="СТОП" />
-               </children>
+
                <padding>
                   <Insets left="20.0" top="20.0" />
                </padding>
             </VBox>
             </VBox>
-        </children>
     </HBox>
 </VBox>
