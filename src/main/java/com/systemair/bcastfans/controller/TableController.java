@@ -169,6 +169,11 @@ public class TableController implements Initializable {
         thread.start();
     }
 
+    public void fillFans(ObservableList<FanUnit> data){
+        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+        LOGGER.info("Заполнение вентилятора в таблицу");
+    }
+
     public void clear() {
         data.clear();
         labelProgressBar.setVisible(false);

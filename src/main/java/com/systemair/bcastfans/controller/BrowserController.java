@@ -30,47 +30,54 @@ public class BrowserController {
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
         browserService.prepareStartPageBeforeCalculation();
-        if (!data.isEmpty())
-            data.stream().
-                    filter(u -> u.getCheck().isSelected()).
-                    forEach(
-                            u -> {
-                                int index = data.indexOf(u) + 1;
-                                if (isStop) {
-                                    return;
-                                }
-                                LOGGER.info("Начало расчета вентилятора " + index);
-                                u.setFan(browserService.calculate(
-                                        u.getAirFlow(),
-                                        u.getAirDrop(),
-                                        u.getTypeMontage(),
-                                        u.getSubType()));
-                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
-                                t2.start();
-                                LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
-                                LOGGER.info("Установка " + index + " посчитана");
-                                String absFileName = getCorrectSavePath(u.getName(), u.getModel());
-                                if (!u.getModel().equals("")) {
-                                    downloadUsingNIO(u.getFan().getShortLink(), absFileName);
-                                    LOGGER.info("Установка " + index + " выгружена");
-                                }
-                            });
+        try {
+            if (!data.isEmpty())
+                data.stream().
+                        filter(u -> u.getCheck().isSelected()).
+                        forEach(
+                                u -> {
+                                    int index = data.indexOf(u) + 1;
+                                    if (isStop) {
+                                        return;
+                                    }
+                                    LOGGER.info("Начало расчета вентилятора " + index);
+                                    u.setFan(browserService.calculate(
+                                            u.getAirFlow(),
+                                            u.getAirDrop(),
+                                            u.getTypeMontage(),
+                                            u.getSubType()));
+                                    String absFileName = getCorrectSavePath(u.getName(), u.getModel());
+                                    LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
+                                    LOGGER.info("Установка " + index + " посчитана");
+                                    if (!u.getModel().equals("")) {
+                                        downloadUsingNIO(u.getFan().getShortLink(), absFileName);
+                                        LOGGER.info("Установка " + index + " выгружена");
+                                    }
+                                    Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
+                                    t2.start();
+                                    t2.interrupt();
+                                });
+        } catch (Exception e){
+            e.printStackTrace();
+        };
         return data;
     }
 
     private void initProgressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
-        new Thread(() -> runLater(() -> {
+        Thread t2 = new Thread(() -> runLater(() -> {
                     pb.setProgress(0.0);
                     pb.setVisible(true);
                     labelProgressBar.setText("Посчитано 0 установок из " + data.size());
                     labelProgressBar.setVisible(true);
                 }
-        )).start();
+        ));
+        t2.start();
+        t2.interrupt();
     }
 
     private String getCorrectSavePath(String name, String model) {
         String fileName = name + " " + model + ".pdf";
-        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
+        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 \\.\\-]", "_");
         return PATH_TEST + "/" + fileName;
 
     }

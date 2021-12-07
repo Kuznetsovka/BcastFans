@@ -26,10 +26,13 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 @Setter
 public class BrowserService {
     private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
+    private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
-    private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
+    private boolean isGrouping;
+    private boolean isHidingDiagram;
+    private boolean isSorting;
 
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -102,17 +105,19 @@ public class BrowserService {
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
+            LOGGER.info("Ошибка!!!");
             flagWarning = false;
             return new Fan();
         }
-        grouping();
-        hidingDiagram();
-        sorting();
+        if(!isGrouping) grouping();
+        if(!isHidingDiagram) hidingDiagram();
+        if(!isSorting) sorting();
         Fan fan = fillTableUnit(subType);
+        LOGGER.debug((fan != null) ? fan.getModel() : null);
         return (fan != null) ? fan : new Fan();
     }
 
-    private Fan fillTableUnit(SubType subType) {
+    private synchronized Fan fillTableUnit(SubType subType) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         Fan result = null;
@@ -121,22 +126,30 @@ public class BrowserService {
         int countRow = 1;
         int lastRows = 0;
         do {
-            if (countRow > lastRows)
-                lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+            if (countRow > lastRows) {
+                if (isExistElementMoreThen(moreFansButtonBy, 2)) {
+                    LOGGER.info("Нажата кнопка больше вентиляторов");
+                    btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+                    LOGGER.info("1" + isWarning());
+                    sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+                    LOGGER.info("2" + isWarning());
+                    countRow += lastRows;
+                } else {
+                    return new Fan();
+                }
+                lastRows = sbc.getWait().until(ExpectedConditions.visibilityOfAllElementsLocatedBy((By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")))).size();
+                LOGGER.info("3" + isWarning());
+                continue;
+            }
             row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]"));
+            LOGGER.info("4" + isWarning());
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
-
             if (isContinueFan(price, subType, model)) {
                 countRow++;
                 continue;
             }
 
-            if (isExistElementMoreThen(moreFansButtonBy, 2) && countRow == lastRows) {
-                btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-                sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-                countRow += lastRows;
-            }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
@@ -144,9 +157,13 @@ public class BrowserService {
     }
 
     private boolean isContinueFan(String price, SubType subType, String model) {
-        return ((price.equals("")) ||
-                (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) ||
+        return ((price.equals("")) &&
+                isNotCorrectRoofFan(subType, model) &&
                 (model.contains("150")));
+    }
+
+    private boolean isNotCorrectRoofFan(SubType subType, String model) {
+        return subType == SubType.ON_ROOF &&  (!model.contains("RVK") && model.contains("MUB"));
     }
 
     @SneakyThrows
@@ -158,25 +175,30 @@ public class BrowserService {
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
         sbc.getWait().until(elementToBeClickable(wb)).click();
+        LOGGER.info("5" + isWarning());
         List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
         List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
         clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
+        LOGGER.info("6" + isWarning());
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
     private void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
+        isSorting = true;
         LOGGER.info("Сортировка вентиляторов");
     }
 
     private void hidingDiagram() {
         // Скрыть диаграммы
         onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
+        isHidingDiagram = true;
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
     private void grouping() {
         changeValueComboBoxByLabel("Группировать по:", "Нет");
+        isGrouping = true;
         LOGGER.info("Группировка вентиляторов");
     }
 
@@ -189,6 +211,7 @@ public class BrowserService {
         }
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
         if (isWarning())
+            LOGGER.debug("Ошибка!!!");
             flagWarning = true;
         LOGGER.info("Заполнен расход и потери...");
     }
