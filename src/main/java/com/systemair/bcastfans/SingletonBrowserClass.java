@@ -1,6 +1,7 @@
 package com.systemair.bcastfans;
 
 import javafx.scene.control.Alert;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -9,7 +10,6 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
-import java.util.logging.Logger;
 
 import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;

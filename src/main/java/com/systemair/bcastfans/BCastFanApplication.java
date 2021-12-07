@@ -5,9 +5,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 public class BCastFanApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(TableController.class.getName());
     @Override

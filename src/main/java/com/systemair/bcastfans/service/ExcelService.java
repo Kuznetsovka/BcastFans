@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,7 +64,6 @@ public class ExcelService {
         }
     }
 
-    @NotNull
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
         int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
         int row = 0;
