@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -40,8 +39,6 @@ public class TableController implements Initializable {
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
     private BrowserController browserController = new BrowserController();
-    @FXML
-    public VBox vb;
     @FXML
     public Label labelProgressBar;
     @FXML
