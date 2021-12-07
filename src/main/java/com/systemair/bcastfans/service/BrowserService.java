@@ -92,7 +92,9 @@ public class BrowserService {
         WebElement wb = getWebElementByXpath(xpath);
         if (wb.getText().equals(newValue)) return;
         wb.sendKeys(Keys.CONTROL + "a");
+        sleep(500);
         wb.sendKeys(Keys.DELETE);
+        sleep(500);
         wb.sendKeys(newValue);
         sleep(500);
     }
@@ -116,6 +118,7 @@ public class BrowserService {
         return (fan != null) ? fan : new Fan();
     }
 
+    @SneakyThrows
     private Fan fillTableUnit(SubType subType) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
@@ -124,15 +127,19 @@ public class BrowserService {
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         int countRow = 1;
         int lastRows;
-        if (isExistElementMoreThen(moreFansButtonBy, 2)) {
-            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+        for (int i = 0; i < 2; i++) {
+            if (isExistElementMoreThen(moreFansButtonBy, 2)) {
+                btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+                sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+            }
         }
-        lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+
+        sleep(500);
+        lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
            if (countRow > lastRows)
                 return new Fan();
-            row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]"));
+            row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
 
@@ -149,7 +156,7 @@ public class BrowserService {
 
     private boolean isContinueFan(String price, SubType subType, String model) {
         return ((price.equals("")) ||
-                (subType == SubType.ON_ROOF && (!model.contains("RVK") && !model.contains("MUB"))) ||
+                (subType == SubType.ON_ROOF && (model.contains("RVK") && !model.contains("MUB"))) ||
                 (model.contains("150")));
     }
 
