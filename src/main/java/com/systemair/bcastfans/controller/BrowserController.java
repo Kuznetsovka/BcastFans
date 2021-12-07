@@ -7,12 +7,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import lombok.SneakyThrows;
+import org.apache.log4j.Logger;
 
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Logger;
 
 import static com.systemair.bcastfans.UtilClass.PATH_TEST;
 import static javafx.application.Platform.runLater;

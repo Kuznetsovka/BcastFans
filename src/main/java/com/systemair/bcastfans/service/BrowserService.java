@@ -8,13 +8,13 @@ import javafx.scene.control.Alert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
@@ -407,7 +407,7 @@ public class BrowserService {
         alert.setContentText(alertTxt);
         alert.showAndWait();
         if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.ERROR)) {
-            LOGGER.warning(alertTxt);
+            LOGGER.error(alertTxt);
             if (sbc.getDriver() != null)
                 sbc.getDriver().close();
         } else if (type.equals(Alert.AlertType.INFORMATION))

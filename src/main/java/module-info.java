@@ -13,6 +13,7 @@ module com.systemair.bcastfans {
     requires org.seleniumhq.selenium.support;
     requires poi;
     requires poi.ooxml;
+    requires log4j;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;
