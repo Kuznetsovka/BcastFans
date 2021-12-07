@@ -29,13 +29,17 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
+import static com.systemair.bcastfans.UtilClass.PATH_TEST;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
 
 @Getter
 @Setter
 public class TableController implements Initializable {
-
+    @FXML
+    public TextField fieldPathDownloading;
+    @FXML
+    public CheckBox checkboxCustomPath;
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
     private BrowserController browserController = new BrowserController(this);
@@ -180,5 +184,16 @@ public class TableController implements Initializable {
 
     public void stop() {
         browserController.stopCalculation();
+    }
+
+    public void customPath() {
+        if (checkboxCustomPath.isSelected()) {
+            fieldPathDownloading.setEditable(false);
+            fieldPathDownloading.setText(PATH_TEST);
+        } else {
+            fieldPathDownloading.setEditable(true);
+            fieldPathDownloading.setText("");
+        }
+
     }
 }
