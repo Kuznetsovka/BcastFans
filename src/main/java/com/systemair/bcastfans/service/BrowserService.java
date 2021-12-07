@@ -29,7 +29,11 @@ public class BrowserService {
     private String positiveLimit;
     private String negativeLimit;
     boolean flagWarning;
+    boolean isSorting;
+    boolean isHidingDiagram;
+    private boolean isGrouping;
     private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
+
 
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -105,9 +109,9 @@ public class BrowserService {
             flagWarning = false;
             return new Fan();
         }
-        grouping();
-        hidingDiagram();
-        sorting();
+        if (!isGrouping) grouping();
+        if (!isHidingDiagram) hidingDiagram();
+        if (!isSorting) sorting();
         Fan fan = fillTableUnit(subType);
         return (fan != null) ? fan : new Fan();
     }
@@ -119,10 +123,15 @@ public class BrowserService {
         List<WebElement> row;
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         int countRow = 1;
-        int lastRows = 0;
+        int lastRows;
+        if (isExistElementMoreThen(moreFansButtonBy, 2)) {
+            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+        }
+        lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
         do {
-            if (countRow > lastRows)
-                lastRows = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']")).size();
+           if (countRow > lastRows)
+                return new Fan();
             row = sbc.getDriver().findElements(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]"));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
@@ -132,11 +141,6 @@ public class BrowserService {
                 continue;
             }
 
-            if (isExistElementMoreThen(moreFansButtonBy, 2) && countRow == lastRows) {
-                btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-                sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-                countRow += lastRows;
-            }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
@@ -166,16 +170,19 @@ public class BrowserService {
 
     private void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
+        isSorting = true;
         LOGGER.info("Сортировка вентиляторов");
     }
 
     private void hidingDiagram() {
         // Скрыть диаграммы
         onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
+        isHidingDiagram = true;
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
     private void grouping() {
+        isGrouping = true;
         changeValueComboBoxByLabel("Группировать по:", "Нет");
         LOGGER.info("Группировка вентиляторов");
     }

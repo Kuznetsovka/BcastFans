@@ -38,7 +38,7 @@ public class TableController implements Initializable {
 
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
-    private BrowserController browserController = new BrowserController();
+    private BrowserController browserController = new BrowserController(this);
     @FXML
     public Label labelProgressBar;
     @FXML
@@ -164,6 +164,10 @@ public class TableController implements Initializable {
             t2.start();
         });
         thread.start();
+    }
+
+    public void fillFan(ObservableList<FanUnit> data){
+        tableService.fillResultData(this.data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
     }
 
     public void clear() {

@@ -21,6 +21,11 @@ public class BrowserController {
     private final BrowserService browserService = new BrowserService();
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
+    private TableController tableController;
+
+    public BrowserController(TableController tableController) {
+        this.tableController = tableController;
+    }
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
         isStop = false;
@@ -45,6 +50,7 @@ public class BrowserController {
                                         u.getAirDrop(),
                                         u.getTypeMontage(),
                                         u.getSubType()));
+                                tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
                                 t2.start();
                                 LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
