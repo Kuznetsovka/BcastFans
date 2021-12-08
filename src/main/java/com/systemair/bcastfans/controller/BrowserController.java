@@ -52,12 +52,12 @@ public class BrowserController {
                                 tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
                                 t2.start();
-                                LOGGER.info("Установка " + index + " поток прогресс бара завершен!");
-                                LOGGER.info("Установка " + index + " посчитана");
+                                LOGGER.info("Установка " + u.getName() + " добавлена в прогресс бар!");
+                                LOGGER.info("Установка " + u.getName() + " посчитана");
                                 String absFileName = getCorrectSavePath(u.getName(), u.getModel());
                                 if (!u.getModel().equals("")) {
                                     downloadUsingNIO(u.getFan().getShortLink(), absFileName);
-                                    LOGGER.info("Установка " + index + " выгружена");
+                                    LOGGER.info("Установка " + u.getName() + " выгружена");
                                 }
                             });
         return data;
@@ -83,7 +83,6 @@ public class BrowserController {
     private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar) {
         pb.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
-        LOGGER.info("Установка " + (index) + " добавлена в прогресс бар!");
     }
 
     public void initializeBrowser() {

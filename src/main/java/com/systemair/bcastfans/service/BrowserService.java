@@ -163,7 +163,7 @@ public class BrowserService {
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
-        WebElement wb = row.get(1).findElement(By.tagName("button"));
+        //WebElement wb = row.get(1).findElement(By.tagName("button"));
         String shortLink = getLink(modelCell,true);
         String fullLink = getLink(modelCell,false);
 //        sbc.getWait().until(elementToBeClickable(wb)).click();
