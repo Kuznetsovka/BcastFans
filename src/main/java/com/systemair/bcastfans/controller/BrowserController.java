@@ -14,7 +14,6 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
-import static com.systemair.bcastfans.UtilClass.PATH_TEST;
 import static javafx.application.Platform.runLater;
 
 public class BrowserController {
@@ -77,8 +76,8 @@ public class BrowserController {
     private String getCorrectSavePath(String name, String model) {
         String fileName = name + " " + model + ".pdf";
         fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
-        return PATH_TEST + "/" + fileName;
-
+        String path = tableController.getFieldPathDownloading().getText();
+        return path + "/" + fileName;
     }
 
     private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar) {

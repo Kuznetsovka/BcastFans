@@ -10,8 +10,11 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.Window;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -21,6 +24,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -115,7 +119,20 @@ public class TableController implements Initializable {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
+        fieldPathDownloading.setText(PATH_TEST);
         browserController.initializeBrowser();
+        final DirectoryChooser directoryChooser = new DirectoryChooser();
+        configuringDirectoryChooser(directoryChooser);
+        fieldPathDownloading.setOnMouseClicked(event -> {
+            Node source = (Node) event.getSource();
+            Window stage = source.getScene().getWindow();
+            File dir = directoryChooser.showDialog(stage);
+            if (dir != null) {
+                fieldPathDownloading.setText(dir.getAbsolutePath());
+            } else {
+                fieldPathDownloading.setText(null);
+            }
+        });
     }
 
     @SneakyThrows
@@ -189,11 +206,20 @@ public class TableController implements Initializable {
     public void customPath() {
         if (checkboxCustomPath.isSelected()) {
             fieldPathDownloading.setEditable(false);
+            fieldPathDownloading.setDisable(true);
             fieldPathDownloading.setText(PATH_TEST);
         } else {
+            fieldPathDownloading.setDisable(false);
             fieldPathDownloading.setEditable(true);
             fieldPathDownloading.setText("");
         }
 
+    }
+
+    private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
+        // Set title for DirectoryChooser
+        directoryChooser.setTitle("Выберите папку для сохранения файлов");
+        // Set Initial Directory
+        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
     }
 }

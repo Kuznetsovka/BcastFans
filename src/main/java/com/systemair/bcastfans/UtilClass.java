@@ -34,7 +34,7 @@ public class UtilClass {
             case STRING:
                 return cell.getStringCellValue();
             case ERROR:
-                showAlert("В ячейке " + cell.getAddress() + " найджена ошибка!", Alert.AlertType.ERROR);
+                showAlert("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
                 throw new IllegalArgumentException("");
         }
         return "";
