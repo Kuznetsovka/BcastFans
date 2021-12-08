@@ -89,14 +89,14 @@ public class BrowserService {
 
     private void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
-        WebElement wb = getWebElementByXpath(xpath);
+        By by = By.xpath(xpath);
+        WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
         wb.sendKeys(Keys.CONTROL + "a");
         sleep(500);
         wb.sendKeys(Keys.DELETE);
-        sleep(500);
-        wb.sendKeys(newValue);
-        sleep(500);
+        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
+            wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -127,27 +127,21 @@ public class BrowserService {
         //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         int countRow = 1;
         int lastRows;
-        for (int i = 0; i < 2; i++) {
-            if (isExistElementMoreThen(moreFansButtonBy, 2)) {
-                btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-                sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-            }
+        while (isExistElementMoreThen(moreFansButtonBy, 2) && subType.equals(SubType.ON_ROOF)) {
+            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
         }
-
-        sleep(500);
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
-           if (countRow > lastRows)
+            if (countRow > lastRows)
                 return new Fan();
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
-
             if (isContinueFan(price, subType, model)) {
                 countRow++;
                 continue;
             }
-
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
@@ -162,17 +156,29 @@ public class BrowserService {
 
     @SneakyThrows
     private Fan getResultFan(List<WebElement> row) {
-        String model = row.get(2).findElement(By.tagName("a")).getText();
-        String phase = row.get(2).findElement(By.tagName("small")).getText();
+        WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
+        WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
+        String model = modelCell.getText();
+        String phase = phaseCell.getText();
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
-        sbc.getWait().until(elementToBeClickable(wb)).click();
-        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
-        List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
-        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
-        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
+        String shortLink = getLink(modelCell,true);
+        String fullLink = getLink(modelCell,false);
+//        sbc.getWait().until(elementToBeClickable(wb)).click();
+//        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+//        List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
+//        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
+        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), fullLink, shortLink);
+    }
+
+    private String getLink(WebElement modelCell,boolean compact) {
+        String type = "";
+        if (compact) type = "-compact";
+        String firstPartLink = "https://shop.systemair.com/ru-RU/api/product/pdf" + type + "/externalId/";
+        String link = modelCell.getAttribute("href");
+        return firstPartLink + link.substring(link.indexOf("?p=") + 3).replace("&", "?");
     }
 
     private void sorting() {
@@ -270,7 +276,7 @@ public class BrowserService {
     }
 
     private List<WebElement> getListDivsByNameClass(String xpathLists) {
-        return sbc.getDriver().findElements(By.xpath(".//div[contains(@class, '" + xpathLists + "')]"));
+        return sbc.getWait().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, '" + xpathLists + "')]")));
     }
 
     private void selectSubType(SubType subType) {

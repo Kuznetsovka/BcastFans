@@ -29,8 +29,8 @@ public class SingletonBrowserClass {
             UtilClass.initProperties();
             System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
             ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.setHeadless(true);//выбор фонового режима true
             chromeOptions.addArguments("start-maximized");
+            chromeOptions.setHeadless(false); //выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
             LOGGER.info("Запуст драйвера!");
             // Ожидание 30 секунд, опрос каждые 5 секунд
