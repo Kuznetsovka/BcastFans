@@ -8,15 +8,18 @@ import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+
 public class BCastFanApplication extends Application {
+
     private static final Logger LOGGER = Logger.getLogger(TableController.class.getName());
+
     @Override
     public void start(Stage stage) throws IOException {
-            FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load());
-            stage.setTitle("Считать");
-            stage.setScene(scene);
-            stage.show();
+        FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        stage.setTitle("Считать");
+        stage.setScene(scene);
+        stage.show();
     }
 
     @Override

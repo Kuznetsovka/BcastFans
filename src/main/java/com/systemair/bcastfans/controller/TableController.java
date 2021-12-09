@@ -13,6 +13,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 import lombok.Getter;
@@ -26,20 +28,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-import static com.systemair.bcastfans.UtilClass.PATH_TEST;
+import static com.systemair.bcastfans.UtilClass.PATH_WORK;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
 
 @Getter
 @Setter
 public class TableController implements Initializable {
+    @FXML
+    private ImageView idImage;
     @FXML
     public TextField fieldPathDownloading;
     @FXML
@@ -119,7 +125,7 @@ public class TableController implements Initializable {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
-        fieldPathDownloading.setText(PATH_TEST);
+        fieldPathDownloading.setText(PATH_WORK);
         browserController.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
@@ -129,15 +135,19 @@ public class TableController implements Initializable {
             File dir = directoryChooser.showDialog(stage);
             if (dir != null) {
                 fieldPathDownloading.setText(dir.getAbsolutePath());
+                PATH_WORK = dir.getAbsolutePath();
             } else {
                 fieldPathDownloading.setText(null);
             }
         });
+        InputStream input = getClass().getResourceAsStream("/logo.png");
+        Image image = new Image(Objects.requireNonNull(input));
+        idImage.setImage(image);
     }
 
     @SneakyThrows
     public void load() {
-        workbook = excelService.loadWorkbook(table);
+        workbook = excelService.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
         Sheet worksheet = workbook.getSheetAt(0);
         ArrayList<ArrayList<String>> cells = excelService.loadCellsFromWorksheet(worksheet);
@@ -160,7 +170,7 @@ public class TableController implements Initializable {
         excelService.createCellsInWorksheet(worksheet, table);
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
-        FileOutputStream outFile = UtilClass.getFileOutputStream(table);
+        FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
         if (outFile == null) return;
         workbook.write(outFile);
         outFile.close();
@@ -207,7 +217,7 @@ public class TableController implements Initializable {
         if (checkboxCustomPath.isSelected()) {
             fieldPathDownloading.setEditable(false);
             fieldPathDownloading.setDisable(true);
-            fieldPathDownloading.setText(PATH_TEST);
+            fieldPathDownloading.setText(PATH_WORK);
         } else {
             fieldPathDownloading.setDisable(false);
             fieldPathDownloading.setEditable(true);
@@ -220,6 +230,6 @@ public class TableController implements Initializable {
         // Set title for DirectoryChooser
         directoryChooser.setTitle("Выберите папку для сохранения файлов");
         // Set Initial Directory
-        directoryChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        directoryChooser.setInitialDirectory(new File(PATH_WORK));
     }
 }

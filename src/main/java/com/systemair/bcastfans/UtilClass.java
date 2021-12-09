@@ -19,7 +19,7 @@ import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
 @Getter
 public class UtilClass {
-    public static String PATH_TEST;
+    public static String PATH_WORK;
     public static String PATH_DRIVER;
 
     public static String parseCell(Cell cell) {
@@ -40,10 +40,10 @@ public class UtilClass {
         return "";
     }
 
-    public static FileOutputStream getFileOutputStream(TableView<FanUnit> table) throws FileNotFoundException {
+    public static FileOutputStream getFileOutputStream(TableView<FanUnit> table,String path) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
 
-        fileChooser.setInitialDirectory(new File(PATH_TEST));
+        fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
                 new FileChooser.ExtensionFilter("XLS files (*.xls)", "*.xls")
@@ -60,7 +60,7 @@ public class UtilClass {
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath),
                 StandardCharsets.UTF_8));
         properties.load(in);
-        PATH_TEST = properties.getProperty("path.test");
+        PATH_WORK = properties.getProperty("path.test");
         PATH_DRIVER = properties.getProperty("path.driver");
     }
 

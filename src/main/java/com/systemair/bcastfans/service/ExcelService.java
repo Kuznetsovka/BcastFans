@@ -18,15 +18,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.systemair.bcastfans.UtilClass.PATH_TEST;
-
 public class ExcelService {
 
-    public Workbook loadWorkbook(TableView<FanUnit> table) throws IOException {
+    public Workbook loadWorkbook(TableView<FanUnit> table,String path) throws IOException {
         Workbook workbook = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
-        fileChooser.setInitialDirectory(new File(PATH_TEST));
+        fileChooser.setInitialDirectory(new File(path));
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
         if (file != null) {
             FileInputStream inputStream = new FileInputStream(file);

@@ -33,6 +33,7 @@ public class BrowserService {
     boolean isHidingDiagram;
     private boolean isGrouping;
     private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
+    private boolean isChangeMeasureValueTable;
 
 
     public void prepareStartPageBeforeCalculation() {
@@ -114,8 +115,17 @@ public class BrowserService {
         if (!isGrouping) grouping();
         if (!isHidingDiagram) hidingDiagram();
         if (!isSorting) sorting();
+        if (!isChangeMeasureValueTable) changeMeasureValueTable();
         Fan fan = fillTableUnit(subType);
         return (fan != null) ? fan : new Fan();
+    }
+
+    private void changeMeasureValueTable() {
+//        changeMeasureValueOnTableByIndex("Па", 3); //Давление
+        changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
+//        changeMeasureValueOnTableByIndex("А", 5); //Ток
+//        changeMeasureValueOnTableByIndex("об/мин", 6); //Частота вращения
+//        isChangeMeasureValueTable = true;
     }
 
     @SneakyThrows
@@ -124,7 +134,6 @@ public class BrowserService {
         WebElement btnMoreUnit;
         Fan result = null;
         List<WebElement> row;
-        //changeValueComboBoxByVerticalLabel("sc-htoDjs cnEpLn", "Вт");
         int countRow = 1;
         int lastRows;
         while (isExistElementMoreThen(moreFansButtonBy, 2) && subType.equals(SubType.ON_ROOF)) {
@@ -163,23 +172,23 @@ public class BrowserService {
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
-        //WebElement wb = row.get(1).findElement(By.tagName("button"));
-        String shortLink = getLink(modelCell,true);
-        String fullLink = getLink(modelCell,false);
-//        sbc.getWait().until(elementToBeClickable(wb)).click();
-//        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
-//        List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
-//        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
-        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), fullLink, shortLink);
+        WebElement wb = row.get(1).findElement(By.tagName("button"));
+//        String shortLink = getLink(modelCell,true);
+//        String fullLink = getLink(modelCell,false);
+        sbc.getWait().until(elementToBeClickable(wb)).click();
+        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+        List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
+        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
+        return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
-    private String getLink(WebElement modelCell,boolean compact) {
-        String type = "";
-        if (compact) type = "-compact";
-        String firstPartLink = "https://shop.systemair.com/ru-RU/api/product/pdf" + type + "/externalId/";
-        String link = modelCell.getAttribute("href");
-        return firstPartLink + link.substring(link.indexOf("?p=") + 3).replace("&", "?");
-    }
+//    private String getLink(WebElement modelCell,boolean compact) {
+//        String type = "";
+//        if (compact) type = "-compact";
+//        String firstPartLink = "https://shop.systemair.com/ru-RU/api/product/pdf" + type + "/externalId/";
+//        String link = modelCell.getAttribute("href");
+//        return firstPartLink + link.substring(link.indexOf("?p=") + 3).replace("&", "?");
+//    }
 
     private void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
@@ -244,20 +253,18 @@ public class BrowserService {
     }
 
 
-    private void changeValueComboBoxByVerticalLabel(String findTextLabel, String newValue) {
-        String checkXpath = ".//div[text() = '" + findTextLabel + "']/following::div[1]/div[1]/span[1]";
-        String xpath = checkXpath + "/following::i[1]";
-        By by = By.xpath(xpath);
-        WebElement checkingWb = getWebElementByXpath(checkXpath);
-        if (checkingWb == null) return;
+    private void changeMeasureValueOnTableByIndex(String newValue, int index) {
+        String xpath = ".//th[@class='sc-hzDkRC kmzkGx'][" + index + "]/div[2]/div[1]";
+        String checkingXpath = xpath + "/span[1]";
+        WebElement checkingWb = sbc.getWait().until(visibilityOfElementLocated(By.xpath(checkingXpath)));
         if (checkingWb.getText().equals(newValue)) return;
-        sbc.getWait().until(visibilityOfElementLocated(by));
-        sbc.getWait().until(elementToBeClickable(by)).click();
-        List<WebElement> list = getListDivsByNameClass("sc-bZQynM");
+        sbc.getWait().until(elementToBeClickable(By.xpath(xpath))).click();
+        List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
             showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
+        LOGGER.info("Заменили значение изменения на " + newValue);
     }
 
     private void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
