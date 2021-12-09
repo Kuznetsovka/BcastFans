@@ -93,12 +93,13 @@ public class BrowserService {
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
-        LOGGER.info("Заполнен расход или потери...");
-        do {
-            wb.sendKeys(Keys.CONTROL + "a");
-            wb.sendKeys(Keys.DELETE);
-        } while (sbc.getWait().until(textToBePresentInElement(wb, "")));
-        wb.sendKeys(newValue);
+        LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
+        wb.sendKeys(Keys.CONTROL + "a");
+        sleep(300);
+        wb.sendKeys(Keys.DELETE);
+        sleep(300);
+        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
+            wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -122,7 +123,6 @@ public class BrowserService {
     }
 
     private void changeMeasureValueTable() {
-//        changeMeasureValueOnTableByIndex("Па", 3); //Давление
         changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
 //        changeMeasureValueOnTableByIndex("А", 5); //Ток
 //        changeMeasureValueOnTableByIndex("об/мин", 6); //Частота вращения
@@ -214,11 +214,11 @@ public class BrowserService {
     private void fillFlowAndDrop(String airFlow, String airDrop) {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
-            sleep(500);
             inputTextByLabel("Внешнее давление", airDrop);
             sleep(500);
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
             sleep(500);
+            //sbc.getWait().until(or(visibilityOfElementLocated(By.xpath(".//span[@type='warning']")),numberOfElementsToBeMoreThan(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"),0)));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

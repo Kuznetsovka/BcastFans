@@ -44,15 +44,21 @@ import static javafx.application.Platform.runLater;
 @Getter
 @Setter
 public class TableController implements Initializable {
+    private TableService tableService = new TableService();
+    private ExcelService excelService = new ExcelService();
+    private BrowserController browserController = new BrowserController(this);
+    @FXML
+    private ToggleGroup methodFillTable;
+    @FXML
+    public RadioButton radioFillOne;
+    @FXML
+    public RadioButton radioFillAll;
     @FXML
     private ImageView idImage;
     @FXML
     public TextField fieldPathDownloading;
     @FXML
     public CheckBox checkboxCustomPath;
-    private TableService tableService = new TableService();
-    private ExcelService excelService = new ExcelService();
-    private BrowserController browserController = new BrowserController(this);
     @FXML
     public Label labelProgressBar;
     @FXML
@@ -182,9 +188,12 @@ public class TableController implements Initializable {
         Thread thread = new Thread(()-> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
-            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar);
-            LOGGER.info("Заполнение вентиляторов в таблицу");
-            tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+
+            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar,radioFillOne.isSelected());
+            if (radioFillAll.isSelected()) {
+                LOGGER.info("Заполнение вентиляторов в таблицу");
+                tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+            }
             Instant finish = Instant.now();
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);

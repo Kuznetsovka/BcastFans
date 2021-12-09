@@ -30,7 +30,7 @@ public class BrowserController {
         this.tableController = tableController;
     }
 
-    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
+    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar, boolean isFillTableByOne) {
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         initProgressBar(data, pb, labelProgressBar);
@@ -48,7 +48,7 @@ public class BrowserController {
                                 if (isStop) return;
                                 LOGGER.info("Начало расчета вентилятора " + u.getName());
                                 getCurrentFan(u);
-                                tableController.fillFan(data);
+                                if (isFillTableByOne) tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), data.size(), pb, labelProgressBar)));
                                 t2.start();
                                 t2.interrupt();
