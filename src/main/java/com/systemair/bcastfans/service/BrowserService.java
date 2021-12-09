@@ -93,6 +93,7 @@ public class BrowserService {
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
+        LOGGER.info("Заполнен расход или потери...");
         wb.sendKeys(Keys.CONTROL + "a");
         sleep(500);
         wb.sendKeys(Keys.DELETE);
@@ -139,6 +140,7 @@ public class BrowserService {
         while (isExistElementMoreThen(moreFansButtonBy, 2) && subType.equals(SubType.ON_ROOF)) {
             btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
             sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+            LOGGER.info("Нажата кнопка больше вентиляторов.");
         }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
@@ -212,14 +214,16 @@ public class BrowserService {
     private void fillFlowAndDrop(String airFlow, String airDrop) {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
+            sleep(500);
             inputTextByLabel("Внешнее давление", airDrop);
+            sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
         if (isWarning())
             flagWarning = true;
-        LOGGER.info("Заполнен расход и потери...");
     }
 
     @SneakyThrows
@@ -275,15 +279,11 @@ public class BrowserService {
         if (checkingWb.getText().equals(newValue)) return;
         sbc.getWait().until(visibilityOfElementLocated(by));
         sbc.getWait().until(elementToBeClickable(by)).click();
-        List<WebElement> list = getListDivsByNameClass("sc-gzVnrw");
+        List<WebElement> list = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, 'sc-gzVnrw')]")));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
             showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
-    }
-
-    private List<WebElement> getListDivsByNameClass(String xpathLists) {
-        return sbc.getWait().until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, '" + xpathLists + "')]")));
     }
 
     private void selectSubType(SubType subType) {

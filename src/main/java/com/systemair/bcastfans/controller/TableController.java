@@ -198,7 +198,7 @@ public class TableController implements Initializable {
     }
 
     public void fillFan(ObservableList<FanUnit> data){
-        tableService.fillResultData(this.data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
     }
 
     public void clear() {

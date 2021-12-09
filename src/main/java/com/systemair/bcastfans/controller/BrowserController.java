@@ -20,7 +20,7 @@ public class BrowserController {
     private final BrowserService browserService = new BrowserService();
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
-    private TableController tableController;
+    private final TableController tableController;
 
     public BrowserController(TableController tableController) {
         this.tableController = tableController;

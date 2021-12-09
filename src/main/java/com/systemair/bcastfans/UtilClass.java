@@ -42,7 +42,6 @@ public class UtilClass {
 
     public static FileOutputStream getFileOutputStream(TableView<FanUnit> table,String path) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
-
         fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("XLSX files (*.xlsx)", "*.xlsx"),
