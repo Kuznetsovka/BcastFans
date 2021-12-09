@@ -17,10 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -28,6 +24,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -41,8 +38,6 @@ import static com.systemair.bcastfans.UtilClass.PATH_WORK;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
 
-@Getter
-@Setter
 public class TableController implements Initializable {
     private TableService tableService = new TableService();
     private ExcelService excelService = new ExcelService();
@@ -107,7 +102,7 @@ public class TableController implements Initializable {
     };
 
     UnaryOperator<TextFormatter.Change> negativeFormatter = change -> {
-        if(change.getText().matches("^[-]|[0]?[0-4]?[0-9]$|^(-50)$")) {
+        if (change.getText().matches("^[-]|[0]?[0-4]?[0-9]$|^(-50)$")) {
             return change;
         } else {
             change.setText("");
@@ -151,7 +146,6 @@ public class TableController implements Initializable {
         idImage.setImage(image);
     }
 
-    @SneakyThrows
     public void load() {
         workbook = excelService.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
@@ -160,7 +154,7 @@ public class TableController implements Initializable {
         fillGUITableFromExcel(cells);
     }
 
-    private void fillGUITableFromExcel(@NonNull ArrayList<ArrayList<String>> dataSource) {
+    private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
         ArrayList<FanUnit> list = new ArrayList<>();
         for (ArrayList<String> row : dataSource) {
             list.add(new FanUnit(row));
@@ -169,27 +163,30 @@ public class TableController implements Initializable {
         tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType);
     }
 
-    @SneakyThrows
     public void save() {
         Workbook workbook = new XSSFWorkbook();
         Sheet worksheet = workbook.createSheet("sheet");
         excelService.createCellsInWorksheet(worksheet, table);
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
-        FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
-        if (outFile == null) return;
-        workbook.write(outFile);
-        outFile.close();
-        workbook.close();
+        FileOutputStream outFile = null;
+        try {
+            outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
+            if (outFile == null) return;
+            workbook.write(outFile);
+            outFile.close();
+            workbook.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    @SneakyThrows
     public void calculate() {
-        Thread thread = new Thread(()-> {
+        Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
 
-            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar,radioFillOne.isSelected());
+            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
                 tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
@@ -207,7 +204,7 @@ public class TableController implements Initializable {
         thread.start();
     }
 
-    public void fillFan(ObservableList<FanUnit> data){
+    public void fillFan(ObservableList<FanUnit> data) {
         tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
     }
 
@@ -241,5 +238,9 @@ public class TableController implements Initializable {
         directoryChooser.setTitle("Выберите папку для сохранения файлов");
         // Set Initial Directory
         directoryChooser.setInitialDirectory(new File(PATH_WORK));
+    }
+
+    public TextField getFieldPathDownloading() {
+        return fieldPathDownloading;
     }
 }

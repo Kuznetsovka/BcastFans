@@ -5,9 +5,6 @@ import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import javafx.scene.control.Alert;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -22,8 +19,6 @@ import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
 import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
-@Getter
-@Setter
 public class BrowserService {
     private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     private String positiveLimit;
@@ -129,7 +124,6 @@ public class BrowserService {
         isChangeMeasureValueTable = true;
     }
 
-    @SneakyThrows
     private Fan fillTableUnit(SubType subType) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
@@ -165,7 +159,6 @@ public class BrowserService {
                 (model.contains("150")));
     }
 
-    @SneakyThrows
     private Fan getResultFan(List<WebElement> row) {
         WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
         WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
@@ -226,7 +219,6 @@ public class BrowserService {
             flagWarning = true;
     }
 
-    @SneakyThrows
     private boolean isWarning() {
         return isExistElementMoreThen(By.xpath(".//span[@type='warning']"), 0);
     }
@@ -450,5 +442,21 @@ public class BrowserService {
         clickElementIfExistsByXpath(".//button[@data-id='2']");
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
+    }
+
+    public String getPositiveLimit() {
+        return positiveLimit;
+    }
+
+    public void setPositiveLimit(String positiveLimit) {
+        this.positiveLimit = positiveLimit;
+    }
+
+    public String getNegativeLimit() {
+        return negativeLimit;
+    }
+
+    public void setNegativeLimit(String negativeLimit) {
+        this.negativeLimit = negativeLimit;
     }
 }

@@ -5,8 +5,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
-import lombok.Getter;
-import lombok.SneakyThrows;
 import org.apache.poi.ss.usermodel.Cell;
 
 import java.io.*;
@@ -17,7 +15,6 @@ import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
-@Getter
 public class UtilClass {
     public static String PATH_WORK;
     public static String PATH_DRIVER;
@@ -52,13 +49,17 @@ public class UtilClass {
         return new FileOutputStream(saveFile.getAbsoluteFile());
     }
 
-    @SneakyThrows
     public static void initProperties() {
         Properties properties = new Properties();
         String absolutePath = System.getProperty("user.dir") + "/src/main/resources/config.properties";
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath),
-                StandardCharsets.UTF_8));
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath),
+                    StandardCharsets.UTF_8));
+
         properties.load(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         PATH_WORK = properties.getProperty("path.test");
         PATH_DRIVER = properties.getProperty("path.driver");
     }

@@ -7,10 +7,10 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -25,7 +25,8 @@ public class BrowserController {
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
     private final TableController tableController;
-    private final Map<FanUnit,Fan> hashMap = new HashMap<>();
+    private final Map<FanUnit, Fan> hashMap = new HashMap<>();
+
     public BrowserController(TableController tableController) {
         this.tableController = tableController;
     }
@@ -109,13 +110,17 @@ public class BrowserController {
         isStop = true;
     }
 
-    @SneakyThrows
     private static void downloadUsingNIO(String urlStr, String file) {
-        URL url = new URL(urlStr);
-        ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-        FileOutputStream fos = new FileOutputStream(file);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-        rbc.close();
+        URL url = null;
+        try {
+            url = new URL(urlStr);
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

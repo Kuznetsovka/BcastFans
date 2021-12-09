@@ -20,20 +20,25 @@ import java.util.Map;
 
 public class ExcelService {
 
-    public Workbook loadWorkbook(TableView<FanUnit> table,String path) throws IOException {
+    public Workbook loadWorkbook(TableView<FanUnit> table, String path) {
         Workbook workbook = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
         fileChooser.setInitialDirectory(new File(path));
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
         if (file != null) {
-            FileInputStream inputStream = new FileInputStream(file);
-            if (file.getName().contains(".xlsx")) {
-                workbook = new XSSFWorkbook(inputStream);
-            } else {
-                workbook = new HSSFWorkbook(inputStream);
+            FileInputStream inputStream = null;
+            try {
+                inputStream = new FileInputStream(file);
+                if (file.getName().contains(".xlsx")) {
+                    workbook = new XSSFWorkbook(inputStream);
+                } else {
+                    workbook = new HSSFWorkbook(inputStream);
+                }
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            inputStream.close();
         }
         return workbook;
     }

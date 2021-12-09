@@ -1,7 +1,6 @@
 module com.systemair.bcastfans {
     requires javafx.fxml;
     requires javafx.controls;
-    requires lombok;
     requires org.seleniumhq.selenium.chrome_driver;
     requires org.seleniumhq.selenium.support;
     requires org.apache.poi.poi;
