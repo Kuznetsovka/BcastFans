@@ -34,6 +34,7 @@ public class BrowserService {
     private boolean isGrouping;
     private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
     private boolean isChangeMeasureValueTable;
+    private TypeMontage lastTypeMontage;
 
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -93,11 +94,11 @@ public class BrowserService {
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
         LOGGER.info("Заполнен расход или потери...");
-        wb.sendKeys(Keys.CONTROL + "a");
-        sleep(500);
-        wb.sendKeys(Keys.DELETE);
-        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
-            wb.sendKeys(newValue);
+        do {
+            wb.sendKeys(Keys.CONTROL + "a");
+            wb.sendKeys(Keys.DELETE);
+        } while (sbc.getWait().until(textToBePresentInElement(wb, "")));
+        wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -125,7 +126,7 @@ public class BrowserService {
         changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
 //        changeMeasureValueOnTableByIndex("А", 5); //Ток
 //        changeMeasureValueOnTableByIndex("об/мин", 6); //Частота вращения
-//        isChangeMeasureValueTable = true;
+        isChangeMeasureValueTable = true;
     }
 
     @SneakyThrows
@@ -160,7 +161,7 @@ public class BrowserService {
 
     private boolean isContinueFan(String price, SubType subType, String model) {
         return ((price.equals("")) ||
-                (subType == SubType.ON_ROOF && (model.contains("RVK") && model.contains("prio") && !model.contains("MUB"))) ||
+                (subType == SubType.ON_ROOF && ((model.contains("RVK") || model.contains("prio")) && !model.contains("MUB"))) ||
                 (model.contains("150")));
     }
 
@@ -216,11 +217,11 @@ public class BrowserService {
             sleep(500);
             inputTextByLabel("Внешнее давление", airDrop);
             sleep(500);
+            clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+            sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
         if (isWarning())
             flagWarning = true;
     }
@@ -375,7 +376,9 @@ public class BrowserService {
             Осевые - 3
             Центробежные - 4
         */
+        if (typeMontage == lastTypeMontage) return;
         List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        lastTypeMontage = typeMontage;
         switch (typeMontage) {
             case ROUND:
                 selectTypeFan(0, listTypeMontage);

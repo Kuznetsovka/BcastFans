@@ -16,6 +16,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static javafx.application.Platform.runLater;
 
@@ -24,7 +25,6 @@ public class BrowserController {
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
     private final TableController tableController;
-    private Fan currentFan = null;
     private final Map<FanUnit,Fan> hashMap = new HashMap<>();
     public BrowserController(TableController tableController) {
         this.tableController = tableController;
@@ -32,7 +32,7 @@ public class BrowserController {
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
         isStop = false;
-       
+        AtomicInteger index = new AtomicInteger();
         initProgressBar(data, pb, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
@@ -44,13 +44,14 @@ public class BrowserController {
                     filter(u -> u.getCheck().isSelected()).
                     forEach(
                             u -> {
-                                int index = data.indexOf(u) + 1;
+                                index.getAndIncrement();
                                 if (isStop) return;
                                 LOGGER.info("Начало расчета вентилятора " + u.getName());
                                 getCurrentFan(u);
                                 tableController.fillFan(data);
-                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
+                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), data.size(), pb, labelProgressBar)));
                                 t2.start();
+                                t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
                                 String absFileName = getCorrectSavePath(u.getName(), u.getModel());
                                 if (!u.getModel().equals("")) {
@@ -63,7 +64,7 @@ public class BrowserController {
 
     private void getCurrentFan(FanUnit u) {
         if (!hashMap.containsKey(u)) {
-            currentFan = browserService.calculate(
+            Fan currentFan = browserService.calculate(
                     u.getAirFlow(),
                     u.getAirDrop(),
                     u.getTypeMontage(),
@@ -72,18 +73,20 @@ public class BrowserController {
             hashMap.put(u, currentFan);
         } else {
             LOGGER.info("Установка уже была посчитана!");
-            u.setFan(currentFan);
+            u.setFan(hashMap.get(u));
         }
     }
 
     private void initProgressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
-        new Thread(() -> runLater(() -> {
+        Thread t1 = new Thread(() -> runLater(() -> {
                     pb.setProgress(0.0);
                     pb.setVisible(true);
                     labelProgressBar.setText("Посчитано 0 установок из " + data.size());
                     labelProgressBar.setVisible(true);
                 }
-        )).start();
+        ));
+        t1.start();
+        t1.interrupt();
     }
 
     private String getCorrectSavePath(String name, String model) {
@@ -106,7 +109,6 @@ public class BrowserController {
         isStop = true;
     }
 
-    // качаем файл с помощью NIO
     @SneakyThrows
     private static void downloadUsingNIO(String urlStr, String file) {
         URL url = new URL(urlStr);
