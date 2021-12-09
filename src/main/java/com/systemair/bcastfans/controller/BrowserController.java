@@ -71,6 +71,7 @@ public class BrowserController {
             u.setFan(currentFan);
             hashMap.put(u, currentFan);
         } else {
+            LOGGER.info("Установка уже была посчитана!");
             u.setFan(currentFan);
         }
     }
