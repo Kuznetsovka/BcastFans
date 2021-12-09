@@ -35,7 +35,6 @@ public class BrowserService {
     private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
     private boolean isChangeMeasureValueTable;
 
-
     public void prepareStartPageBeforeCalculation() {
         try {
             // Внесение данных Отрицательный допуск

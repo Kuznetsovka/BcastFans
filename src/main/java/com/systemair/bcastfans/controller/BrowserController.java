@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.controller;
 
+import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.service.BrowserService;
 import javafx.collections.ObservableList;
@@ -13,6 +14,8 @@ import java.io.FileOutputStream;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.HashMap;
+import java.util.Map;
 
 import static javafx.application.Platform.runLater;
 
@@ -21,13 +24,15 @@ public class BrowserController {
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
     private final TableController tableController;
-
+    private Fan currentFan = null;
+    private final Map<FanUnit,Fan> hashMap = new HashMap<>();
     public BrowserController(TableController tableController) {
         this.tableController = tableController;
     }
 
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
         isStop = false;
+       
         initProgressBar(data, pb, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
@@ -44,11 +49,7 @@ public class BrowserController {
                                     return;
                                 }
                                 LOGGER.info("Начало расчета вентилятора " + index);
-                                u.setFan(browserService.calculate(
-                                        u.getAirFlow(),
-                                        u.getAirDrop(),
-                                        u.getTypeMontage(),
-                                        u.getSubType()));
+                                getCurrentFan(u);
                                 tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
                                 t2.start();
@@ -61,6 +62,20 @@ public class BrowserController {
                                 }
                             });
         return data;
+    }
+
+    private void getCurrentFan(FanUnit u) {
+        if (!hashMap.containsKey(u)) {
+            currentFan = browserService.calculate(
+                    u.getAirFlow(),
+                    u.getAirDrop(),
+                    u.getTypeMontage(),
+                    u.getSubType());
+            u.setFan(currentFan);
+            hashMap.put(u, currentFan);
+        } else {
+            u.setFan(currentFan);
+        }
     }
 
     private void initProgressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {

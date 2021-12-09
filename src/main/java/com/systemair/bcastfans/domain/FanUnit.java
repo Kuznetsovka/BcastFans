@@ -6,6 +6,7 @@ import javafx.scene.control.CheckBox;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class FanUnit {
     private final SimpleStringProperty name;
@@ -202,5 +203,18 @@ public class FanUnit {
 
     public void setRow(Map<Integer, String> row) {
         this.row = row;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FanUnit fanUnit = (FanUnit) o;
+        return Objects.equals(airFlow, fanUnit.airFlow) && Objects.equals(airDrop, fanUnit.airDrop) && typeMontage == fanUnit.typeMontage && subType == fanUnit.subType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, airFlow, airDrop, model, article, power, phase, price, typeMontage, subType, check, fan, row);
     }
 }
