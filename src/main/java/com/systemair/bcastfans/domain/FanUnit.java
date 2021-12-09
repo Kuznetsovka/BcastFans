@@ -210,11 +210,14 @@ public class FanUnit {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         FanUnit fanUnit = (FanUnit) o;
-        return Objects.equals(airFlow, fanUnit.airFlow) && Objects.equals(airDrop, fanUnit.airDrop) && typeMontage == fanUnit.typeMontage && subType == fanUnit.subType;
+        return Double.valueOf(airFlow.getValue()).intValue() == Double.valueOf(fanUnit.airFlow.getValue()).intValue() &&
+                Double.valueOf(airDrop.getValue()).intValue() == Double.valueOf(fanUnit.airDrop.getValue()).intValue() &&
+                typeMontage == fanUnit.typeMontage &&
+                subType == fanUnit.subType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, airFlow, airDrop, model, article, power, phase, price, typeMontage, subType, check, fan, row);
+        return Objects.hash(Double.valueOf(airFlow.getValue()).intValue() , Double.valueOf(airDrop.getValue()).intValue() , typeMontage, subType);
     }
 }

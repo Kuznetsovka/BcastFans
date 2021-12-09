@@ -181,6 +181,7 @@ public class TableController implements Initializable {
     public void calculate() {
         Thread thread = new Thread(()-> {
             Instant start = Instant.now();
+            if (data.isEmpty()) return;
             data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar);
             LOGGER.info("Заполнение вентиляторов в таблицу");
             tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);

@@ -1,18 +1,11 @@
 module com.systemair.bcastfans {
-    requires javafx.controls;
     requires javafx.fxml;
-
-    requires org.controlsfx.controls;
-    requires com.dlsc.formsfx;
-    requires validatorfx;
-    requires org.kordamp.bootstrapfx.core;
+    requires javafx.controls;
     requires lombok;
-    requires org.seleniumhq.selenium.api;
     requires org.seleniumhq.selenium.chrome_driver;
-    requires org.seleniumhq.selenium.http;
     requires org.seleniumhq.selenium.support;
-    requires poi;
-    requires poi.ooxml;
+    requires org.apache.poi.poi;
+    requires org.apache.poi.ooxml;
     requires log4j;
 
     opens com.systemair.bcastfans to javafx.fxml;
