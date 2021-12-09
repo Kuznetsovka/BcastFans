@@ -45,15 +45,12 @@ public class BrowserController {
                     forEach(
                             u -> {
                                 int index = data.indexOf(u) + 1;
-                                if (isStop) {
-                                    return;
-                                }
-                                LOGGER.info("Начало расчета вентилятора " + index);
+                                if (isStop) return;
+                                LOGGER.info("Начало расчета вентилятора " + u.getName());
                                 getCurrentFan(u);
                                 tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index, data.size(), pb, labelProgressBar)));
                                 t2.start();
-                                LOGGER.info("Установка " + u.getName() + " добавлена в прогресс бар!");
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
                                 String absFileName = getCorrectSavePath(u.getName(), u.getModel());
                                 if (!u.getModel().equals("")) {
