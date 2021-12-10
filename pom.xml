@@ -155,6 +155,7 @@
                         <configuration>
                             <headerType>gui</headerType>
                             <!--                            <headerType>console</headerType>-->
+
                             <jar>target/BcastFans-1.0-SNAPSHOT.jar</jar>
                             <outfile>target/${project.build.finalName}.exe</outfile>
                             <errTitle>${project.name}</errTitle>
@@ -162,6 +163,7 @@
                             <jre>
                                 <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
                             </jre>
+
                             <versionInfo>
                                 <fileVersion>1.0.0.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
@@ -228,13 +230,13 @@
                 </executions>
                 <configuration>
                     <outputDirectory>C:\ProgramData\Bcast</outputDirectory>
-                    <appendAssemblyId>false</appendAssemblyId>
+                    <appendAssemblyId>true</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
+                            <mainClass>com.systemair.bcastfans.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -246,15 +248,40 @@
                 <executions>
                     <execution>
                         <!-- Default configuration for running with: mvn clean javafx:run -->
-                        <id>default-cli</id>
+                        <id>create-executable</id>
                         <configuration>
                             <packaging>jar</packaging>
+                            <jre>
+                                <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
+                            </jre>
                             <archive>
                                 <manifest>
                                     <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
                                 </manifest>
                             </archive>
                             <mainClass>com.systemair.bcastfans/com.systemair.bcastfans.BCastFanApplication</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <!-- Run shade goal on package phase -->
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <!-- add Main-Class to manifest file -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.systemair.bcastfans.Main</mainClass>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>

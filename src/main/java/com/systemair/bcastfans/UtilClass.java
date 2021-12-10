@@ -6,16 +6,16 @@ import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.poi.ss.usermodel.Cell;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.concurrent.TimeUnit;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
 public class UtilClass {
-    public static String PATH_WORK;
-    public static String PATH_DRIVER;
+    public static String PATH_WORK = "C:/Users";
+    public static String PATH_DRIVER = "C:/Java/BcastFans/src/main/resources/chromedriver.exe";
 
     public static String parseCell(Cell cell) {
         if (cell == null) return "";
@@ -48,18 +48,8 @@ public class UtilClass {
     }
 
     public static void initProperties() {
-        Properties properties = new Properties();
-        String absolutePath = System.getProperty("user.dir") + "/src/main/resources/config.properties";
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(absolutePath),
-                    StandardCharsets.UTF_8));
-
-        properties.load(in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        PATH_WORK = properties.getProperty("path.work");
-        PATH_DRIVER = properties.getProperty("path.driver");
+        PATH_WORK = "C:/Users";
+        PATH_DRIVER = "C:/Java/BcastFans/src/main/resources/chromedriver.exe";
     }
 
     public static String millisToShortDHMS(long duration) {
