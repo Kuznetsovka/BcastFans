@@ -7,6 +7,7 @@
     <groupId>com.systemair</groupId>
     <artifactId>BcastFans</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <description>Программа подбора вентиляторов Системаир</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
     <url>http://maven.apache.org</url>
@@ -69,17 +70,17 @@
             <artifactId>formsfx-core</artifactId>
             <version>11.4.2</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>net.synedra</groupId>-->
-        <!--            <artifactId>validatorfx</artifactId>-->
-        <!--            <version>0.1.13</version>-->
-        <!--            <exclusions>-->
-        <!--                <exclusion>-->
-        <!--                    <groupId>org.openjfx</groupId>-->
-        <!--                    <artifactId>*</artifactId>-->
-        <!--                </exclusion>-->
-        <!--            </exclusions>-->
-        <!--        </dependency>-->
+                <dependency>
+                    <groupId>net.synedra</groupId>
+                    <artifactId>validatorfx</artifactId>
+                    <version>0.2.1</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.openjfx</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -102,19 +103,54 @@
             <artifactId>selenium-support</artifactId>
             <version>4.1.0</version>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.slf4j</groupId>-->
-        <!--            <artifactId>slf4j-simple</artifactId>-->
-        <!--            <version>1.7.32</version>-->
-        <!--        </dependency>-->
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>l4j-clui</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+<!--                            <headerType>console</headerType>-->
+                            <jar>target/BcastFans-1.0-SNAPSHOT.jar</jar>
+                            <outfile>target/${project.build.finalName}.exe</outfile>
+                            <errTitle>${project.name}</errTitle>
+                            <icon>target/logo.png</icon>
+                            <jre>
+                                <path>jre</path> <!-- if you bundle the jre -->
+                            </jre>
+
+                            <versionInfo>
+                                <fileVersion>1.2.3.4</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>${project.description}</fileDescription>
+                                <copyright>(c) ${project.inceptionYear} MyCompany</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>${project.name}</productName>
+                                <companyName>MyCompany</companyName>
+                                <internalName>${project.name}</internalName>
+                                <originalFilename>${project.build.finalName}.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -149,6 +185,30 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-executable</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <outputDirectory>C:/ProgramData/DriverChrome/</outputDirectory>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.openjfx</groupId>
