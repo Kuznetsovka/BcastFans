@@ -3,7 +3,6 @@ package com.systemair.bcastfans;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -11,7 +10,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
-import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
@@ -63,13 +61,6 @@ public class UtilClass {
         PATH_WORK = properties.getProperty("path.test");
         PATH_DRIVER = properties.getProperty("path.driver");
     }
-
-    public static UnaryOperator<TextFormatter.Change> filter = change -> {
-        if(change.getControlNewText().matches("\\d{0,11}")) {
-            return change;
-        }
-        return null;
-    };
 
     public static String millisToShortDHMS(long duration) {
         String res;

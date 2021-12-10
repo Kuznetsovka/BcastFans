@@ -62,7 +62,7 @@
                 <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                     <Label text="Выбор способа заполнения таблицы" VBox.vgrow="ALWAYS"/>
                     <RadioButton fx:id="radioFillOne" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT"
-                                 text="Заполнение по 1 вентилятору">
+                                 text="Заполнение по 1 вентилятору" toggleGroup="$methodFillTable">
                         <toggleGroup>
                             <ToggleGroup fx:id="methodFillTable"/>
                         </toggleGroup>
@@ -71,23 +71,29 @@
                                  selected="true" text="Заполнение после подбора" toggleGroup="$methodFillTable"/>
                 </VBox>
                 <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-
-                    <ProgressBar fx:id="progressBar" progress="0.0" visible="false">
-                    </ProgressBar>
-                    <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false"/>
-                    <Label fx:id="labelTimeLong" text="Label" visible="false"/>
+                    <HBox prefHeight="100.0" prefWidth="200.0">
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0"
+                              HBox.hgrow="ALWAYS">
+                            <Label alignment="TOP_CENTER" contentDisplay="TOP" text="Сохранение техники"
+                                   textAlignment="CENTER" wrapText="true"/>
+                            <CheckBox fx:id="isSaveTechData" mnemonicParsing="false" selected="true" text="Да/Нет"/>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                            <ProgressBar fx:id="progressBar" progress="0.0" visible="false">
+                            </ProgressBar>
+                            <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false"/>
+                            <Label fx:id="labelTimeLong" text="Label" visible="false"/>
+                        </VBox>
+                    </HBox>
                 </VBox>
             </HBox>
             <HBox.margin>
                 <Insets/>
             </HBox.margin>
-            <padding>
-                <Insets top="10.0"/>
-            </padding>
         </VBox>
     </HBox>
     <HBox prefHeight="500.0">
-        <TableView fx:id="table" maxHeight="500" minWidth="830" prefHeight="324.0" prefWidth="830.0">
+        <TableView fx:id="table" maxHeight="500" minWidth="830" prefHeight="324.0">
             <columns>
                 <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
                     <graphic>

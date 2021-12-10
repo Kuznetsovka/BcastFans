@@ -1,8 +1,8 @@
-package com.systemair.bcastfans.controller;
+package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.bcastfans.service.BrowserService;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -20,14 +20,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static javafx.application.Platform.runLater;
 
-public class BrowserController {
+public class CalculationService {
     private final BrowserService browserService = new BrowserService();
     private static boolean isStop = false;
-    private static final Logger LOGGER = Logger.getLogger(BrowserController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CalculationService.class.getName());
     private final TableController tableController;
     private final Map<FanUnit, Fan> hashMap = new HashMap<>();
 
-    public BrowserController(TableController tableController) {
+    public CalculationService(TableController tableController) {
         this.tableController = tableController;
     }
 
@@ -55,11 +55,12 @@ public class BrowserController {
                                 t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
                                 String absFileName = getCorrectSavePath(u.getName(), u.getModel());
-                                if (!u.getModel().equals("")) {
+                                if (!u.getModel().equals("") && tableController.isSaveTechData().isSelected()) {
                                     downloadUsingNIO(u.getFan().getShortLink(), absFileName);
                                     LOGGER.info("Установка " + u.getName() + " выгружена");
                                 }
                             });
+        hashMap.clear();
         return data;
     }
 
@@ -111,15 +112,15 @@ public class BrowserController {
     }
 
     private static void downloadUsingNIO(String urlStr, String file) {
-        URL url = null;
         try {
-            url = new URL(urlStr);
+            URL url = new URL(urlStr);
             ReadableByteChannel rbc = Channels.newChannel(url.openStream());
             FileOutputStream fos = new FileOutputStream(file);
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
             rbc.close();
         } catch (IOException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
     }

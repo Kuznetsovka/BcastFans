@@ -4,6 +4,7 @@ import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -20,6 +21,8 @@ import java.util.Map;
 
 public class ExcelService {
 
+    private static final Logger LOGGER = Logger.getLogger(ExcelService.class.getName());
+
     public Workbook loadWorkbook(TableView<FanUnit> table, String path) {
         Workbook workbook = null;
         FileChooser fileChooser = new FileChooser();
@@ -27,9 +30,8 @@ public class ExcelService {
         fileChooser.setInitialDirectory(new File(path));
         File file = fileChooser.showOpenDialog(table.getScene().getWindow());
         if (file != null) {
-            FileInputStream inputStream = null;
             try {
-                inputStream = new FileInputStream(file);
+                FileInputStream inputStream = new FileInputStream(file);
                 if (file.getName().contains(".xlsx")) {
                     workbook = new XSSFWorkbook(inputStream);
                 } else {
@@ -37,6 +39,7 @@ public class ExcelService {
                 }
                 inputStream.close();
             } catch (IOException e) {
+                LOGGER.error(e.getMessage());
                 e.printStackTrace();
             }
         }

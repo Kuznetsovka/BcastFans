@@ -58,6 +58,7 @@ public class BrowserService {
             changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
             LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
         } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
 
@@ -74,6 +75,7 @@ public class BrowserService {
             }
             sbc.getWait().until(elementToBeClickable(by)).click();
         } catch (ElementClickInterceptedException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -213,6 +215,7 @@ public class BrowserService {
             sleep(500);
             //sbc.getWait().until(or(visibilityOfElementLocated(By.xpath(".//span[@type='warning']")),numberOfElementsToBeMoreThan(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"),0)));
         } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
         if (isWarning())

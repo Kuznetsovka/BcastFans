@@ -4,6 +4,7 @@ import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.service.CalculationService;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
 import javafx.collections.FXCollections;
@@ -39,57 +40,59 @@ import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
-    private TableService tableService = new TableService();
-    private ExcelService excelService = new ExcelService();
-    private BrowserController browserController = new BrowserController(this);
+    private final TableService tableService = new TableService();
+    private final ExcelService excelService = new ExcelService();
+    private final CalculationService calculationService = new CalculationService(this);
     @FXML
-    private ToggleGroup methodFillTable;
+    public ToggleGroup methodFillTable;
     @FXML
-    public RadioButton radioFillOne;
+    private CheckBox isSaveTechData;
     @FXML
-    public RadioButton radioFillAll;
+    private RadioButton radioFillOne;
+    @FXML
+    private RadioButton radioFillAll;
     @FXML
     private ImageView idImage;
     @FXML
-    public TextField fieldPathDownloading;
+    private TextField fieldPathDownloading;
     @FXML
-    public CheckBox checkboxCustomPath;
+    private CheckBox checkboxCustomPath;
     @FXML
-    public Label labelProgressBar;
+    private Label labelProgressBar;
     @FXML
-    public ProgressBar progressBar;
+    private ProgressBar progressBar;
     @FXML
-    public TextField fieldNegativeLimit;
+    private TextField fieldNegativeLimit;
     @FXML
-    public TextField fieldPositiveLimit;
+    private TextField fieldPositiveLimit;
     @FXML
-    public Label labelTimeLong;
+    private Label labelTimeLong;
     @FXML
-    TableView<FanUnit> table;
+    private TableView<FanUnit> table;
     @FXML
     private CheckBox checkBox;
     @FXML
-    TableColumn<FanUnit, Boolean> columnChoose;
+    private TableColumn<FanUnit, Boolean> columnChoose;
     @FXML
-    TableColumn<FanUnit, String> columnNumberSystem;
+    private TableColumn<FanUnit, String> columnNumberSystem;
     @FXML
-    TableColumn<FanUnit, String> columnAirFlow;
+    private TableColumn<FanUnit, String> columnAirFlow;
     @FXML
-    TableColumn<FanUnit, String> columnAirDrop;
+    private TableColumn<FanUnit, String> columnAirDrop;
     @FXML
-    TableColumn<FanUnit, TypeMontage> columnTypeMontage;
+    private TableColumn<FanUnit, TypeMontage> columnTypeMontage;
     @FXML
-    TableColumn<FanUnit, SubType> columnSubType;
+    private TableColumn<FanUnit, SubType> columnSubType;
     @FXML
-    TableColumn<FanUnit, String> columnModel;
+    private TableColumn<FanUnit, String> columnModel;
     @FXML
-    TableColumn<FanUnit, String> columnArticle;
+    private TableColumn<FanUnit, String> columnArticle;
     @FXML
-    TableColumn<FanUnit, String> columnPower;
+    private TableColumn<FanUnit, String> columnPower;
     @FXML
-    TableColumn<FanUnit, String> columnPhase;
+    private TableColumn<FanUnit, String> columnPhase;
     @FXML
-    TableColumn<FanUnit, String> columnPrice;
+    private TableColumn<FanUnit, String> columnPrice;
 
     private static final Logger LOGGER = Logger.getLogger(TableController.class.getName());
 
@@ -127,7 +130,7 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
-        browserController.initializeBrowser();
+        calculationService.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
         fieldPathDownloading.setOnMouseClicked(event -> {
@@ -169,14 +172,14 @@ public class TableController implements Initializable {
         excelService.createCellsInWorksheet(worksheet, table);
         excelService.setHeader(worksheet, table);
         excelService.fillWorksheetFromGUI(worksheet, table);
-        FileOutputStream outFile = null;
         try {
-            outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
+            FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
             workbook.write(outFile);
             outFile.close();
             workbook.close();
         } catch (IOException e) {
+            LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
     }
@@ -186,7 +189,7 @@ public class TableController implements Initializable {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
 
-            data = browserController.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, radioFillOne.isSelected());
+            data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
                 tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
@@ -217,7 +220,7 @@ public class TableController implements Initializable {
     }
 
     public void stop() {
-        browserController.stopCalculation();
+        calculationService.stopCalculation();
     }
 
     public void customPath() {
@@ -242,5 +245,9 @@ public class TableController implements Initializable {
 
     public TextField getFieldPathDownloading() {
         return fieldPathDownloading;
+    }
+
+    public CheckBox isSaveTechData() {
+        return isSaveTechData;
     }
 }
