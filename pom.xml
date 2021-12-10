@@ -18,6 +18,12 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id></id>-->
+<!--            <url>https://mvnrepository.com/artifact/org.openjfx/javafx-controls</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
     <dependencies>
         <dependency>
             <groupId>org.apache.poi</groupId>
@@ -52,7 +58,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>17.0.0.1</version>
+            <version>11.0.2</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -62,7 +68,7 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>17.0.0.1</version>
+            <version>11.0.2</version>
         </dependency>
 
         <dependency>
@@ -111,6 +117,29 @@
 
     </dependencies>
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.2</version>
+                    <executions>
+                        <execution>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
+                            </manifest>
+                        </archive>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
@@ -131,18 +160,17 @@
                             <errTitle>${project.name}</errTitle>
                             <!--<icon>target/logo.png</icon>-->
                             <jre>
-                                <path>jre</path> <!-- if you bundle the jre -->
+                                <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
                             </jre>
-
                             <versionInfo>
-                                <fileVersion>1.2.3.4</fileVersion>
+                                <fileVersion>1.0.0.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>${project.description}</fileDescription>
-                                <copyright>(c) ${project.inceptionYear} MyCompany</copyright>
+                                <copyright>(c) 2021 Systemair</copyright>
                                 <productVersion>1.0.0.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>
-                                <companyName>MyCompany</companyName>
+                                <companyName>Systemair</companyName>
                                 <internalName>${project.name}</internalName>
                                 <originalFilename>${project.build.finalName}.exe</originalFilename>
                             </versionInfo>
@@ -154,7 +182,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>3.8.1</version>
                 <configuration>
                     <release>11</release>
                     <annotationProcessorPaths>
@@ -176,7 +204,6 @@
                             </includes>
                         </configuration>
                     </execution>
-
                     <execution>
                         <id>compile-project</id>
                         <phase>compile</phase>
@@ -187,7 +214,9 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <id>create-executable</id>
@@ -198,7 +227,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <outputDirectory>C:/ProgramData/DriverChrome/</outputDirectory>
+                    <outputDirectory>C:\ProgramData\Bcast</outputDirectory>
                     <appendAssemblyId>false</appendAssemblyId>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -219,6 +248,12 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
+                            <packaging>jar</packaging>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
+                                </manifest>
+                            </archive>
                             <mainClass>com.systemair.bcastfans/com.systemair.bcastfans.BCastFanApplication</mainClass>
                         </configuration>
                     </execution>
