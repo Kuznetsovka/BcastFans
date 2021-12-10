@@ -58,7 +58,7 @@ public class UtilClass {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        PATH_WORK = properties.getProperty("path.test");
+        PATH_WORK = properties.getProperty("path.work");
         PATH_DRIVER = properties.getProperty("path.driver");
     }
 

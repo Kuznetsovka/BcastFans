@@ -7,7 +7,7 @@
     <groupId>com.systemair</groupId>
     <artifactId>BcastFans</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <description>Программа подбора вентиляторов Системаир</description>
+    <description>Program for calculation fans Systemair</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
     <url>http://maven.apache.org</url>
@@ -70,17 +70,17 @@
             <artifactId>formsfx-core</artifactId>
             <version>11.4.2</version>
         </dependency>
-                <dependency>
-                    <groupId>net.synedra</groupId>
-                    <artifactId>validatorfx</artifactId>
-                    <version>0.2.1</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.openjfx</groupId>
-                            <artifactId>*</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
+        <dependency>
+            <groupId>net.synedra</groupId>
+            <artifactId>validatorfx</artifactId>
+            <version>0.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
@@ -125,11 +125,11 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-<!--                            <headerType>console</headerType>-->
+                            <!--                            <headerType>console</headerType>-->
                             <jar>target/BcastFans-1.0-SNAPSHOT.jar</jar>
                             <outfile>target/${project.build.finalName}.exe</outfile>
                             <errTitle>${project.name}</errTitle>
-                            <icon>target/logo.png</icon>
+                            <!--<icon>target/logo.png</icon>-->
                             <jre>
                                 <path>jre</path> <!-- if you bundle the jre -->
                             </jre>
