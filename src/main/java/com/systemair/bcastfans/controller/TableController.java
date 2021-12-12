@@ -60,7 +60,7 @@ public class TableController implements Initializable {
     @FXML
     private Label labelProgressBar;
     @FXML
-    private ProgressBar progressBar;
+    private ProgressIndicator progressIndicator;
     @FXML
     private TextField fieldNegativeLimit;
     @FXML
@@ -188,7 +188,7 @@ public class TableController implements Initializable {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
-            data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, radioFillOne.isSelected());
+            data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressIndicator, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
                 tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
@@ -213,8 +213,8 @@ public class TableController implements Initializable {
     public void clear() {
         data.clear();
         labelProgressBar.setVisible(false);
-        progressBar.setProgress(0.0);
-        progressBar.setVisible(false);
+        progressIndicator.setProgress(0.0);
+        progressIndicator.setVisible(false);
         labelTimeLong.setVisible(false);
     }
 

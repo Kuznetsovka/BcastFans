@@ -5,7 +5,7 @@ import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import org.apache.log4j.Logger;
 
@@ -31,15 +31,17 @@ public class CalculationService {
         this.tableController = tableController;
     }
 
-    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar, boolean isFillTableByOne) {
+    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne) {
         isStop = false;
         AtomicInteger index = new AtomicInteger();
-        initProgressBar(data, pb, labelProgressBar);
+        long count = data.filtered(u -> u.getCheck().isSelected()).size();
+        initProgressBar(count, pi, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
         browserService.prepareStartPageBeforeCalculation();
+
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -50,7 +52,8 @@ public class CalculationService {
                                 LOGGER.info("Начало расчета вентилятора " + u.getName());
                                 getCurrentFan(u);
                                 if (isFillTableByOne) tableController.fillFan(data);
-                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), data.size(), pb, labelProgressBar)));
+
+                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), count, pi, labelProgressBar)));
                                 t2.start();
                                 t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
@@ -79,11 +82,11 @@ public class CalculationService {
         }
     }
 
-    private void initProgressBar(ObservableList<FanUnit> data, ProgressBar pb, Label labelProgressBar) {
+    private void initProgressBar(long count, ProgressIndicator pi, Label labelProgressBar) {
         Thread t1 = new Thread(() -> runLater(() -> {
-                    pb.setProgress(0.0);
-                    pb.setVisible(true);
-                    labelProgressBar.setText("Посчитано 0 установок из " + data.size());
+                    pi.setProgress(0.0);
+                    pi.setVisible(true);
+                    labelProgressBar.setText("Посчитано 0 установок из " + count);
                     labelProgressBar.setVisible(true);
                 }
         ));
@@ -98,8 +101,8 @@ public class CalculationService {
         return path + "/" + fileName;
     }
 
-    private synchronized void progressBar(int index, int size, ProgressBar pb, Label labelProgressBar) {
-        pb.setProgress((double) (index) / size);
+    private synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
+        pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
     }
 
