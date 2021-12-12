@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.apache.log4j.Logger;
 
+import javax.swing.*;
 import java.io.IOException;
 
 public class BCastFanApplication extends Application {
@@ -16,12 +17,14 @@ public class BCastFanApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        JFrame loadingWindow = new LoadingWindow().getInitWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.getIcons().add(new Image("/logo.ico"));
         stage.setTitle("Подбор вентиляторов");
         stage.setScene(scene);
         stage.show();
+        loadingWindow.dispose();
     }
 
     @Override
