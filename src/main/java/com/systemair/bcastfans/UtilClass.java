@@ -49,7 +49,7 @@ public class UtilClass {
 
     public static void initProperties() {
         PATH_WORK = "C:/Users";
-        PATH_DRIVER = "C:/Java/BcastFans/src/main/resources/chromedriver.exe";
+        PATH_DRIVER = "C:/ProgramData/Bcast/chromedriver.exe";
     }
 
     public static String millisToShortDHMS(long duration) {

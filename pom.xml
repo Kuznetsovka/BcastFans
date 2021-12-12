@@ -140,7 +140,42 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/config.properties</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/res</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
@@ -159,7 +194,7 @@
                             <jar>target/BcastFans-1.0-SNAPSHOT.jar</jar>
                             <outfile>target/${project.build.finalName}.exe</outfile>
                             <errTitle>${project.name}</errTitle>
-                            <!--<icon>target/logo.png</icon>-->
+                            <icon>src/main/resources/logo.ico</icon>
                             <jre>
                                 <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
                             </jre>
