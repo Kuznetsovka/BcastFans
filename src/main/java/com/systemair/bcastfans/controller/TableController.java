@@ -188,7 +188,6 @@ public class TableController implements Initializable {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
-
             data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressBar, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
@@ -237,9 +236,7 @@ public class TableController implements Initializable {
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
-        // Set title for DirectoryChooser
         directoryChooser.setTitle("Выберите папку для сохранения файлов");
-        // Set Initial Directory
         directoryChooser.setInitialDirectory(new File(PATH_WORK));
     }
 

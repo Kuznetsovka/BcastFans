@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 import static com.systemair.bcastfans.service.BrowserService.showAlert;
 
 public class UtilClass {
-    public static String PATH_WORK = "C:/Users";
-    public static String PATH_DRIVER = "C:/Java/BcastFans/src/main/resources/chromedriver.exe";
+    public static String PATH_WORK;
+    public static String PATH_DRIVER;
 
     public static String parseCell(Cell cell) {
         if (cell == null) return "";
@@ -48,8 +48,8 @@ public class UtilClass {
     }
 
     public static void initProperties() {
-        PATH_WORK = "C:/Users";
-        PATH_DRIVER = "C:/ProgramData/Bcast/chromedriver.exe";
+        PATH_WORK = System.getProperty("user.dir");
+        PATH_DRIVER = "C:/ProgramData/DriverChrome/chromedriver_win32_93/chromedriver.exe";
     }
 
     public static String millisToShortDHMS(long duration) {
