@@ -105,6 +105,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+            <version>11.0.2</version>
+        </dependency>
+        <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-support</artifactId>
             <version>4.1.0</version>
@@ -131,6 +136,10 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <compilerArgs>
+                            <arg>--add-modules</arg>
+                            <arg>java.se,java.desktop</arg>
+                        </compilerArgs>
                         <archive>
                             <manifest>
                                 <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>

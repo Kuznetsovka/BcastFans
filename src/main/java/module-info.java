@@ -6,6 +6,7 @@ module com.systemair.bcastfans {
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
     requires log4j;
+    requires java.desktop;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;
