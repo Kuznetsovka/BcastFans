@@ -5,25 +5,22 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="1000.0" prefHeight="500.0" spacing="20.0"
-      xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.systemair.bcastfans.controller.TableController">
+<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="1000.0" prefHeight="500.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
             <Label text="BCastFans" wrapText="true">
                 <font>
-                    <Font name="Chiller" size="24.0"/>
+                    <Font name="Chiller" size="24.0" />
                 </font>
             </Label>
         </HBox>
         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-            <ImageView fx:id="idImage" fitHeight="36.0" fitWidth="100.0" nodeOrientation="INHERIT" pickOnBounds="true"
-                       preserveRatio="true">
+            <ImageView fx:id="idImage" fitHeight="36.0" fitWidth="100.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                 <viewport>
-                    <Rectangle2D/>
+                    <Rectangle2D />
                 </viewport>
             </ImageView>
         </HBox>
@@ -31,28 +28,27 @@
     <HBox spacing="20.0">
         <VBox prefWidth="480.0" spacing="10.0">
             <HBox spacing="10.0">
-                <Label prefWidth="150.0" text="Отрицательный допуск"/>
-                <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="0"/>
+                <Label prefWidth="150.0" text="Отрицательный допуск" />
+                <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="0" />
             </HBox>
             <HBox spacing="10.0">
-                <Label prefWidth="150.0" text="Положительный допуск"/>
-                <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="100"/>
+                <Label prefWidth="150.0" text="Положительный допуск" />
+                <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="100" />
             </HBox>
             <HBox prefHeight="100.0" prefWidth="450.0">
                 <Label prefHeight="17.0" text="Путь сохранения" HBox.hgrow="ALWAYS">
                     <padding>
-                        <Insets top="5.0"/>
+                        <Insets top="5.0" />
                     </padding>
                 </Label>
                 <CheckBox fx:id="checkboxCustomPath" mnemonicParsing="false" onAction="#customPath" selected="true">
                     <padding>
-                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                     </padding>
                 </CheckBox>
-                <TextField fx:id="fieldPathDownloading" disable="true" editable="false" prefHeight="25.0"
-                           prefWidth="300.0">
+                <TextField fx:id="fieldPathDownloading" disable="true" editable="false" prefHeight="25.0" prefWidth="300.0">
                     <HBox.margin>
-                        <Insets left="30.0"/>
+                        <Insets left="30.0" />
                     </HBox.margin>
                 </TextField>
             </HBox>
@@ -60,23 +56,19 @@
         <VBox alignment="TOP_RIGHT" prefHeight="97.0" prefWidth="378.0" spacing="10.0" HBox.hgrow="ALWAYS">
             <HBox prefHeight="100.0" prefWidth="200.0">
                 <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
-                    <Label text="Выбор способа заполнения таблицы" VBox.vgrow="ALWAYS"/>
-                    <RadioButton fx:id="radioFillOne" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT"
-                                 text="Заполнение по 1 вентилятору" toggleGroup="$methodFillTable">
+                    <Label text="Выбор способа заполнения таблицы" wrapText="true" VBox.vgrow="ALWAYS" />
+                    <RadioButton fx:id="radioFillOne" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Заполнение по 1 вентилятору" toggleGroup="$methodFillTable">
                         <toggleGroup>
-                            <ToggleGroup fx:id="methodFillTable"/>
+                            <ToggleGroup fx:id="methodFillTable" />
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="radioFillAll" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT"
-                                 selected="true" text="Заполнение после подбора" toggleGroup="$methodFillTable"/>
+                    <RadioButton fx:id="radioFillAll" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" selected="true" text="Заполнение после подбора" toggleGroup="$methodFillTable" />
                 </VBox>
                 <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                     <HBox prefHeight="100.0" prefWidth="200.0">
-                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0"
-                              HBox.hgrow="ALWAYS">
-                            <Label alignment="TOP_CENTER" contentDisplay="TOP" text="Сохранение техники"
-                                   textAlignment="CENTER" wrapText="true"/>
-                            <CheckBox fx:id="isSaveTechData" mnemonicParsing="false" selected="true" text="Да/Нет"/>
+                        <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
+                            <Label alignment="TOP_CENTER" contentDisplay="TOP" minWidth="-Infinity" prefHeight="24.0" prefWidth="141.0" text="Сохранение техники" textAlignment="CENTER" wrapText="true" />
+                            <CheckBox fx:id="isSaveTechData" mnemonicParsing="false" selected="true" text="Да/Нет" />
                         </VBox>
                         <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                             <ProgressIndicator fx:id="progressIndicator" progress="0.0" visible="false">
@@ -86,15 +78,15 @@
                     <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                         <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false">
                             <padding>
-                                <Insets top="10.0"/>
+                                <Insets top="10.0" />
                             </padding>
                         </Label>
-                        <Label fx:id="labelTimeLong" text="Label" visible="false"/>
+                        <Label fx:id="labelTimeLong" text="Label" visible="false" />
                     </VBox>
                 </VBox>
             </HBox>
             <HBox.margin>
-                <Insets/>
+                <Insets />
             </HBox.margin>
         </VBox>
     </HBox>
@@ -103,47 +95,45 @@
             <columns>
                 <TableColumn fx:id="columnChoose" prefWidth="34.0" resizable="false">
                     <graphic>
-                        <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize"
-                                  prefHeight="20.0" prefWidth="10.0"/>
+                        <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize" prefHeight="20.0" prefWidth="10.0" />
                     </graphic>
                 </TableColumn>
-                <TableColumn fx:id="columnNumberSystem" prefWidth="50.0" text="#"/>
-                <TableColumn fx:id="columnAirFlow" prefWidth="75.0" text="Расход"/>
-                <TableColumn fx:id="columnAirDrop" prefWidth="50.0" text="Потери"/>
-                <TableColumn fx:id="columnTypeMontage" prefWidth="120.0" text="Тип монтажа"/>
-                <TableColumn fx:id="columnSubType" prefWidth="120.0" text="Тип установки"/>
+                <TableColumn fx:id="columnNumberSystem" prefWidth="50.0" text="#" />
+                <TableColumn fx:id="columnAirFlow" prefWidth="75.0" text="Расход" />
+                <TableColumn fx:id="columnAirDrop" prefWidth="50.0" text="Потери" />
+                <TableColumn fx:id="columnTypeMontage" prefWidth="120.0" text="Тип монтажа" />
+                <TableColumn fx:id="columnSubType" prefWidth="120.0" text="Тип установки" />
             </columns>
             <columns>
-                <TableColumn fx:id="columnModel" maxWidth="1.7976931348623157E308" prefWidth="140.0" text="Модель"/>
-                <TableColumn fx:id="columnArticle" prefWidth="60.0" text="Артикул"/>
-                <TableColumn fx:id="columnPower" prefWidth="70.0" text="Мощность"/>
-                <TableColumn fx:id="columnPhase" prefWidth="60.0" text="Фазность"/>
-                <TableColumn fx:id="columnPrice" prefWidth="50.0" text="Цена"/>
+                <TableColumn fx:id="columnModel" maxWidth="1.7976931348623157E308" prefWidth="140.0" text="Модель" />
+                <TableColumn fx:id="columnArticle" prefWidth="60.0" text="Артикул" />
+                <TableColumn fx:id="columnPower" prefWidth="70.0" text="Мощность" />
+                <TableColumn fx:id="columnPhase" prefWidth="60.0" text="Фазность" />
+                <TableColumn fx:id="columnPrice" prefWidth="50.0" text="Цена" />
             </columns>
         </TableView>
         <VBox spacing="10.0">
             <VBox spacing="20.0">
-                <Button mnemonicParsing="false" onAction="#load" prefWidth="80.0" text="Load"/>
-                <Button mnemonicParsing="false" onAction="#save" prefWidth="80.0" text="Save as"/>
+                <Button mnemonicParsing="false" onAction="#load" prefWidth="80.0" text="Загрузить" />
+                <Button mnemonicParsing="false" onAction="#save" prefWidth="80.0" text="Сохранить как" />
                 <opaqueInsets>
-                    <Insets/>
+                    <Insets />
                 </opaqueInsets>
                 <padding>
-                    <Insets bottom="20.0" left="20.0"/>
+                    <Insets bottom="20.0" left="20.0" />
                 </padding>
             </VBox>
             <VBox prefWidth="100.0">
-                <Button mnemonicParsing="false" onAction="#clear" prefWidth="80.0" text="Clear"/>
+                <Button mnemonicParsing="false" onAction="#clear" prefWidth="80.0" text="Очистить" />
                 <padding>
-                    <Insets bottom="10.0" left="20.0" top="10.0"/>
+                    <Insets bottom="10.0" left="20.0" top="10.0" />
                 </padding>
             </VBox>
             <VBox alignment="BOTTOM_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
-                <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0"
-                        text="Calculate"/>
-                <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0" text="СТОП"/>
+                <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0" text="Расчет" />
+                <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0" text="СТОП" />
                 <padding>
-                    <Insets left="20.0" top="20.0"/>
+                    <Insets left="20.0" top="20.0" />
                 </padding>
             </VBox>
         </VBox>

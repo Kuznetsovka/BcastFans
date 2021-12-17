@@ -205,14 +205,14 @@
                             <errTitle>${project.name}</errTitle>
                             <icon>src/main/resources/logo.ico</icon>
                             <jre>
-                                <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
+                                <path>C:\ProgramData\DriverChrome\jre</path> <!-- if you bundle the jre -->
                             </jre>
 
                             <versionInfo>
                                 <fileVersion>1.0.0.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>${project.description}</fileDescription>
-                                <copyright>(c) 2021 Systemair</copyright>
+                                <copyright>© 2021 Systemair (KuznetsovKA)</copyright>
                                 <productVersion>1.0.0.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>

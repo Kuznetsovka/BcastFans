@@ -49,7 +49,7 @@ public class UtilClass {
 
     public static void initProperties() {
         PATH_WORK = System.getProperty("user.dir");
-        PATH_DRIVER = "C:/ProgramData/DriverChrome/chromedriver_win32_93/chromedriver.exe";
+        PATH_DRIVER = "C:/ProgramData/DriverChrome/chromedriver/chromedriver.exe";
     }
 
     public static String millisToShortDHMS(long duration) {
