@@ -80,15 +80,12 @@ public class TableService {
 
         columnSubType.setOnEditCommit((TableColumn.CellEditEvent<FanUnit, SubType> event) -> {
             TablePosition<FanUnit, SubType> pos = event.getTablePosition();
-
             SubType newSubType = event.getNewValue();
-
             int row = pos.getRow();
             FanUnit system = event.getTableView().getItems().get(row);
 
             system.setSubType(newSubType);
         });
-
         tableInputData.setItems(inputData);
     }
 
