@@ -71,7 +71,7 @@ public class ExcelService {
     }
 
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
-        int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
+        int lastColumn = worksheet.getRow(0).getLastCellNum();
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;

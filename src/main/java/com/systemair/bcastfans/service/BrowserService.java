@@ -426,7 +426,7 @@ public class BrowserService {
 
     public static void showAlert(String alertTxt, Alert.AlertType type) {
         Alert alert = new Alert(type);
-        alert.setTitle(type.toString());
+        alert.setTitle(rightStringCase(type.toString()));
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
@@ -436,6 +436,10 @@ public class BrowserService {
                 sbc.getDriver().close();
         } else if (type.equals(Alert.AlertType.INFORMATION))
             LOGGER.info(alertTxt);
+    }
+
+    private static String rightStringCase(String txt) {
+        return txt.substring(0,1).toUpperCase() + txt.substring(1).toLowerCase();
     }
 
     public void initializeBrowser() {

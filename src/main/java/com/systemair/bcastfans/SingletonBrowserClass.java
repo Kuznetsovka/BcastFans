@@ -21,19 +21,18 @@ public class SingletonBrowserClass {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private static WebDriver driver;
     private static Wait<WebDriver> wait;
-    public static final int MAX_LIMIT_TIMEOUT = 45;
+    public static final int MAX_LIMIT_TIMEOUT = 20;
     public static final int LIMIT_REPEAT_TIMEOUT = 2;
 
     private SingletonBrowserClass() {
         try {
-            UtilClass.initProperties();
             System.setProperty("webdriver.chrome.driver", PATH_DRIVER);
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("start-maximized");
             chromeOptions.setHeadless(true); //выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
             LOGGER.info("Запуск драйвера!");
-            // Ожидание 30 секунд, опрос каждые 5 секунд
+            // Ожидание 20 секунд, опрос каждые 2 секунды
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
