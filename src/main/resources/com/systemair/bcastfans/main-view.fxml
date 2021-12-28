@@ -86,7 +86,7 @@
                 </VBox>
             </HBox>
             <HBox.margin>
-                <Insets />
+                <Insets/>
             </HBox.margin>
         </VBox>
     </HBox>
