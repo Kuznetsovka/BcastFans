@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 import org.apache.log4j.Logger;
@@ -114,7 +115,6 @@ public class TableController implements Initializable {
     };
 
     private ObservableList<FanUnit> data;
-    private Workbook workbook;
 
     @FXML
     public void checkBoxInitialize() {
@@ -133,24 +133,26 @@ public class TableController implements Initializable {
         calculationService.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
-        fieldPathDownloading.setOnMouseClicked(event -> {
-            Node source = (Node) event.getSource();
-            Window stage = source.getScene().getWindow();
-            File dir = directoryChooser.showDialog(stage);
-            if (dir != null) {
-                fieldPathDownloading.setText(dir.getAbsolutePath());
-                PATH_WORK = dir.getAbsolutePath();
-            } else {
-                fieldPathDownloading.setText(null);
-            }
-        });
+        fieldPathDownloading.setOnMouseClicked(event -> changeFieldPathDownloading(directoryChooser, event));
         InputStream input = getClass().getResourceAsStream("/logo.png");
         Image image = new Image(Objects.requireNonNull(input));
         idImage.setImage(image);
     }
 
+    private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
+        Node source = (Node) event.getSource();
+        Window stage = source.getScene().getWindow();
+        File dir = directoryChooser.showDialog(stage);
+        if (dir != null) {
+            fieldPathDownloading.setText(dir.getAbsolutePath());
+            PATH_WORK = dir.getAbsolutePath();
+        } else {
+            fieldPathDownloading.setText(null);
+        }
+    }
+
     public void load() {
-        workbook = excelService.loadWorkbook(table, PATH_WORK);
+        Workbook workbook = excelService.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
         Sheet worksheet = workbook.getSheetAt(0);
         ArrayList<ArrayList<String>> cells = excelService.loadCellsFromWorksheet(worksheet);
@@ -188,6 +190,7 @@ public class TableController implements Initializable {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
+
             data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressIndicator, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");

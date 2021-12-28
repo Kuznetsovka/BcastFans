@@ -4,10 +4,13 @@ import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import org.apache.log4j.Logger;
+import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.TimeoutException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.systemair.bcastfans.service.BrowserService.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class CalculationService {
@@ -41,7 +45,6 @@ public class CalculationService {
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
         browserService.prepareStartPageBeforeCalculation();
-
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -52,7 +55,6 @@ public class CalculationService {
                                 LOGGER.info("Начало расчета вентилятора " + u.getName());
                                 getCurrentFan(u);
                                 if (isFillTableByOne) tableController.fillFan(data);
-
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), count, pi, labelProgressBar)));
                                 t2.start();
                                 t2.interrupt();
@@ -69,11 +71,17 @@ public class CalculationService {
 
     private void getCurrentFan(FanUnit u) {
         if (!hashMap.containsKey(u)) {
-            Fan currentFan = browserService.calculate(
-                    u.getAirFlow(),
-                    u.getAirDrop(),
-                    u.getTypeMontage(),
-                    u.getSubType());
+            Fan currentFan = new Fan();
+            try {
+                currentFan = browserService.calculate(
+                        u.getAirFlow(),
+                        u.getAirDrop(),
+                        u.getTypeMontage(),
+                        u.getSubType());
+            } catch(TimeoutException | NoSuchSessionException e) {
+                Thread t = new Thread(() -> runLater(() -> showAlert(e.getMessage(), Alert.AlertType.WARNING)));
+                t.start();
+            }
             u.setFan(currentFan);
             hashMap.put(u, currentFan);
         } else {

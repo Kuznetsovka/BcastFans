@@ -53,7 +53,7 @@ public class SingletonBrowserClass {
     }
 
     public synchronized static SingletonBrowserClass getInstanceOfSingletonBrowserClass() {
-        if (instanceOfSingletonBrowserClass == null) {
+        if (instanceOfSingletonBrowserClass == null || driver == null) {
             instanceOfSingletonBrowserClass = new SingletonBrowserClass();
         }
         return instanceOfSingletonBrowserClass;

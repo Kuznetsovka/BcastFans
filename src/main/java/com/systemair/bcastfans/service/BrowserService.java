@@ -436,7 +436,6 @@ public class BrowserService {
                 sbc.getDriver().close();
         } else if (type.equals(Alert.AlertType.INFORMATION))
             LOGGER.info(alertTxt);
-
     }
 
     public void initializeBrowser() {
