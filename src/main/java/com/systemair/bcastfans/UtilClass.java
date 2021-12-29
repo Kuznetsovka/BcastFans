@@ -4,36 +4,16 @@ import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
-import org.apache.poi.ss.usermodel.Cell;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.concurrent.TimeUnit;
 
-import static com.systemair.bcastfans.service.BrowserService.showAlert;
-
 public class UtilClass {
     public static String PATH_WORK;
     public static String PATH_DRIVER;
-
-    public static String parseCell(Cell cell) {
-        if (cell == null) return "";
-        switch (cell.getCellType()) {
-            case BLANK:
-                return "";
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
-            case STRING:
-                return cell.getStringCellValue();
-            case ERROR:
-                showAlert("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
-                throw new IllegalArgumentException("");
-        }
-        return "";
-    }
 
     public static FileOutputStream getFileOutputStream(TableView<FanUnit> table,String path) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
@@ -67,5 +47,23 @@ public class UtilClass {
         else
             res = String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds);
         return res;
+    }
+
+    public static void showAlert(Logger LOGGER,String alertTxt, Alert.AlertType type) {
+        Alert alert = new Alert(type);
+        alert.setTitle(rightStringCase(type.toString()));
+        alert.setHeaderText("Description:");
+        alert.setContentText(alertTxt);
+        alert.showAndWait();
+        if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.ERROR)) {
+            LOGGER.error(alertTxt);
+            if (SingletonBrowserClass.getInstanceOfSingletonBrowserClass().getDriver() != null)
+                SingletonBrowserClass.getInstanceOfSingletonBrowserClass().getDriver().close();
+        } else if (type.equals(Alert.AlertType.INFORMATION))
+            LOGGER.info(alertTxt);
+    }
+
+    private static String rightStringCase(String txt) {
+        return txt.substring(0,1).toUpperCase() + txt.substring(1).toLowerCase();
     }
 }

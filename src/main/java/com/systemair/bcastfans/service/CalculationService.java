@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.systemair.bcastfans.service.BrowserService.showAlert;
+import static com.systemair.bcastfans.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class CalculationService {
@@ -79,7 +79,7 @@ public class CalculationService {
                         u.getTypeMontage(),
                         u.getSubType());
             } catch(TimeoutException | NoSuchSessionException e) {
-                Thread t = new Thread(() -> runLater(() -> showAlert(e.getMessage(), Alert.AlertType.WARNING)));
+                Thread t = new Thread(() -> runLater(() -> showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING)));
                 t.start();
             }
             u.setFan(currentFan);

@@ -86,7 +86,7 @@
                 </VBox>
             </HBox>
             <HBox.margin>
-                <Insets/>
+                <Insets />
             </HBox.margin>
         </VBox>
     </HBox>
@@ -103,8 +103,7 @@
                 <TableColumn fx:id="columnAirDrop" prefWidth="50.0" text="Потери" />
                 <TableColumn fx:id="columnTypeMontage" prefWidth="120.0" text="Тип монтажа" />
                 <TableColumn fx:id="columnSubType" prefWidth="120.0" text="Тип установки" />
-            </columns>
-            <columns>
+                <TableColumn fx:id="columnDimension" prefWidth="75.0" text="Размер" />
                 <TableColumn fx:id="columnModel" prefWidth="140.0" text="Модель" />
                 <TableColumn fx:id="columnArticle" prefWidth="60.0" text="Артикул" />
                 <TableColumn fx:id="columnPower" prefWidth="70.0" text="Мощность" />

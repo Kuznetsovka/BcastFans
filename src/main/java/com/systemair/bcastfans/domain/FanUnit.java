@@ -19,6 +19,7 @@ public class FanUnit {
     private SimpleStringProperty price;
     private TypeMontage typeMontage;
     private SubType subType;
+    private Dimension dimension;
     private CheckBox check = new CheckBox();
     private Fan fan;
     private Map<Integer,String> row = new HashMap<>();
@@ -42,7 +43,11 @@ public class FanUnit {
             this.subType = SubType.getByDescription(row.get(5));
         else
             this.subType = SubType.NONE;
-
+        if (typeMontage.equals(TypeMontage.ROUND)) {
+            this.dimension = new RoundDimension(row.get(6));
+        } else if (typeMontage.equals(TypeMontage.RECTANGLE)){
+            this.dimension = new RectangleDimension(row.get(6));
+        }
     }
 
     public Fan getFan() {
@@ -181,6 +186,14 @@ public class FanUnit {
     public void setPrice(String price) {
         fan.setPrice(Double.valueOf(price));
         this.price.set(price);
+    }
+
+    public Dimension getDimension() {
+        return dimension;
+    }
+
+    public void setDimension(Dimension dimension) {
+        this.dimension = dimension;
     }
 
     public Map<Integer, String> getRow() {

@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.controller;
 
 import com.systemair.bcastfans.UtilClass;
+import com.systemair.bcastfans.domain.Dimension;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -37,7 +38,7 @@ import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.UtilClass.PATH_WORK;
-import static com.systemair.bcastfans.service.BrowserService.showAlert;
+import static com.systemair.bcastfans.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
@@ -82,6 +83,8 @@ public class TableController implements Initializable {
     private TableColumn<FanUnit, String> columnAirDrop;
     @FXML
     private TableColumn<FanUnit, TypeMontage> columnTypeMontage;
+    @FXML
+    public TableColumn<FanUnit, Dimension> columnDimension;
     @FXML
     private TableColumn<FanUnit, SubType> columnSubType;
     @FXML
@@ -165,7 +168,7 @@ public class TableController implements Initializable {
             list.add(new FanUnit(row));
         }
         data = FXCollections.observableArrayList(list);
-        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType);
+        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType,columnDimension);
     }
 
     public void save() {
@@ -200,7 +203,7 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                showAlert(LOGGER,"Все установки посчитаны!", Alert.AlertType.INFORMATION);
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));
