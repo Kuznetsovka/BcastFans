@@ -1,4 +1,4 @@
-package com.systemair.bcastfans;
+package com.systemair.bcastfans.staticClasses;
 
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;

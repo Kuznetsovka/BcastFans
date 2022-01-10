@@ -1,4 +1,4 @@
-package com.systemair.bcastfans;
+package com.systemair.bcastfans.staticClasses;
 
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
@@ -11,8 +11,8 @@ import org.openqa.selenium.support.ui.Wait;
 
 import java.time.Duration;
 
-import static com.systemair.bcastfans.UtilClass.PATH_DRIVER;
-import static com.systemair.bcastfans.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_DRIVER;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 
 public class SingletonBrowserClass {
 

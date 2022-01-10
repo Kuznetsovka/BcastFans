@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.systemair.bcastfans.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class CalculationService {

@@ -1,9 +1,9 @@
 package com.systemair.bcastfans.service;
 
-import com.systemair.bcastfans.SingletonBrowserClass;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -14,10 +14,10 @@ import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.systemair.bcastfans.PrepareBrowserClass.*;
-import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
-import static com.systemair.bcastfans.UtilClass.showAlert;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
+import static com.systemair.bcastfans.staticClasses.PrepareBrowserClass.*;
+import static com.systemair.bcastfans.staticClasses.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 

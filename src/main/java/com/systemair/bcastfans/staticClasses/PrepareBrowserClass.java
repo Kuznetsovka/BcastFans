@@ -1,4 +1,4 @@
-package com.systemair.bcastfans;
+package com.systemair.bcastfans.staticClasses;
 
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.systemair.bcastfans.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 

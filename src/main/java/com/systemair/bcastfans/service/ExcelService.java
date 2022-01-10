@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import static com.systemair.bcastfans.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 
 public class ExcelService {
 

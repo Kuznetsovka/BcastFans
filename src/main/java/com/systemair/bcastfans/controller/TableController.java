@@ -1,12 +1,12 @@
 package com.systemair.bcastfans.controller;
 
-import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.CalculationService;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
+import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -36,8 +36,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-import static com.systemair.bcastfans.UtilClass.PATH_WORK;
-import static com.systemair.bcastfans.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {

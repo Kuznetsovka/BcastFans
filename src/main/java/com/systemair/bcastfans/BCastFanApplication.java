@@ -1,6 +1,8 @@
 package com.systemair.bcastfans;
 
 import com.systemair.bcastfans.controller.TableController;
+import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
+import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
