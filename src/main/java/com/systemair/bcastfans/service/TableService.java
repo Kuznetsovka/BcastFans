@@ -1,6 +1,8 @@
 package com.systemair.bcastfans.service;
 
-import com.systemair.bcastfans.domain.*;
+import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.bcastfans.domain.SubType;
+import com.systemair.bcastfans.domain.TypeMontage;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 public class TableService {
-    public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType, TableColumn<FanUnit, Dimension> columnDimension) {
+    public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType, TableColumn<FanUnit, String> columnDimension) {
         tableInputData.setEditable(true);
 
         // ==== Name ====
@@ -89,22 +91,11 @@ public class TableService {
 
         // ==== Dimension ====
 
-        ObservableList<RoundDimension.RoundDimensionType> roundDimensions = FXCollections.observableArrayList(
-                RoundDimension.values);
-        ObservableList<RectangleDimension.RectangleDimensionType> rectangleDimensions = FXCollections.observableArrayList(
-                RectangleDimension.values);
-        columnDimension.setCellValueFactory(param -> {
-            FanUnit system = param.getValue();
-            Dimension dimension = system.getDimension();
-            return new SimpleObjectProperty<>(dimension);
-        });
-        columnDimension.setOnEditCommit((TableColumn.CellEditEvent<FanUnit, Dimension> event) -> {
-            TablePosition<FanUnit, Dimension> pos = event.getTablePosition();
-            Dimension newValue = event.getNewValue();
-            int row = pos.getRow();
-            FanUnit system = event.getTableView().getItems().get(row);
-            system.setDimension(newValue);
-        });
+        setCellFactoryForColumn(columnDimension, "dimension");
+        columnAirDrop.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setDimension(t.getNewValue()));
 
         tableInputData.setItems(inputData);
     }

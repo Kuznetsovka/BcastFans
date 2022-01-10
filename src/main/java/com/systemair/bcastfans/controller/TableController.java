@@ -1,7 +1,6 @@
 package com.systemair.bcastfans.controller;
 
 import com.systemair.bcastfans.UtilClass;
-import com.systemair.bcastfans.domain.Dimension;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -84,7 +83,7 @@ public class TableController implements Initializable {
     @FXML
     private TableColumn<FanUnit, TypeMontage> columnTypeMontage;
     @FXML
-    public TableColumn<FanUnit, Dimension> columnDimension;
+    public TableColumn<FanUnit, String> columnDimension;
     @FXML
     private TableColumn<FanUnit, SubType> columnSubType;
     @FXML
@@ -133,7 +132,6 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
-        calculationService.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
         fieldPathDownloading.setOnMouseClicked(event -> changeFieldPathDownloading(directoryChooser, event));

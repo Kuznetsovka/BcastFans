@@ -30,6 +30,7 @@ public class CalculationService {
     private static final Logger LOGGER = Logger.getLogger(CalculationService.class.getName());
     private final TableController tableController;
     private final Map<FanUnit, Fan> hashMap = new HashMap<>();
+    private boolean isPrepare;
 
     public CalculationService(TableController tableController) {
         this.tableController = tableController;
@@ -42,9 +43,10 @@ public class CalculationService {
         initProgressBar(count, pi, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
-        browserService.setNegativeLimit(negativeLimit);
-        browserService.setPositiveLimit(positiveLimit);
-        browserService.prepareStartPageBeforeCalculation();
+        if (!isPrepare) {
+            browserService.prepareLimits(negativeLimit,positiveLimit);
+            isPrepare = true;
+        }
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -112,10 +114,6 @@ public class CalculationService {
     private synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
         pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
-    }
-
-    public void initializeBrowser() {
-        browserService.initializeBrowser();
     }
 
     public void stopCalculation() {

@@ -6,14 +6,15 @@ import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebElement;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.systemair.bcastfans.PrepareBrowserClass.*;
 import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
 import static com.systemair.bcastfans.UtilClass.showAlert;
 import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
@@ -22,8 +23,6 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class BrowserService {
     private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
-    private String positiveLimit;
-    private String negativeLimit;
     boolean flagWarning;
     boolean isSorting;
     boolean isHidingDiagram;
@@ -32,50 +31,15 @@ public class BrowserService {
     private boolean isChangeMeasureValueTable;
     private TypeMontage lastTypeMontage;
 
-    public void prepareStartPageBeforeCalculation() {
+    public void prepareLimits(String negativeLimit, String positiveLimit) {
         try {
             // Внесение данных Отрицательный допуск
-            inputTextByLabel("Отрицательный допуск", negativeLimit);
+            inputTextByLabel(sbc.getWait(), "Отрицательный допуск", negativeLimit);
             LOGGER.info("Заполнен отрицательный допуск");
             // Внесение данных Положительный допуск
-            inputTextByLabel("Положительный допуск", positiveLimit);
+            inputTextByLabel(sbc.getWait(), "Положительный допуск", positiveLimit);
             LOGGER.info("Заполнен положительный допуск");
-            // Проверка и изменение значения Макс. температура воздуха на 40
-            inputTextByLabel("Макс. температура воздуха", "40");
-            LOGGER.info("Заполнена макс. температура воздуха");
-            // Проверка и изменение единиц измерения Расход воздуха на м³/ч
-            changeValueComboBoxByLabel("Расход воздуха", "м³/ч");
-            LOGGER.info("Изменены единицы измерения расхода воздуха");
-            // Проверка и изменение единиц измерения Внешнее давление на Па
-            changeValueComboBoxByLabel("Внешнее давление", "Па");
-            LOGGER.info("Изменены единицы измерения внешнего давления");
-            // Проверка и изменение значения Частота на 50 Гц
-            changeValueComboBoxByLabel("Частота", "50 Гц");
-            LOGGER.info("Изменено значение частоты");
-            // Проверка и изменение значения Регулятор скорости на По умолчанию
-            changeValueComboBoxByLabel("Регулятор скорости", "По умолчанию");
-            LOGGER.info("Изменено значение регулятора скорости");
-            // Проверка и изменение единиц измерения Макс. температура воздуха на °С
-            changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
-            LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
         } catch (InterruptedException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
-
-    }
-
-    private void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
-        try {
-            By by = By.xpath(xpath);
-            sbc.getWait().until(visibilityOfElementLocated(by));
-            if (attributeAndValue.length > 0) {
-                String attribute = attributeAndValue[0];
-                String value = attributeAndValue[1];
-                if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
-            }
-            sbc.getWait().until(elementToBeClickable(by)).click();
-        } catch (ElementClickInterceptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
@@ -84,20 +48,6 @@ public class BrowserService {
     private void clickElementWithScroll(WebElement webElement) {
         ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
         sbc.getWait().until(elementToBeClickable(webElement)).click();
-    }
-
-    private void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
-        String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
-        By by = By.xpath(xpath);
-        WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
-        if (wb.getText().equals(newValue)) return;
-        LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
-        wb.sendKeys(Keys.CONTROL + "a");
-        sleep(300);
-        wb.sendKeys(Keys.DELETE);
-        sleep(300);
-        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
-            wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
@@ -164,9 +114,12 @@ public class BrowserService {
 
     private Fan getResultFan(List<WebElement> row) {
         WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
-        WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
+        String phase = "";
+        if (!row.get(2).findElement(By.tagName("small")).getText().equals("")) {
+            WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
+            phase = phaseCell.getText();
+        }
         String model = modelCell.getText();
-        String phase = phaseCell.getText();
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
@@ -196,7 +149,7 @@ public class BrowserService {
 
     private void hidingDiagram() {
         // Скрыть диаграммы
-        onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
+        onCheckboxDiagram(getWebElementByXpath(sbc.getWait(), ".//div[contains(@class, 'sc-cMljjf')]"));
         isHidingDiagram = true;
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
@@ -209,10 +162,10 @@ public class BrowserService {
 
     private void fillFlowAndDrop(String airFlow, String airDrop) {
         try {
-            inputTextByLabel("Расход воздуха", airFlow);
-            inputTextByLabel("Внешнее давление", airDrop);
+            inputTextByLabel(sbc.getWait(), "Расход воздуха", airFlow);
+            inputTextByLabel(sbc.getWait(), "Внешнее давление", airDrop);
             sleep(500);
-            clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
+            clickElementIfExistsByXpath(sbc.getWait(),"(.//button[@class='sc-bxivhb SWiNZ'])[2]");
             sleep(500);
             //sbc.getWait().until(or(visibilityOfElementLocated(By.xpath(".//span[@type='warning']")),numberOfElementsToBeMoreThan(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"),0)));
         } catch (InterruptedException e) {
@@ -247,11 +200,6 @@ public class BrowserService {
         }
     }
 
-    private WebElement getWebElementByXpath(String xpath) {
-        List<Optional<WebElement>> webElements = sbc.getWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0)).stream().map(Optional::of).collect(Collectors.toList());
-        return webElements.get(0).orElseThrow(IllegalArgumentException::new);
-    }
-
 
     private void changeMeasureValueOnTableByIndex(String newValue, int index) {
         String xpath = ".//th[@class='sc-hzDkRC kmzkGx'][" + index + "]/div[2]/div[1]";
@@ -267,10 +215,10 @@ public class BrowserService {
         LOGGER.info("Заменили значение изменения на " + newValue);
     }
 
-    private void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
+    private static void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
         By by = By.xpath(xpath + "/ancestor::div[1]");
-        WebElement checkingWb = getWebElementByXpath(xpath);
+        WebElement checkingWb = getWebElementByXpath(sbc.getWait(),xpath);
         if (checkingWb == null) return;
         if (checkingWb.getText().equals(newValue)) return;
         sbc.getWait().until(visibilityOfElementLocated(by));
@@ -423,29 +371,5 @@ public class BrowserService {
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
-    }
-
-    public void initializeBrowser() {
-        clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
-        // Нажатие на вкладку  Подбор
-        clickElementIfExistsByXpath(".//button[@data-id='2']");
-        // Открытие вкладки Дополнительные параметры поиска
-        clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
-    }
-
-    public String getPositiveLimit() {
-        return positiveLimit;
-    }
-
-    public void setPositiveLimit(String positiveLimit) {
-        this.positiveLimit = positiveLimit;
-    }
-
-    public String getNegativeLimit() {
-        return negativeLimit;
-    }
-
-    public void setNegativeLimit(String negativeLimit) {
-        this.negativeLimit = negativeLimit;
     }
 }

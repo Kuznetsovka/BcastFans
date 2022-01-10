@@ -19,7 +19,7 @@ public class FanUnit {
     private SimpleStringProperty price;
     private TypeMontage typeMontage;
     private SubType subType;
-    private Dimension dimension;
+    private SimpleStringProperty dimension;
     private CheckBox check = new CheckBox();
     private Fan fan;
     private Map<Integer,String> row = new HashMap<>();
@@ -43,10 +43,12 @@ public class FanUnit {
             this.subType = SubType.getByDescription(row.get(5));
         else
             this.subType = SubType.NONE;
-        if (typeMontage.equals(TypeMontage.ROUND)) {
-            this.dimension = new RoundDimension(row.get(6));
+        if (row.size() < 7) {
+            this.dimension = new SimpleStringProperty("");
+        } else if (typeMontage.equals(TypeMontage.ROUND)) {
+            this.dimension = new SimpleStringProperty(row.get(6));
         } else if (typeMontage.equals(TypeMontage.RECTANGLE)){
-            this.dimension = new RectangleDimension(row.get(6));
+            this.dimension = new SimpleStringProperty(row.get(6));
         }
     }
 
@@ -188,17 +190,21 @@ public class FanUnit {
         this.price.set(price);
     }
 
-    public Dimension getDimension() {
+    public String getDimension() {
+        return dimension.get();
+    }
+
+    public SimpleStringProperty dimensionProperty() {
         return dimension;
     }
 
-    public void setDimension(Dimension dimension) {
-        this.dimension = dimension;
+    public void setDimension(String dimension) {
+        this.dimension.set(dimension);
     }
 
     public Map<Integer, String> getRow() {
         row.clear();
-        row.put(0,check.isSelected()?"Да":"Нет");
+        row.put(0, check.isSelected() ? "Да" : "Нет");
         row.put(1, name.getValue());
         row.put(2, airFlow.getValue());
         row.put(3, airDrop.getValue());
@@ -206,9 +212,9 @@ public class FanUnit {
         row.put(5, subType.getDescription());
         if (fan != null) {
             row.put(6, fan.getModel());
-            row.put(7,fan.getArticle());
+            row.put(7, fan.getArticle());
             row.put(8, String.valueOf(fan.getPower()));
-            row.put(9,fan.getPhase());
+            row.put(9, fan.getPhase());
             row.put(10, String.valueOf(fan.getPrice()));
         }
         return row;
