@@ -104,11 +104,12 @@ public class ExcelService {
         cell[3].setCellValue("Потери");
         cell[4].setCellValue("Тип монтажа");
         cell[5].setCellValue("Тип установки");
-        cell[6].setCellValue("Модель");
-        cell[7].setCellValue("Артикул");
-        cell[8].setCellValue("Мощность");
-        cell[9].setCellValue("Фазность");
-        cell[10].setCellValue("Цена");
+        cell[6].setCellValue("Типоразмер");
+        cell[7].setCellValue("Модель");
+        cell[8].setCellValue("Артикул");
+        cell[9].setCellValue("Мощность");
+        cell[10].setCellValue("Фазность");
+        cell[11].setCellValue("Цена");
     }
 
     public static String parseCell(Cell cell) {

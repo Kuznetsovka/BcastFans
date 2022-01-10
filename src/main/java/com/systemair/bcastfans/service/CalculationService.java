@@ -43,10 +43,9 @@ public class CalculationService {
         initProgressBar(count, pi, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
-        if (!isPrepare) {
-            browserService.prepareLimits(negativeLimit,positiveLimit);
-            isPrepare = true;
-        }
+        browserService.setNegativeLimit(negativeLimit);
+        browserService.setPositiveLimit(positiveLimit);
+        browserService.prepareStartPageBeforeCalculation();
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -79,7 +78,8 @@ public class CalculationService {
                         u.getAirFlow(),
                         u.getAirDrop(),
                         u.getTypeMontage(),
-                        u.getSubType());
+                        u.getSubType(),
+                        u.getDimension());
             } catch(TimeoutException | NoSuchSessionException e) {
                 Thread t = new Thread(() -> runLater(() -> showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING)));
                 t.start();
@@ -114,6 +114,10 @@ public class CalculationService {
     private synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
         pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
+    }
+
+    public void initializeBrowser() {
+        browserService.initializeBrowser();
     }
 
     public void stopCalculation() {

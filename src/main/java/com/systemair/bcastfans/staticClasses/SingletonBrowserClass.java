@@ -44,8 +44,6 @@ public class SingletonBrowserClass {
             for (int i = 0; i < 4; i++) {
                 builder.sendKeys(Keys.chord(Keys.CONTROL, "-")).perform();
             }
-            PrepareBrowserClass.initializeBrowser(wait);
-            PrepareBrowserClass.prepareStartPageBeforeCalculation(wait);
         } catch (SessionNotCreatedException e) {
             showAlert(LOGGER,"Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
         } catch (IllegalArgumentException e) {

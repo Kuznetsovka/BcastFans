@@ -132,6 +132,7 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
+        calculationService.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
         fieldPathDownloading.setOnMouseClicked(event -> changeFieldPathDownloading(directoryChooser, event));
