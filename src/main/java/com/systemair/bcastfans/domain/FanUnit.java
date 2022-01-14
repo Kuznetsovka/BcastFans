@@ -191,7 +191,7 @@ public class FanUnit {
     }
 
     public String getDimension() {
-        return dimension.get();
+        return dimension == null ? "" : dimension.get();
     }
 
     public SimpleStringProperty dimensionProperty() {
