@@ -1,9 +1,9 @@
 package com.systemair.bcastfans.service;
 
-import com.systemair.bcastfans.SingletonBrowserClass;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.systemair.bcastfans.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
-import static com.systemair.bcastfans.domain.TypeMontage.ROUND;
+import static com.systemair.bcastfans.domain.TypeMontage.*;
+import static com.systemair.bcastfans.staticClasses.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
@@ -99,11 +100,13 @@ public class BrowserService {
             wb.sendKeys(newValue);
     }
 
-    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType) {
+    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType,String dimension) {
         if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
         if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert("Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
+            showAlert(LOGGER,"Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
         selectTypeMontage(typeMontage);
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
@@ -115,7 +118,7 @@ public class BrowserService {
         if (!isHidingDiagram) hidingDiagram();
         if (!isSorting) sorting();
         if (!isChangeMeasureValueTable) changeMeasureValueTable();
-        Fan fan = fillTableUnit(subType);
+        Fan fan = fillTableUnit(subType,dimension);
         return (fan != null) ? fan : new Fan();
     }
 
@@ -126,14 +129,14 @@ public class BrowserService {
         isChangeMeasureValueTable = true;
     }
 
-    private Fan fillTableUnit(SubType subType) {
+    private Fan fillTableUnit(SubType subType,String dimension) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         Fan result = null;
         List<WebElement> row;
         int countRow = 1;
         int lastRows;
-        while (isExistElementMoreThen(moreFansButtonBy, 2) && subType.equals(SubType.ON_ROOF)) {
+        while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty()) ) {
             btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
             sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
             LOGGER.info("Нажата кнопка больше вентиляторов.");
@@ -149,10 +152,18 @@ public class BrowserService {
                 countRow++;
                 continue;
             }
+            if (!model.contains(dimension)) {
+                countRow++;
+                continue;
+            }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
         return result;
+    }
+
+    private boolean isModelByDimension(String model, String dimension) {
+        return !model.contains(dimension);
     }
 
     private boolean isContinueFan(String price, SubType subType, String model) {
@@ -163,9 +174,12 @@ public class BrowserService {
 
     private Fan getResultFan(List<WebElement> row) {
         WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
-        WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
+        String phase = "";
+        if (!row.get(2).findElement(By.tagName("small")).getText().equals("")) {
+            WebElement phaseCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("small"))));
+            phase = phaseCell.getText();
+        }
         String model = modelCell.getText();
-        String phase = phaseCell.getText();
         String article = row.get(3).getText();
         String price = row.get(4).getText();
         String power = row.get(7).getText();
@@ -261,7 +275,7 @@ public class BrowserService {
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            showAlert(LOGGER,"Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
         LOGGER.info("Заменили значение изменения на " + newValue);
     }
@@ -277,7 +291,7 @@ public class BrowserService {
         List<WebElement> list = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, 'sc-gzVnrw')]")));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            showAlert(LOGGER,"Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
@@ -422,21 +436,6 @@ public class BrowserService {
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
-    }
-
-    public static void showAlert(String alertTxt, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(type.toString());
-        alert.setHeaderText("Description:");
-        alert.setContentText(alertTxt);
-        alert.showAndWait();
-        if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.ERROR)) {
-            LOGGER.error(alertTxt);
-            if (sbc.getDriver() != null)
-                sbc.getDriver().close();
-        } else if (type.equals(Alert.AlertType.INFORMATION))
-            LOGGER.info(alertTxt);
-
     }
 
     public void initializeBrowser() {

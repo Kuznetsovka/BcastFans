@@ -14,7 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 public class TableService {
-    public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType) {
+    public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType, TableColumn<FanUnit, String> columnDimension) {
         tableInputData.setEditable(true);
 
         // ==== Name ====
@@ -80,12 +80,23 @@ public class TableService {
 
         columnSubType.setOnEditCommit((TableColumn.CellEditEvent<FanUnit, SubType> event) -> {
             TablePosition<FanUnit, SubType> pos = event.getTablePosition();
+
             SubType newSubType = event.getNewValue();
+
             int row = pos.getRow();
             FanUnit system = event.getTableView().getItems().get(row);
 
             system.setSubType(newSubType);
         });
+
+        // ==== Dimension ====
+
+        setCellFactoryForColumn(columnDimension, "dimension");
+        columnAirDrop.setOnEditCommit(
+                (TableColumn.CellEditEvent<FanUnit, String> t) -> (
+                        t.getTableView().getItems().get(t.getTablePosition().getRow())
+                ).setDimension(t.getNewValue()));
+
         tableInputData.setItems(inputData);
     }
 

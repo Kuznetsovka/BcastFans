@@ -1,12 +1,12 @@
 package com.systemair.bcastfans.controller;
 
-import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.service.CalculationService;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
+import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
 import org.apache.log4j.Logger;
@@ -35,8 +36,8 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-import static com.systemair.bcastfans.UtilClass.PATH_WORK;
-import static com.systemair.bcastfans.service.BrowserService.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
@@ -82,6 +83,8 @@ public class TableController implements Initializable {
     @FXML
     private TableColumn<FanUnit, TypeMontage> columnTypeMontage;
     @FXML
+    public TableColumn<FanUnit, String> columnDimension;
+    @FXML
     private TableColumn<FanUnit, SubType> columnSubType;
     @FXML
     private TableColumn<FanUnit, String> columnModel;
@@ -114,7 +117,6 @@ public class TableController implements Initializable {
     };
 
     private ObservableList<FanUnit> data;
-    private Workbook workbook;
 
     @FXML
     public void checkBoxInitialize() {
@@ -133,24 +135,26 @@ public class TableController implements Initializable {
         calculationService.initializeBrowser();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
-        fieldPathDownloading.setOnMouseClicked(event -> {
-            Node source = (Node) event.getSource();
-            Window stage = source.getScene().getWindow();
-            File dir = directoryChooser.showDialog(stage);
-            if (dir != null) {
-                fieldPathDownloading.setText(dir.getAbsolutePath());
-                PATH_WORK = dir.getAbsolutePath();
-            } else {
-                fieldPathDownloading.setText(null);
-            }
-        });
+        fieldPathDownloading.setOnMouseClicked(event -> changeFieldPathDownloading(directoryChooser, event));
         InputStream input = getClass().getResourceAsStream("/logo.png");
         Image image = new Image(Objects.requireNonNull(input));
         idImage.setImage(image);
     }
 
+    private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
+        Node source = (Node) event.getSource();
+        Window stage = source.getScene().getWindow();
+        File dir = directoryChooser.showDialog(stage);
+        if (dir != null) {
+            fieldPathDownloading.setText(dir.getAbsolutePath());
+            PATH_WORK = dir.getAbsolutePath();
+        } else {
+            fieldPathDownloading.setText(null);
+        }
+    }
+
     public void load() {
-        workbook = excelService.loadWorkbook(table, PATH_WORK);
+        Workbook workbook = excelService.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
         Sheet worksheet = workbook.getSheetAt(0);
         ArrayList<ArrayList<String>> cells = excelService.loadCellsFromWorksheet(worksheet);
@@ -163,7 +167,7 @@ public class TableController implements Initializable {
             list.add(new FanUnit(row));
         }
         data = FXCollections.observableArrayList(list);
-        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType);
+        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType,columnDimension);
     }
 
     public void save() {
@@ -188,6 +192,7 @@ public class TableController implements Initializable {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
+
             data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressIndicator, labelProgressBar, radioFillOne.isSelected());
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
@@ -197,7 +202,7 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                showAlert(LOGGER,"Все установки посчитаны!", Alert.AlertType.INFORMATION);
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));

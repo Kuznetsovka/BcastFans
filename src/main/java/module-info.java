@@ -18,4 +18,6 @@ module com.systemair.bcastfans {
     opens com.systemair.bcastfans.intarface to javafx.fxml;
     exports com.systemair.bcastfans.service;
     opens com.systemair.bcastfans.service to javafx.fxml;
+    exports com.systemair.bcastfans.staticClasses;
+    opens com.systemair.bcastfans.staticClasses to javafx.fxml;
 }

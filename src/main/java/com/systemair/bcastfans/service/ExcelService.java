@@ -1,7 +1,7 @@
 package com.systemair.bcastfans.service;
 
-import com.systemair.bcastfans.UtilClass;
 import com.systemair.bcastfans.domain.FanUnit;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.log4j.Logger;
@@ -18,6 +18,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
+
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 
 public class ExcelService {
 
@@ -71,20 +73,22 @@ public class ExcelService {
     }
 
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
-        int lastColumn = worksheet.getRow(0).getLastCellNum() - 1;
+        int lastColumn = worksheet.getRow(0).getLastCellNum();
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
-        while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
-            rows = new ArrayList<>();
-            for (int column = 0; column < lastColumn; column++) {
-                Cell cell = worksheet.getRow(row).getCell(column);
-                if (cell != null)
-                    rows.add(UtilClass.parseCell(cell));
+        try {
+            while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
+                rows = new ArrayList<>();
+                for (int column = 0; column < lastColumn; column++) {
+                    Cell cell = worksheet.getRow(row).getCell(column);
+                    if (cell != null)
+                        rows.add(parseCell(cell));
+                }
+                if (!rows.isEmpty())
+                    cells.add(rows);
             }
-            if (!rows.isEmpty())
-                cells.add(rows);
-        }
+        } catch (Exception ignored) {}
         return cells;
     }
 
@@ -100,10 +104,29 @@ public class ExcelService {
         cell[3].setCellValue("Потери");
         cell[4].setCellValue("Тип монтажа");
         cell[5].setCellValue("Тип установки");
-        cell[6].setCellValue("Модель");
-        cell[7].setCellValue("Артикул");
-        cell[8].setCellValue("Мощность");
-        cell[9].setCellValue("Фазность");
-        cell[10].setCellValue("Цена");
+        cell[6].setCellValue("Типоразмер");
+        cell[7].setCellValue("Модель");
+        cell[8].setCellValue("Артикул");
+        cell[9].setCellValue("Мощность");
+        cell[10].setCellValue("Фазность");
+        cell[11].setCellValue("Цена");
+    }
+
+    public static String parseCell(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case BLANK:
+                return "";
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case NUMERIC:
+                return String.valueOf(cell.getNumericCellValue());
+            case STRING:
+                return cell.getStringCellValue();
+            case ERROR:
+                showAlert(LOGGER,"В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
+                throw new IllegalArgumentException("");
+        }
+        return "";
     }
 }
