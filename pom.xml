@@ -119,7 +119,6 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-
     </dependencies>
     <build>
         <pluginManagement>
@@ -198,8 +197,6 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <!--                            <headerType>console</headerType>-->
-
                             <jar>target/BcastFans-1.0-SNAPSHOT.jar</jar>
                             <outfile>target/${project.build.finalName}.exe</outfile>
                             <errTitle>${project.name}</errTitle>
