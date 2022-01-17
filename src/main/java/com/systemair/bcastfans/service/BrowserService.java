@@ -122,6 +122,28 @@ public class BrowserService {
         return (fan != null) ? fan : new Fan();
     }
 
+    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType,String dimension, List<String> selectedFans) {
+        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
+            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+        if (typeMontage == ROUND && subType == SubType.KITCHEN)
+            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
+            showAlert(LOGGER,"Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+        selectTypeMontage(typeMontage);
+        selectSubType(subType);
+        fillFlowAndDrop(airFlow, airDrop);
+        if (flagWarning) {
+            flagWarning = false;
+            return new Fan();
+        }
+        if (!isGrouping) grouping();
+        if (!isHidingDiagram) hidingDiagram();
+        if (!isSorting) sorting();
+        if (!isChangeMeasureValueTable) changeMeasureValueTable();
+        Fan fan = fillTableUnit(subType, dimension, selectedFans);
+        return (fan != null) ? fan : new Fan();
+    }
+
     private void changeMeasureValueTable() {
         changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
 //        changeMeasureValueOnTableByIndex("А", 5); //Ток
@@ -160,6 +182,51 @@ public class BrowserService {
             result = getResultFan(row);
         } while (result == null);
         return result;
+    }
+
+    private Fan fillTableUnit(SubType subType,String dimension,List<String> selectedList) {
+        By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
+        WebElement btnMoreUnit;
+        Fan result = null;
+        List<WebElement> row;
+        int countRow = 1;
+        int lastRows;
+        while (isExistElementMoreThen(moreFansButtonBy, 2)) {
+            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+            LOGGER.info("Нажата кнопка больше вентиляторов.");
+        }
+        lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
+        do {
+            if (countRow > lastRows)
+                return new Fan();
+            row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
+            String price = row.get(4).getText();
+            String model = row.get(2).findElement(By.tagName("a")).getText();
+            if (checkAvailibleFanModel(model, selectedList)){
+                countRow++;
+                continue;
+            }
+            if (isContinueFan(price, subType, model)) {
+                countRow++;
+                continue;
+            }
+            if (!model.contains(dimension)) {
+                countRow++;
+                continue;
+            }
+            LOGGER.info("Выбран вентилятор с индексом " + countRow);
+            result = getResultFan(row);
+        } while (result == null);
+        return result;
+    }
+
+    private boolean checkAvailibleFanModel(String model, List<String> selectedList) {
+        for (String s : selectedList) {
+            if (model.startsWith(s + " "))
+                return false;
+        }
+        return true;
     }
 
     private boolean isModelByDimension(String model, String dimension) {

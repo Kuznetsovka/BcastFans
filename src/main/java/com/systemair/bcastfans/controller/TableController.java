@@ -1,8 +1,6 @@
 package com.systemair.bcastfans.controller;
 
-import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.bcastfans.domain.SubType;
-import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.CalculationService;
 import com.systemair.bcastfans.service.ExcelService;
 import com.systemair.bcastfans.service.TableService;
@@ -46,6 +44,12 @@ public class TableController implements Initializable {
     private final CalculationService calculationService = new CalculationService(this);
     @FXML
     public ToggleGroup methodFillTable;
+    @FXML
+    public ListView<RoundModels> listRoundFans;
+    @FXML
+    public ListView<RectangleModels> listRectangleFans;
+    @FXML
+    public ListView<RoofModels> listRoofFans;
     @FXML
     private CheckBox isSaveTechData;
     @FXML
@@ -133,12 +137,26 @@ public class TableController implements Initializable {
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
         calculationService.initializeBrowser();
+        initializeListBoxes();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
         fieldPathDownloading.setOnMouseClicked(event -> changeFieldPathDownloading(directoryChooser, event));
         InputStream input = getClass().getResourceAsStream("/logo.png");
         Image image = new Image(Objects.requireNonNull(input));
         idImage.setImage(image);
+    }
+
+    private void initializeListBoxes() {
+        initializeListBox(listRoundFans,RoundModels.values());
+        initializeListBox(listRectangleFans,RectangleModels.values());
+        initializeListBox(listRoofFans,RoofModels.values());
+    }
+
+    private <T> void initializeListBox(ListView<T> listBox, T[] values) {
+        listBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        listBox.setItems(FXCollections.observableArrayList(values));
+        listBox.getSelectionModel().selectAll();
+        listBox.setFixedCellSize(20);
     }
 
     private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
@@ -192,8 +210,16 @@ public class TableController implements Initializable {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
             if (data.isEmpty()) return;
-
-            data = calculationService.calculate(fieldNegativeLimit, fieldPositiveLimit, data, progressIndicator, labelProgressBar, radioFillOne.isSelected());
+            data = calculationService.calculate(
+                    fieldNegativeLimit,
+                    fieldPositiveLimit,
+                    data,
+                    progressIndicator,
+                    labelProgressBar,
+                    radioFillOne.isSelected(),
+                    listRectangleFans,
+                    listRoundFans,
+                    listRoofFans);
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
                 tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);

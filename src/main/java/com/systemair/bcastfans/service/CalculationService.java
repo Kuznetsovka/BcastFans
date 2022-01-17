@@ -1,13 +1,9 @@
 package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.controller.TableController;
-import com.systemair.bcastfans.domain.Fan;
-import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.bcastfans.domain.*;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.TimeoutException;
@@ -18,8 +14,11 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
@@ -30,13 +29,13 @@ public class CalculationService {
     private static final Logger LOGGER = Logger.getLogger(CalculationService.class.getName());
     private final TableController tableController;
     private final Map<FanUnit, Fan> hashMap = new HashMap<>();
-    private boolean isPrepare;
+    private boolean isFilterFans;
 
     public CalculationService(TableController tableController) {
         this.tableController = tableController;
     }
 
-    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne) {
+    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         long count = data.filtered(u -> u.getCheck().isSelected()).size();
@@ -54,7 +53,8 @@ public class CalculationService {
                                 index.getAndIncrement();
                                 if (isStop) return;
                                 LOGGER.info("Начало расчета вентилятора " + u.getName());
-                                getCurrentFan(u);
+                                List<String> selectedList = getSelectedList(u.getTypeMontage(), listRectangleFans, listRoofFans, listRoundFans);
+                                getCurrentFan(u, selectedList);
                                 if (isFillTableByOne) tableController.fillFan(data);
                                 Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), count, pi, labelProgressBar)));
                                 t2.start();
@@ -68,19 +68,42 @@ public class CalculationService {
                             });
         hashMap.clear();
         return data;
+    } //TODO Проверить, сейчас фильтрует только первую позицию
+
+    private List<String> getSelectedList(TypeMontage typeMontage, ListView<RectangleModels> listRectangleFans, ListView<RoofModels> listRoofFans, ListView<RoundModels> listRoundFans) {
+        isFilterFans = true;
+        switch (typeMontage) {
+            case ROOF:
+                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans);
+                return listRoofFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
+            case ROUND:
+                isFilterFans = !isAllSelectedItemsInListBox(listRectangleFans);
+                return listRoundFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
+            case RECTANGLE:
+                isFilterFans = !isAllSelectedItemsInListBox(listRoofFans);
+                return listRectangleFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
+            case ROUND_AND_RECTANGLE:
+                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans) || !isAllSelectedItemsInListBox(listRectangleFans);
+                Stream<RectangleModels> s1 = listRectangleFans.getItems().stream();
+                Stream<RoundModels> s2 = listRoundFans.getItems().stream();
+                return Stream.concat(s1, s2).map(Enum::toString).collect(Collectors.toList());
+            default:
+                throw new IllegalStateException("Unexpected value: " + typeMontage);
+        }
     }
 
-    private void getCurrentFan(FanUnit u) {
+    private <T> boolean isAllSelectedItemsInListBox(ListView<T> list) {
+        return list.getSelectionModel().getSelectedItems().size() == list.getItems().size();
+    }
+
+    private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
             Fan currentFan = new Fan();
             try {
-                currentFan = browserService.calculate(
-                        u.getAirFlow(),
-                        u.getAirDrop(),
-                        u.getTypeMontage(),
-                        u.getSubType(),
-                        u.getDimension());
-            } catch(TimeoutException | NoSuchSessionException e) {
+                currentFan = isFilterFans ?
+                        browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(),selectedList) :
+                        browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
+            } catch (TimeoutException | NoSuchSessionException e) {
                 Thread t = new Thread(() -> runLater(() -> showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING)));
                 t.start();
             }
