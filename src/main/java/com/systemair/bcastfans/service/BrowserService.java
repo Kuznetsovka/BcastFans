@@ -222,10 +222,12 @@ public class BrowserService {
     }
 
     private boolean checkAvailibleFanModel(String model, List<String> selectedList) {
-        for (String s : selectedList) {
-            if (model.startsWith(s + " "))
-                return false;
-        }
+        String prefix;
+        prefix = model.contains("MUB") ? "" : " ";
+            for (String s : selectedList) {
+                if (model.startsWith(s + prefix))
+                    return false;
+            }
         return true;
     }
 
