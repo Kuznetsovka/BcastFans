@@ -15,5 +15,6 @@ public enum RoofModels {
     DVV,
     DVC,
     DVCI,
-    TFC
+    TFC,
+    DVG
 }

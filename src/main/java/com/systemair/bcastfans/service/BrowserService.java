@@ -223,12 +223,16 @@ public class BrowserService {
 
     private boolean checkAvailibleFanModel(String model, List<String> selectedList) {
         String prefix;
-        prefix = model.contains("MUB") ? "" : " ";
+        prefix = getPrefixByModel(model);
             for (String s : selectedList) {
                 if (model.startsWith(s + prefix))
                     return false;
             }
         return true;
+    }
+
+    private String getPrefixByModel(String model) {
+        return model.contains("MUB") || model.contains("DVG") ? "" : " ";
     }
 
     private boolean isModelByDimension(String model, String dimension) {
