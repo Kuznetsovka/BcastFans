@@ -5,11 +5,9 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.log4j.Logger;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -54,12 +52,18 @@ public class ExcelService {
         Cell[] cell = new XSSFCell[lastColumn];
         for (int count = 0; count < countSystems; count++) {
             FanUnit cells = table.getItems().get(count);
+            String url = cells.getFan().getShortLink();
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
                 Integer column = entry.getKey();
                 String value = entry.getValue();
                 cell[column] = worksheet.getRow(count + 1).createCell(column, CellType.STRING);
                 if (value != null)
                     cell[column].setCellValue(value);
+                if (column == 7 && !url.isEmpty()) {
+                    Hyperlink link = worksheet.getWorkbook().getCreationHelper().createHyperlink(HyperlinkType.URL);
+                    link.setAddress(url);
+                    cell[column].setHyperlink(link);
+                }
             }
         }
         worksheet.autoSizeColumn(1);

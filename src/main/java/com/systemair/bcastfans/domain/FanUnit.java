@@ -24,32 +24,26 @@ public class FanUnit {
     private Fan fan;
     private Map<Integer,String> row = new HashMap<>();
 
-    public FanUnit(String name, String airFlow, String airDrop, String typeMontage, String subType) {
-        this.name = new SimpleStringProperty(name);
-        this.airFlow = new SimpleStringProperty(airFlow);
-        this.airDrop = new SimpleStringProperty(airDrop);
-        this.typeMontage = TypeMontage.valueOf(typeMontage);
-        this.subType = SubType.valueOf(subType);
-        check = new CheckBox();
-    }
-
-    public FanUnit(ArrayList<String> row) {
-        check.setSelected(row.get(0).equals("Да"));
-        this.name = new SimpleStringProperty(row.get(1));
-        this.airFlow = new SimpleStringProperty(row.get(2));
-        this.airDrop = new SimpleStringProperty(row.get(3));
-        this.typeMontage = TypeMontage.getByDescription(row.get(4));
-        if (row.size() > 5)
-            this.subType = SubType.getByDescription(row.get(5));
+    public FanUnit(ArrayList<String> columns) {
+        check.setSelected(columns.get(0).equals("Да"));
+        this.name = new SimpleStringProperty(columns.get(1));
+        this.airFlow = new SimpleStringProperty(columns.get(2));
+        this.airDrop = new SimpleStringProperty(columns.get(3));
+        this.typeMontage = TypeMontage.getByDescription(columns.get(4));
+        if (columns.size() > 5)
+            this.subType = SubType.getByDescription(columns.get(5));
         else
             this.subType = SubType.NONE;
-        if (row.size() < 7) {
+        if (columns.size() < 7) {
             this.dimension = new SimpleStringProperty("");
         } else if (typeMontage.equals(TypeMontage.ROUND)) {
-            this.dimension = new SimpleStringProperty(row.get(6));
+            this.dimension = new SimpleStringProperty(columns.get(6));
         } else if (typeMontage.equals(TypeMontage.RECTANGLE)){
-            this.dimension = new SimpleStringProperty(row.get(6));
+            this.dimension = new SimpleStringProperty(columns.get(6));
+        } else {
+            this.dimension = new SimpleStringProperty("");
         }
+
     }
 
     public Fan getFan() {
@@ -63,6 +57,7 @@ public class FanUnit {
         this.power = new SimpleStringProperty(fan.getPower().toString());
         this.phase = new SimpleStringProperty(fan.getPhase());
         this.price = new SimpleStringProperty(fan.getPrice().toString());
+        createMapFan();
     }
 
     public CheckBox getCheck() {
@@ -203,6 +198,10 @@ public class FanUnit {
     }
 
     public Map<Integer, String> getRow() {
+        return row;
+    }
+
+    private void createMapFan() {
         row.clear();
         row.put(0, check.isSelected() ? "Да" : "Нет");
         row.put(1, name.getValue());
@@ -210,14 +209,14 @@ public class FanUnit {
         row.put(3, airDrop.getValue());
         row.put(4, typeMontage.getDescription());
         row.put(5, subType.getDescription());
+        row.put(6, dimension.getValue());
         if (fan != null) {
-            row.put(6, fan.getModel());
-            row.put(7, fan.getArticle());
-            row.put(8, String.valueOf(fan.getPower()));
-            row.put(9, fan.getPhase());
-            row.put(10, String.valueOf(fan.getPrice()));
+            row.put(7, fan.getModel());
+            row.put(8, fan.getArticle());
+            row.put(9, String.valueOf(fan.getPower()));
+            row.put(10, fan.getPhase());
+            row.put(11, String.valueOf(fan.getPrice()));
         }
-        return row;
     }
 
     public void setRow(Map<Integer, String> row) {
