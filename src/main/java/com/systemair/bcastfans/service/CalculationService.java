@@ -68,24 +68,24 @@ public class CalculationService {
                             });
         hashMap.clear();
         return data;
-    } //TODO Проверить, сейчас фильтрует только первую позицию
+    }
 
     private List<String> getSelectedList(TypeMontage typeMontage, ListView<RectangleModels> listRectangleFans, ListView<RoofModels> listRoofFans, ListView<RoundModels> listRoundFans) {
-        isFilterFans = true;
+        isFilterFans = false;
         switch (typeMontage) {
             case ROOF:
-                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans);
-                return listRoofFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
-            case ROUND:
-                isFilterFans = !isAllSelectedItemsInListBox(listRectangleFans);
-                return listRoundFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
-            case RECTANGLE:
                 isFilterFans = !isAllSelectedItemsInListBox(listRoofFans);
-                return listRectangleFans.getItems().stream().map(Enum::toString).collect(Collectors.toList());
+                return listRoofFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
+            case ROUND:
+                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans);
+                return listRoundFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
+            case RECTANGLE:
+                isFilterFans = !isAllSelectedItemsInListBox(listRectangleFans);
+                return listRectangleFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
             case ROUND_AND_RECTANGLE:
                 isFilterFans = !isAllSelectedItemsInListBox(listRoundFans) || !isAllSelectedItemsInListBox(listRectangleFans);
-                Stream<RectangleModels> s1 = listRectangleFans.getItems().stream();
-                Stream<RoundModels> s2 = listRoundFans.getItems().stream();
+                Stream<RectangleModels> s1 = listRectangleFans.getSelectionModel().getSelectedItems().stream();
+                Stream<RoundModels> s2 = listRoundFans.getSelectionModel().getSelectedItems().stream();
                 return Stream.concat(s1, s2).map(Enum::toString).collect(Collectors.toList());
             default:
                 throw new IllegalStateException("Unexpected value: " + typeMontage);

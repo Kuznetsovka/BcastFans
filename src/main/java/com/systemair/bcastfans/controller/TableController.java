@@ -157,6 +157,7 @@ public class TableController implements Initializable {
         listBox.setItems(FXCollections.observableArrayList(values));
         listBox.getSelectionModel().selectAll();
         listBox.setFixedCellSize(20);
+
     }
 
     private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
@@ -209,6 +210,7 @@ public class TableController implements Initializable {
     public void calculate() {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
+            if (data == null) showAlert(LOGGER,"Поле данных не заполнено!", Alert.AlertType.INFORMATION);
             if (data.isEmpty()) return;
             data = calculationService.calculate(
                     fieldNegativeLimit,
