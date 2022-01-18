@@ -37,9 +37,9 @@ public class SingletonBrowserClass {
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
-            LOGGER.info("Загрузка страницы");
+            LOGGER.info("Загрузка страницы!");
             driver.navigate().to(HOME_URL);
-            LOGGER.info("Страница загружена");
+            LOGGER.info("Страница загружена!");
             Actions builder = new Actions(driver);
             for (int i = 0; i < 4; i++) {
                 builder.sendKeys(Keys.chord(Keys.CONTROL, "-")).perform();

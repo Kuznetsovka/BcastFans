@@ -6,16 +6,18 @@ import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 public class UtilClass {
+    private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
+    private static final Logger LOGGER = Logger.getLogger(UtilClass.class.getName());
     public static String PATH_WORK;
     public static String PATH_DRIVER;
 
-    public static FileOutputStream getFileOutputStream(TableView<FanUnit> table,String path) throws FileNotFoundException {
+    public static FileOutputStream getFileOutputStream(TableView<FanUnit> table, String path) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(path));
         fileChooser.getExtensionFilters().addAll(
@@ -27,19 +29,29 @@ public class UtilClass {
         return new FileOutputStream(saveFile.getAbsoluteFile());
     }
 
+
     public static void initProperties() {
-        PATH_WORK = System.getProperty("user.dir");
-        PATH_DRIVER = "C:/ProgramData/DriverChrome/chromedriver_win32_93/chromedriver.exe";
+        Properties properties = new Properties();
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(PROPERTY_FILE),
+                    StandardCharsets.UTF_8));
+            properties.load(in);
+            PATH_WORK = properties.getProperty("path.work");
+            PATH_DRIVER = properties.getProperty("path.driver");
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(LOGGER,"Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+        }
     }
 
     public static String millisToShortDHMS(long duration) {
         String res;
-        long days       = TimeUnit.MILLISECONDS.toDays(duration);
-        long hours      = TimeUnit.MILLISECONDS.toHours(duration) -
+        long days = TimeUnit.MILLISECONDS.toDays(duration);
+        long hours = TimeUnit.MILLISECONDS.toHours(duration) -
                 TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(duration));
-        long minutes    = TimeUnit.MILLISECONDS.toMinutes(duration) -
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration) -
                 TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(duration));
-        long seconds    = TimeUnit.MILLISECONDS.toSeconds(duration) -
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) -
                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
 
         if (days == 0)
@@ -49,7 +61,7 @@ public class UtilClass {
         return res;
     }
 
-    public static void showAlert(Logger LOGGER,String alertTxt, Alert.AlertType type) {
+    public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
         Alert alert = new Alert(type);
         alert.setTitle(rightStringCase(type.toString()));
         alert.setHeaderText("Description:");
@@ -64,6 +76,6 @@ public class UtilClass {
     }
 
     private static String rightStringCase(String txt) {
-        return txt.substring(0,1).toUpperCase() + txt.substring(1).toLowerCase();
+        return txt.substring(0, 1).toUpperCase() + txt.substring(1).toLowerCase();
     }
 }
