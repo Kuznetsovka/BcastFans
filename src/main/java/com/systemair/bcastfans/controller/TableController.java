@@ -39,6 +39,7 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
+    public static final int CELL_SIZE = 20;
     private final TableService tableService = new TableService();
     private final ExcelService excelService = new ExcelService();
     private final CalculationService calculationService = new CalculationService(this);
@@ -156,8 +157,8 @@ public class TableController implements Initializable {
         listBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listBox.setItems(FXCollections.observableArrayList(values));
         listBox.getSelectionModel().selectAll();
-        listBox.setFixedCellSize(20);
-
+        listBox.setFixedCellSize(CELL_SIZE);
+        listBox.setPrefHeight(CELL_SIZE * values.length);
     }
 
     private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
