@@ -3,15 +3,16 @@ package com.systemair.bcastfans.domain;
 import com.systemair.bcastfans.intarface.Describable;
 
 public enum TypeMontage implements Describable {
-        ROUND("Круглый"),
-        RECTANGLE("Прямоугольный"),
-        ROUND_AND_RECTANGLE("Круг & Прямог."),
-        ROOF("Крышный");
+    ROUND("Круглый"),
+    RECTANGLE("Прямоугольный"),
+    ROUND_AND_RECTANGLE("Круг & Прямог."),
+    ROOF("Крышный");
     private final String description;
 
-    TypeMontage(String desc){
+    TypeMontage(String desc) {
         this.description = desc;
     }
+
     @Override
     public String getDescription() {
         return this.description;

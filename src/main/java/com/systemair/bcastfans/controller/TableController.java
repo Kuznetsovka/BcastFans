@@ -147,9 +147,9 @@ public class TableController implements Initializable {
     }
 
     private void initializeListBoxes() {
-        initializeListBox(listRoundFans,RoundModels.values());
-        initializeListBox(listRectangleFans,RectangleModels.values());
-        initializeListBox(listRoofFans,RoofModels.values());
+        initializeListBox(listRoundFans, RoundModels.values());
+        initializeListBox(listRectangleFans, RectangleModels.values());
+        initializeListBox(listRoofFans, RoofModels.values());
     }
 
     private <T> void initializeListBox(ListView<T> listBox, T[] values) {
@@ -186,7 +186,7 @@ public class TableController implements Initializable {
             list.add(new FanUnit(row));
         }
         data = FXCollections.observableArrayList(list);
-        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType,columnDimension);
+        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType, columnDimension);
     }
 
     public void save() {
@@ -210,7 +210,7 @@ public class TableController implements Initializable {
     public void calculate() {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
-            if (data == null) showAlert(LOGGER,"Поле данных не заполнено!", Alert.AlertType.INFORMATION);
+            if (data == null) showAlert(LOGGER, "Поле данных не заполнено!", Alert.AlertType.INFORMATION);
             if (data.isEmpty()) return;
             data = calculationService.calculate(
                     fieldNegativeLimit,
@@ -230,7 +230,7 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                showAlert(LOGGER,"Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                showAlert(LOGGER, "Все установки посчитаны!", Alert.AlertType.INFORMATION);
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));

@@ -74,16 +74,16 @@ public class CalculationService {
         isFilterFans = false;
         switch (typeMontage) {
             case ROOF:
-                isFilterFans = !isAllSelectedItemsInListBox(listRoofFans);
+                isFilterFans = notAllSelectedItemsInListBox(listRoofFans);
                 return listRoofFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
             case ROUND:
-                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans);
+                isFilterFans = notAllSelectedItemsInListBox(listRoundFans);
                 return listRoundFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
             case RECTANGLE:
-                isFilterFans = !isAllSelectedItemsInListBox(listRectangleFans);
+                isFilterFans = notAllSelectedItemsInListBox(listRectangleFans);
                 return listRectangleFans.getSelectionModel().getSelectedItems().stream().map(Enum::toString).collect(Collectors.toList());
             case ROUND_AND_RECTANGLE:
-                isFilterFans = !isAllSelectedItemsInListBox(listRoundFans) || !isAllSelectedItemsInListBox(listRectangleFans);
+                isFilterFans = notAllSelectedItemsInListBox(listRoundFans) || notAllSelectedItemsInListBox(listRectangleFans);
                 Stream<RectangleModels> s1 = listRectangleFans.getSelectionModel().getSelectedItems().stream();
                 Stream<RoundModels> s2 = listRoundFans.getSelectionModel().getSelectedItems().stream();
                 return Stream.concat(s1, s2).map(Enum::toString).collect(Collectors.toList());
@@ -92,8 +92,8 @@ public class CalculationService {
         }
     }
 
-    private <T> boolean isAllSelectedItemsInListBox(ListView<T> list) {
-        return list.getSelectionModel().getSelectedItems().size() == list.getItems().size();
+    private <T> boolean notAllSelectedItemsInListBox(ListView<T> list) {
+        return list.getSelectionModel().getSelectedItems().size() != list.getItems().size();
     }
 
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
@@ -101,7 +101,7 @@ public class CalculationService {
             Fan currentFan = new Fan();
             try {
                 currentFan = isFilterFans ?
-                        browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(),selectedList) :
+                        browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
             } catch (TimeoutException | NoSuchSessionException e) {
                 Thread t = new Thread(() -> runLater(() -> showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING)));

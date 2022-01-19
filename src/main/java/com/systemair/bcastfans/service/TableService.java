@@ -100,7 +100,7 @@ public class TableService {
         tableInputData.setItems(inputData);
     }
 
-    private void setCellFactoryForColumn (TableColumn<FanUnit, String> column, String name)  {
+    private void setCellFactoryForColumn(TableColumn<FanUnit, String> column, String name) {
         column.setCellValueFactory(
                 new PropertyValueFactory<>(name));
         column.setCellFactory(TextFieldTableCell.forTableColumn());

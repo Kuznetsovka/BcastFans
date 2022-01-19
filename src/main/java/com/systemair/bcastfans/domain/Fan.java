@@ -19,7 +19,8 @@ public class Fan {
         this.shortLink = shortLink;
     }
 
-    public Fan() {}
+    public Fan() {
+    }
 
     public String getModel() {
         return model;

@@ -40,7 +40,7 @@ public class UtilClass {
             PATH_DRIVER = properties.getProperty("path.driver");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(LOGGER,"Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
         }
     }
 

@@ -2,17 +2,7 @@ package com.systemair.bcastfans.domain;
 
 import com.systemair.bcastfans.intarface.Describable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class RoundDimension extends Dimension<RoundDimension> {
-    public static List<RoundDimension.RoundDimensionType> values = List.of(RoundDimension.RoundDimensionType.values());
-    public static List<String> stringValues = Arrays.stream(RoundDimensionType.values()).map(RoundDimensionType::getDescription).collect(Collectors.toList());
-
-    public RoundDimension(String dimension) {
-        super(dimension,TypeMontage.ROUND);
-    }
+public class RoundDimension {
 
     public enum RoundDimensionType implements Describable {
         NONE(""),

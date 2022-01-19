@@ -2,16 +2,7 @@ package com.systemair.bcastfans.domain;
 
 import com.systemair.bcastfans.intarface.Describable;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class RectangleDimension extends Dimension<RectangleDimension> {
-    public static List<RectangleDimensionType> values = List.of(RectangleDimension.RectangleDimensionType.values());
-    public static List<String> stringValues = Arrays.stream(RectangleDimensionType.values()).map(RectangleDimension.RectangleDimensionType::getDescription).collect(Collectors.toList());
-    public RectangleDimension(String dimension) {
-        super(dimension,TypeMontage.RECTANGLE);
-    }
+public class RectangleDimension {
     public enum RectangleDimensionType implements Describable {
         NONE(""),
         RECT_40_20("40-20"),

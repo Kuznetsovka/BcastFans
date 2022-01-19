@@ -22,7 +22,7 @@ public class FanUnit {
     private SimpleStringProperty dimension;
     private CheckBox check = new CheckBox();
     private Fan fan;
-    private Map<Integer,String> row = new HashMap<>();
+    private Map<Integer, String> row = new HashMap<>();
 
     public FanUnit(ArrayList<String> columns) {
         check.setSelected(columns.get(0).equals("Да"));
@@ -38,7 +38,7 @@ public class FanUnit {
             this.dimension = new SimpleStringProperty("");
         } else if (typeMontage.equals(TypeMontage.ROUND)) {
             this.dimension = new SimpleStringProperty(columns.get(6));
-        } else if (typeMontage.equals(TypeMontage.RECTANGLE)){
+        } else if (typeMontage.equals(TypeMontage.RECTANGLE)) {
             this.dimension = new SimpleStringProperty(columns.get(6));
         } else {
             this.dimension = new SimpleStringProperty("");
@@ -237,6 +237,6 @@ public class FanUnit {
 
     @Override
     public int hashCode() {
-        return Objects.hash(Double.valueOf(airFlow.getValue()).intValue() , Double.valueOf(airDrop.getValue()).intValue() , typeMontage, subType, dimension);
+        return Objects.hash(Double.valueOf(airFlow.getValue()).intValue(), Double.valueOf(airDrop.getValue()).intValue(), typeMontage, subType, dimension);
     }
 }

@@ -92,7 +92,8 @@ public class ExcelService {
                 if (!rows.isEmpty())
                     cells.add(rows);
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return cells;
     }
 
@@ -128,7 +129,7 @@ public class ExcelService {
             case STRING:
                 return cell.getStringCellValue();
             case ERROR:
-                showAlert(LOGGER,"В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
+                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
                 throw new IllegalArgumentException("");
         }
         return "";

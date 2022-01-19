@@ -100,13 +100,13 @@ public class BrowserService {
             wb.sendKeys(newValue);
     }
 
-    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType,String dimension) {
+    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension) {
         if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
         if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
         if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
-            showAlert(LOGGER,"Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
         selectTypeMontage(typeMontage);
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
@@ -118,17 +118,17 @@ public class BrowserService {
         if (!isHidingDiagram) hidingDiagram();
         if (!isSorting) sorting();
         if (!isChangeMeasureValueTable) changeMeasureValueTable();
-        Fan fan = fillTableUnit(subType,dimension);
+        Fan fan = fillTableUnit(subType, dimension);
         return (fan != null) ? fan : new Fan();
     }
 
-    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType,String dimension, List<String> selectedFans) {
+    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String> selectedFans) {
         if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
         if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert(LOGGER,"Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
         if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
-            showAlert(LOGGER,"Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
         selectTypeMontage(typeMontage);
         selectSubType(subType);
         fillFlowAndDrop(airFlow, airDrop);
@@ -151,14 +151,14 @@ public class BrowserService {
         isChangeMeasureValueTable = true;
     }
 
-    private Fan fillTableUnit(SubType subType,String dimension) {
+    private Fan fillTableUnit(SubType subType, String dimension) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         Fan result = null;
         List<WebElement> row;
         int countRow = 1;
         int lastRows;
-        while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty()) ) {
+        while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
             btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
             sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
             LOGGER.info("Нажата кнопка больше вентиляторов.");
@@ -184,7 +184,7 @@ public class BrowserService {
         return result;
     }
 
-    private Fan fillTableUnit(SubType subType,String dimension,List<String> selectedList) {
+    private Fan fillTableUnit(SubType subType, String dimension, List<String> selectedList) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         Fan result = null;
@@ -203,7 +203,7 @@ public class BrowserService {
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
-            if (checkAvailibleFanModel(model, selectedList)){
+            if (checkAvailibleFanModel(model, selectedList)) {
                 countRow++;
                 continue;
             }
@@ -224,10 +224,10 @@ public class BrowserService {
     private boolean checkAvailibleFanModel(String model, List<String> selectedList) {
         String prefix;
         prefix = getPrefixByModel(model);
-            for (String s : selectedList) {
-                if (model.startsWith(s + prefix))
-                    return false;
-            }
+        for (String s : selectedList) {
+            if (model.startsWith(s + prefix))
+                return false;
+        }
         return true;
     }
 
@@ -348,7 +348,7 @@ public class BrowserService {
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert(LOGGER,"Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
         LOGGER.info("Заменили значение изменения на " + newValue);
     }
@@ -364,7 +364,7 @@ public class BrowserService {
         List<WebElement> list = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, 'sc-gzVnrw')]")));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert(LOGGER,"Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 

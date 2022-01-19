@@ -45,9 +45,9 @@ public class SingletonBrowserClass {
                 builder.sendKeys(Keys.chord(Keys.CONTROL, "-")).perform();
             }
         } catch (SessionNotCreatedException e) {
-            showAlert(LOGGER,"Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
         } catch (IllegalArgumentException e) {
-            showAlert(LOGGER,"Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + PATH_DRIVER, Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + PATH_DRIVER, Alert.AlertType.WARNING);
         }
     }
 
