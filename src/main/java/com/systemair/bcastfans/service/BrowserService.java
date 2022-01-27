@@ -31,6 +31,7 @@ public class BrowserService {
     private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
     private boolean isChangeMeasureValueTable;
     private TypeMontage lastTypeMontage;
+    private SubType lastSubMontage;
 
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -107,8 +108,8 @@ public class BrowserService {
             showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
         if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
             showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
-        selectTypeMontage(typeMontage);
         selectSubType(subType);
+        selectTypeMontage(typeMontage);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
             flagWarning = false;
@@ -129,8 +130,8 @@ public class BrowserService {
             showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
         if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
             showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
-        selectTypeMontage(typeMontage);
         selectSubType(subType);
+        selectTypeMontage(typeMontage);
         fillFlowAndDrop(airFlow, airDrop);
         if (flagWarning) {
             flagWarning = false;
@@ -144,10 +145,14 @@ public class BrowserService {
         return (fan != null) ? fan : new Fan();
     }
 
+    private void clearTypeMontage() {
+        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        selectTypeFan(-1, listTypeMontage);
+        LOGGER.info("Выключаем все вентиляторы...");
+    }
+
     private void changeMeasureValueTable() {
         changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
-//        changeMeasureValueOnTableByIndex("А", 5); //Ток
-//        changeMeasureValueOnTableByIndex("об/мин", 6); //Частота вращения
         isChangeMeasureValueTable = true;
     }
 
@@ -257,22 +262,12 @@ public class BrowserService {
         String price = row.get(4).getText();
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
-//        String shortLink = getLink(modelCell,true);
-//        String fullLink = getLink(modelCell,false);
         sbc.getWait().until(elementToBeClickable(wb)).click();
         List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
         List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
         clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
-
-//    private String getLink(WebElement modelCell,boolean compact) {
-//        String type = "";
-//        if (compact) type = "-compact";
-//        String firstPartLink = "https://shop.systemair.com/ru-RU/api/product/pdf" + type + "/externalId/";
-//        String link = modelCell.getAttribute("href");
-//        return firstPartLink + link.substring(link.indexOf("?p=") + 3).replace("&", "?");
-//    }
 
     private void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
@@ -300,7 +295,6 @@ public class BrowserService {
             sleep(500);
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
             sleep(500);
-            //sbc.getWait().until(or(visibilityOfElementLocated(By.xpath(".//span[@type='warning']")),numberOfElementsToBeMoreThan(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"),0)));
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
@@ -381,9 +375,12 @@ public class BrowserService {
             8 - Агрессивная среда
             9 - Агрессивная среда + Взрывозащита
          */
+        if (subType == lastSubMontage) return;
         WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-cIShpX htEzPC']"));
         List<WebElement> listSubType = listSubTypeParent.findElements(By.tagName("div"));
         List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-tilXH')]"));
+        lastSubMontage = subType;
+        clearTypeMontage();
         switch (subType) {
             case NONE:
             case ON_ROOF:
@@ -476,7 +473,6 @@ public class BrowserService {
                 break;
         }
         LOGGER.info("Выбран тип монтажа...");
-
     }
 
     private void selectTwoTypeFan(int i1, int i2, List<WebElement> list) {
