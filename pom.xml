@@ -115,69 +115,7 @@
         </dependency>
     </dependencies>
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.1.2</version>
-                    <executions>
-                        <execution>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <compilerArgs>
-                            <arg>--add-modules</arg>
-                            <arg>java.se,java.desktop</arg>
-                        </compilerArgs>
-                        <archive>
-                            <manifest>
-                                <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
-                            </manifest>
-                        </archive>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>**/config.properties</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
-            <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>copy-resources</id>
-                        <!-- here the phase you need -->
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${basedir}/target/res</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.akathist.maven.plugins.launch4j</groupId>
                 <artifactId>launch4j-maven-plugin</artifactId>
@@ -191,16 +129,13 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <!--                            <headerType>console</headerType>-->
-
                             <jar>target/BcastFans-${project.version}.jar</jar>
                             <outfile>target/${project.build.finalName}.exe</outfile>
                             <errTitle>${project.name}</errTitle>
                             <icon>src/main/resources/logo.ico</icon>
                             <jre>
-                                <path>C:\ProgramData\DriverChrome\jre</path> <!-- if you bundle the jre -->
+                                <path>C:\ProgramData\DriverChrome\jre</path>
                             </jre>
-
                             <versionInfo>
                                 <fileVersion>1.0.3.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
@@ -217,7 +152,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -249,55 +183,6 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.3.0</version>
-                <executions>
-                    <execution>
-                        <id>create-executable</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <outputDirectory>C:\ProgramData\Bcast</outputDirectory>
-                    <appendAssemblyId>true</appendAssemblyId>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
-                    <archive>
-                        <manifest>
-                            <mainClass>com.systemair.bcastfans.Main</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.6</version>
-                <executions>
-                    <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
-                        <id>create-executable</id>
-                        <configuration>
-                            <packaging>jar</packaging>
-                            <jre>
-                                <path>C:\Program Files\Java\semeru-11.0.13</path> <!-- if you bundle the jre -->
-                            </jre>
-                            <archive>
-                                <manifest>
-                                    <mainClass>com.systemair.bcastfans.BCastFanApplication</mainClass>
-                                </manifest>
-                            </archive>
-                            <mainClass>com.systemair.bcastfans/com.systemair.bcastfans.BCastFanApplication</mainClass>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

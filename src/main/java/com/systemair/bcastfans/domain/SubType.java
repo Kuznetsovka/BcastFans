@@ -10,20 +10,7 @@ public enum SubType implements Describable {
     ON_ROOF("На крыше"),
     SMOKE_EXTRACT("Дымоудаление"),
     SILENT_AND_EC("Шумоизолированный & EC"),
-    KITCHEN_AND_EC("Кухонный & EC"),
-    DIMENSION_100("⌀100"),
-    DIMENSION_125("⌀125"),
-    DIMENSION_160("⌀160"),
-    DIMENSION_200("⌀200"),
-    DIMENSION_250("⌀250"),
-    DIMENSION_315("⌀315"),
-    DIMENSION_40_20("40-20"),
-    DIMENSION_50_25("50-25"),
-    DIMENSION_60_30("60-30"),
-    DIMENSION_60_35("60-35"),
-    DIMENSION_70_40("70-40"),
-    DIMENSION_80_50("80-50"),
-    DIMENSION_100_50("100-50");
+    KITCHEN_AND_EC("Кухонный & EC");
     private final String description;
 
     SubType(String desc) {

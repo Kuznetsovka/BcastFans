@@ -92,7 +92,7 @@ public class TableService {
         // ==== Dimension ====
 
         setCellFactoryForColumn(columnDimension, "dimension");
-        columnAirDrop.setOnEditCommit(
+        columnDimension.setOnEditCommit(
                 (TableColumn.CellEditEvent<FanUnit, String> t) -> (
                         t.getTableView().getItems().get(t.getTablePosition().getRow())
                 ).setDimension(t.getNewValue()));

@@ -40,6 +40,7 @@ import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
     public static final int CELL_SIZE = 20;
+    public static final int TABLE_SIZE = 905;
     private final TableService tableService = new TableService();
     private final ExcelService excelService = new ExcelService();
     private final CalculationService calculationService = new CalculationService(this);
@@ -75,6 +76,7 @@ public class TableController implements Initializable {
     private Label labelTimeLong;
     @FXML
     private TableView<FanUnit> table;
+    private int[] width = {34, 50, 75, 50, 120, 120, 75, 140, 60, 70, 60, 50};
     @FXML
     private CheckBox checkBox;
     @FXML
@@ -138,6 +140,18 @@ public class TableController implements Initializable {
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
         calculationService.initializeBrowser();
+//        table.widthProperty().addListener(new ChangeListener<Number>() {
+//            @Override
+//            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
+//                int countColumns = table.getColumns().size();
+//                double coef = TABLE_SIZE / observableValue.getValue().doubleValue();
+//                for (int i = 0; i < countColumns; i++) {
+//                    table.getColumns().get(i).setMinWidth(width[i] * coef);
+//
+//                }
+//                table.getColumns().get(countColumns).setMinWidth(0);
+//            }
+//        });
         initializeListBoxes();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
@@ -266,7 +280,6 @@ public class TableController implements Initializable {
             fieldPathDownloading.setEditable(true);
             fieldPathDownloading.setText("");
         }
-
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
