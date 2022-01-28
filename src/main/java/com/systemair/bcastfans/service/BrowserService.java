@@ -24,6 +24,7 @@ public class BrowserService {
     private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     private String positiveLimit;
     private String negativeLimit;
+    private boolean isClear;
     boolean flagWarning;
     boolean isSorting;
     boolean isHidingDiagram;
@@ -149,6 +150,7 @@ public class BrowserService {
         List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
         selectTypeFan(-1, listTypeMontage);
         LOGGER.info("Выключаем все вентиляторы...");
+        isClear = true;
     }
 
     private void changeMeasureValueTable() {
@@ -192,6 +194,8 @@ public class BrowserService {
     private Fan fillTableUnit(SubType subType, String dimension, List<String> selectedList) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
+        boolean isFirst = false;
+        Fan firstFan = null;
         Fan result = null;
         List<WebElement> row;
         int countRow = 1;
@@ -216,6 +220,10 @@ public class BrowserService {
                 countRow++;
                 continue;
             }
+            if (!isFirst) {
+                firstFan = getResultFan(row);
+                isFirst = true;
+            }
             if (!model.contains(dimension)) {
                 countRow++;
                 continue;
@@ -223,6 +231,8 @@ public class BrowserService {
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
+        if (result.getModel().isEmpty() && firstFan != null)
+            result = firstFan;
         return result;
     }
 
@@ -246,8 +256,8 @@ public class BrowserService {
 
     private boolean isContinueFan(String price, SubType subType, String model) {
         return ((price.equals("")) ||
-                (subType == SubType.ON_ROOF && ((model.contains("RVK") || model.contains("prio")) && !model.contains("MUB"))) ||
-                (model.contains("150")));
+                (subType == SubType.ON_ROOF && !model.contains("K ") && !model.contains("MUB"))) ||
+                (model.contains("150"));
     }
 
     private Fan getResultFan(List<WebElement> row) {
@@ -455,7 +465,7 @@ public class BrowserService {
             Осевые - 3
             Центробежные - 4
         */
-        if (typeMontage == lastTypeMontage) return;
+        if (typeMontage == lastTypeMontage && !isClear) return;
         List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
         lastTypeMontage = typeMontage;
         switch (typeMontage) {
@@ -472,6 +482,7 @@ public class BrowserService {
                 selectTwoTypeFan(0, 1, listTypeMontage);
                 break;
         }
+        isClear = false;
         LOGGER.info("Выбран тип монтажа...");
     }
 
