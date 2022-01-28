@@ -163,7 +163,7 @@ public class BrowserService {
         WebElement btnMoreUnit;
         Fan result = null;
         boolean isFirst = false;
-        Fan firstFan = null;
+        Fan firstFan = new Fan();
         List<WebElement> row;
         int countRow = 1;
         int lastRows;
