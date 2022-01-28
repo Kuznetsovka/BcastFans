@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static java.lang.Math.round;
 
 public class ExcelService {
 
@@ -128,7 +129,7 @@ public class ExcelService {
             case BOOLEAN:
                 return String.valueOf(cell.getBooleanCellValue());
             case NUMERIC:
-                return String.valueOf(cell.getNumericCellValue());
+                return String.valueOf(round(cell.getNumericCellValue()));
             case STRING:
                 return cell.getStringCellValue();
             case FORMULA:
