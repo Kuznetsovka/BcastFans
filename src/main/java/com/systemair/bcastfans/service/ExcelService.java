@@ -22,9 +22,10 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 public class ExcelService {
 
     private static final Logger LOGGER = Logger.getLogger(ExcelService.class.getName());
+    Workbook workbook;
 
     public Workbook loadWorkbook(TableView<FanUnit> table, String path) {
-        Workbook workbook = null;
+        workbook = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
         fileChooser.setInitialDirectory(new File(path));
@@ -77,7 +78,7 @@ public class ExcelService {
     }
 
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
-        int lastColumn = worksheet.getRow(0).getLastCellNum();
+        int lastColumn = 7;
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
@@ -92,7 +93,9 @@ public class ExcelService {
                 if (!rows.isEmpty())
                     cells.add(rows);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            showAlert(LOGGER,"Ошибка считывания данных, не должно быть формул", Alert.AlertType.ERROR);
+            LOGGER.error(e.getMessage());
         }
         return cells;
     }
@@ -128,6 +131,9 @@ public class ExcelService {
                 return String.valueOf(cell.getNumericCellValue());
             case STRING:
                 return cell.getStringCellValue();
+            case FORMULA:
+                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
+                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
             case ERROR:
                 showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
                 throw new IllegalArgumentException("");

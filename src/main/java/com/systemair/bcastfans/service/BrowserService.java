@@ -162,6 +162,8 @@ public class BrowserService {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
         WebElement btnMoreUnit;
         Fan result = null;
+        boolean isFirst = false;
+        Fan firstFan = null;
         List<WebElement> row;
         int countRow = 1;
         int lastRows;
@@ -172,14 +174,18 @@ public class BrowserService {
         }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
-            if (countRow > lastRows)
-                return new Fan();
+            if (countRow > lastRows && !dimension.isEmpty())
+                return firstFan; // TODO Проверить в других случаях
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
             if (isContinueFan(price, subType, model)) {
                 countRow++;
                 continue;
+            }
+            if (!isFirst) {
+                firstFan = getResultFan(row);
+                isFirst = true;
             }
             if (!model.contains(dimension)) {
                 countRow++;
@@ -207,8 +213,8 @@ public class BrowserService {
         }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
-            if (countRow > lastRows)
-                return new Fan();
+            if (countRow > lastRows && !dimension.isEmpty())
+                return firstFan; // TODO Проверить в других случаях
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
@@ -231,8 +237,6 @@ public class BrowserService {
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
             result = getResultFan(row);
         } while (result == null);
-        if (result.getModel().isEmpty() && firstFan != null)
-            result = firstFan;
         return result;
     }
 
