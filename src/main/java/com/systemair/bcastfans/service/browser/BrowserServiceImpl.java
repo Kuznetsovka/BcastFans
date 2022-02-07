@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.service.browser;
 
 
+import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -17,6 +18,8 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClick
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 public abstract class BrowserServiceImpl implements BrowserService {
+
+    public SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     protected boolean isContainsInClass(WebElement webElement, String text) {
         return webElement.getAttribute("class").contains(text);
     }
@@ -62,10 +65,13 @@ public abstract class BrowserServiceImpl implements BrowserService {
     }
 
     protected void clickElementWithScroll(WebElement webElement) {
-        ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
+        //((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
         sbc.getWait().until(elementToBeClickable(webElement)).click();
     }
 
+    protected void scrollToWebElement(WebElement webElement) {
+        ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
+    }
 
 
 //    protected boolean waitForJQueryControls(SingletonBrowserClass sbc) {

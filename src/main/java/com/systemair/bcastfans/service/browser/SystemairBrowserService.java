@@ -3,12 +3,14 @@ package com.systemair.bcastfans.service.browser;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
+import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,6 +20,8 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class SystemairBrowserService extends BrowserServiceImpl {
+    protected String positiveLimit = "100";
+    protected String negativeLimit = "0";
     private boolean isClear;
     boolean flagWarning;
     boolean isSorting;
@@ -68,20 +72,24 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
-        String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
+        // "fgkAsr" - без ошибки "lnjRPV" - c ошибкой
+        String checkXPath = ".//span[text() = '" + findTextLabel + "']";
+        String xpath = checkXPath + "/following::input[1]";
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
         LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
-        wb.sendKeys(Keys.CONTROL + "a");
-        JSWaiter.waitAllRequest();
-        //waitForJQueryControls(sbc.getWait());
-        wb.sendKeys(Keys.DELETE);
-        JSWaiter.waitAllRequest();
-        //waitForJQueryControls(sbc.getWait());
-        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
+        do {
+            wb.sendKeys(Keys.CONTROL + "a");
+            wb.sendKeys(Keys.DELETE);
+        } while(!wb.getAttribute("value").equals(""));
+        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath),"class","lnjRPV"));
+        if (sbc.getWait().until(ExpectedConditions.attributeToBe(wb, "value", "")))
+        do {
             wb.sendKeys(newValue);
+        } while(!wb.getAttribute("value").equals(newValue));
         JSWaiter.waitAllRequest();
+        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath),"class","fgkAsr"));
         //waitForJQueryControls(sbc.getWait());
     }
     @Override
@@ -168,7 +176,10 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                 continue;
             }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
-            result = getResultFan(row);
+            if(countRow == 1 && firstFan != null)
+                result = firstFan;
+            else
+                result = getResultFan(row);
         } while (result == null);
         return result;
     }
@@ -289,6 +300,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
             inputTextByLabel("Внешнее давление", airDrop);
+            JSWaiter.waitAllRequest();
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
             JSWaiter.waitAllRequest();
             //waitForJQueryControls(sbc.getWait());
@@ -492,11 +504,16 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void setNegativeLimit(String negativeLimit) {
-
+        this.negativeLimit =  negativeLimit;
     }
 
     @Override
     public void setPositiveLimit(String positiveLimit) {
+        this.positiveLimit =  positiveLimit;
+    }
 
+    @Override
+    public SingletonBrowserClass getSbc() {
+        return sbc;
     }
 }

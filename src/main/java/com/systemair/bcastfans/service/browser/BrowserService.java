@@ -9,9 +9,6 @@ import org.openqa.selenium.WebElement;
 import java.util.List;
 
 public interface BrowserService {
-    String positiveLimit = "100";
-    String negativeLimit = "0";
-    SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
 
     void selectTypeMontage(TypeMontage typeMontage);
 
@@ -56,4 +53,6 @@ public interface BrowserService {
     void grouping();
 
     void changeMeasureValueOnTableByIndex(String newValue, int index);
+
+    SingletonBrowserClass getSbc();
 }

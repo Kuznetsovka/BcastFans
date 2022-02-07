@@ -3,10 +3,12 @@ package com.systemair.bcastfans.staticClasses;
 import com.systemair.bcastfans.service.browser.JSWaiter;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.*;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.SessionNotCreatedException;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -42,10 +44,6 @@ public class SingletonBrowserClass {
             LOGGER.info("Загрузка страницы!");
             driver.navigate().to(HOME_URL);
             LOGGER.info("Страница загружена!");
-            Actions builder = new Actions(driver);
-            for (int i = 0; i < 4; i++) {
-                builder.sendKeys(Keys.chord(Keys.CONTROL, "-")).perform();
-            }
         } catch (SessionNotCreatedException e) {
             showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
         } catch (IllegalArgumentException e) {

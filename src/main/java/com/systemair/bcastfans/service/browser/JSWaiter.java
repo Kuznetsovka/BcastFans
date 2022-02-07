@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.service.browser;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -11,6 +12,7 @@ public class JSWaiter {
     private static WebDriver jsWaitDriver;
     private static WebDriverWait jsWait;
     private static JavascriptExecutor jsExec;
+    private static final Logger LOGGER = Logger.getLogger(JSWaiter.class.getName());
     //Get the driver 
     public static void setDriver (WebDriver driver) {
         jsWaitDriver = driver;
@@ -29,6 +31,7 @@ public class JSWaiter {
                 .executeScript("return jQuery.active") == 0);
             boolean jqueryReady = (Boolean) jsExec.executeScript("return jQuery.active==0");
             if (!jqueryReady) {
+                LOGGER.info("Ожидание waitForJQueryLoad");
                 jsWait.until(jQueryLoad);
             }
         } catch (WebDriverException ignored) {
@@ -44,6 +47,7 @@ public class JSWaiter {
                 .executeScript("return document.readyState").toString().equals("complete");
             boolean jsReady = jsExec.executeScript("return document.readyState").toString().equals("complete");
             if (!jsReady) {
+                LOGGER.info("Ожидание waitUntilJSReady");
                 jsWait.until(jsLoad);
             }
         } catch (WebDriverException ignored) {
@@ -95,6 +99,7 @@ public class JSWaiter {
                 .executeScript(angularReadyScript).toString());
             boolean angularReady = Boolean.valueOf(jsExec.executeScript(angularReadyScript).toString());
             if (!angularReady) {
+                LOGGER.info("Ожидание angularLoads");
                 jsWait.until(angularLoad);
             }
         } catch (WebDriverException ignored) {
