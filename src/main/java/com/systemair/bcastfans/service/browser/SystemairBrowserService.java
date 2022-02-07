@@ -1,39 +1,38 @@
-package com.systemair.bcastfans.service;
+package com.systemair.bcastfans.service.browser;
 
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
-import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ElementClickInterceptedException;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebElement;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.domain.TypeMontage.*;
-import static com.systemair.bcastfans.staticClasses.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
-import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
-public class BrowserService {
-    private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
-    private String positiveLimit;
-    private String negativeLimit;
+public class SystemairBrowserService extends BrowserServiceImpl {
     private boolean isClear;
     boolean flagWarning;
     boolean isSorting;
     boolean isHidingDiagram;
     private boolean isGrouping;
-    private static final Logger LOGGER = Logger.getLogger(BrowserService.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SystemairBrowserService.class.getName());
     private boolean isChangeMeasureValueTable;
     private TypeMontage lastTypeMontage;
     private SubType lastSubMontage;
 
+    public SystemairBrowserService() {
+        super();
+    }
+
+    @Override
     public void prepareStartPageBeforeCalculation() {
         try {
             // Внесение данных Отрицательный допуск
@@ -67,48 +66,27 @@ public class BrowserService {
 
     }
 
-    private void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) {
-        try {
-            By by = By.xpath(xpath);
-            sbc.getWait().until(visibilityOfElementLocated(by));
-            if (attributeAndValue.length > 0) {
-                String attribute = attributeAndValue[0];
-                String value = attributeAndValue[1];
-                if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
-            }
-            sbc.getWait().until(elementToBeClickable(by)).click();
-        } catch (ElementClickInterceptedException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void clickElementWithScroll(WebElement webElement) {
-        ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
-        sbc.getWait().until(elementToBeClickable(webElement)).click();
-    }
-
-    private void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
+    @Override
+    public void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getText().equals(newValue)) return;
         LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
         wb.sendKeys(Keys.CONTROL + "a");
-        sleep(300);
+        JSWaiter.waitAllRequest();
+        //waitForJQueryControls(sbc.getWait());
         wb.sendKeys(Keys.DELETE);
-        sleep(300);
+        JSWaiter.waitAllRequest();
+        //waitForJQueryControls(sbc.getWait());
         if (sbc.getWait().until(textToBePresentInElement(wb, "")))
             wb.sendKeys(newValue);
+        JSWaiter.waitAllRequest();
+        //waitForJQueryControls(sbc.getWait());
     }
-
+    @Override
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension) {
-        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-        if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
-        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
-            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+        checkAvailableConfiguration(typeMontage, subType, dimension);
         selectSubType(subType);
         selectTypeMontage(typeMontage);
         fillFlowAndDrop(airFlow, airDrop);
@@ -116,21 +94,13 @@ public class BrowserService {
             flagWarning = false;
             return new Fan();
         }
-        if (!isGrouping) grouping();
-        if (!isHidingDiagram) hidingDiagram();
-        if (!isSorting) sorting();
-        if (!isChangeMeasureValueTable) changeMeasureValueTable();
+        prepareListBeforeCalculation();
         Fan fan = fillTableUnit(subType, dimension);
         return (fan != null) ? fan : new Fan();
     }
-
+    @Override
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String> selectedFans) {
-        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-        if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
-        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
-            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+        checkAvailableConfiguration(typeMontage, subType, dimension);
         selectSubType(subType);
         selectTypeMontage(typeMontage);
         fillFlowAndDrop(airFlow, airDrop);
@@ -138,29 +108,37 @@ public class BrowserService {
             flagWarning = false;
             return new Fan();
         }
-        if (!isGrouping) grouping();
-        if (!isHidingDiagram) hidingDiagram();
-        if (!isSorting) sorting();
-        if (!isChangeMeasureValueTable) changeMeasureValueTable();
+        prepareListBeforeCalculation();
         Fan fan = fillTableUnit(subType, dimension, selectedFans);
         return (fan != null) ? fan : new Fan();
     }
 
-    private void clearTypeMontage() {
+    private void checkAvailableConfiguration(TypeMontage typeMontage, SubType subType, String dimension) {
+        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+        if (typeMontage == ROUND && subType == SubType.KITCHEN)
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
+        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
+            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+    }
+
+    private void prepareListBeforeCalculation() {
+        if (!isGrouping) grouping();
+        if (!isHidingDiagram) hidingDiagram();
+        if (!isSorting) sorting();
+        if (!isChangeMeasureValueTable) changeMeasureValueOnTableByIndex("Вт", 4);
+    }
+
+    @Override
+    public void clearTypeMontage() {
         List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
         selectTypeFan(-1, listTypeMontage);
         LOGGER.info("Выключаем все вентиляторы...");
         isClear = true;
     }
 
-    private void changeMeasureValueTable() {
-        changeMeasureValueOnTableByIndex("Вт", 4); //Мощность
-        isChangeMeasureValueTable = true;
-    }
-
     private Fan fillTableUnit(SubType subType, String dimension) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
-        WebElement btnMoreUnit;
         Fan result = null;
         boolean isFirst = false;
         Fan firstFan = new Fan();
@@ -168,14 +146,12 @@ public class BrowserService {
         int countRow = 1;
         int lastRows;
         while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
-            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-            LOGGER.info("Нажата кнопка больше вентиляторов.");
+            clickButtonMoreFans(moreFansButtonBy);
         }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
             if (countRow > lastRows && !dimension.isEmpty())
-                return firstFan; // TODO Проверить в других случаях
+                return firstFan;
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
@@ -197,9 +173,9 @@ public class BrowserService {
         return result;
     }
 
+
     private Fan fillTableUnit(SubType subType, String dimension, List<String> selectedList) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
-        WebElement btnMoreUnit;
         boolean isFirst = false;
         Fan firstFan = null;
         Fan result = null;
@@ -207,18 +183,16 @@ public class BrowserService {
         int countRow = 1;
         int lastRows;
         while (isExistElementMoreThen(moreFansButtonBy, 2)) {
-            btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
-            sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
-            LOGGER.info("Нажата кнопка больше вентиляторов.");
+            clickButtonMoreFans(moreFansButtonBy);
         }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
             if (countRow > lastRows && !dimension.isEmpty())
-                return firstFan; // TODO Проверить в других случаях
+                return firstFan;
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
-            if (checkAvailibleFanModel(model, selectedList)) {
+            if (checkAvailableFanModel(model, selectedList)) {
                 countRow++;
                 continue;
             }
@@ -240,7 +214,15 @@ public class BrowserService {
         return result;
     }
 
-    private boolean checkAvailibleFanModel(String model, List<String> selectedList) {
+    private void clickButtonMoreFans(By moreFansButtonBy) {
+        WebElement btnMoreUnit;
+        btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+        sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
+        LOGGER.info("Нажата кнопка больше вентиляторов.");
+    }
+
+    @Override
+    public boolean checkAvailableFanModel(String model, List<String> selectedList) {
         String prefix;
         prefix = getPrefixByModel(model);
         for (String s : selectedList) {
@@ -250,21 +232,18 @@ public class BrowserService {
         return true;
     }
 
-    private String getPrefixByModel(String model) {
+    public String getPrefixByModel(String model) {
         return model.contains("MUB") || model.contains("DVG") ? "" : " ";
     }
 
-    private boolean isModelByDimension(String model, String dimension) {
-        return !model.contains(dimension);
-    }
-
-    private boolean isContinueFan(String price, SubType subType, String model) {
+    @Override
+    public boolean isContinueFan(String price, SubType subType, String model) {
         return ((price.equals("")) ||
                 (subType == SubType.ON_ROOF && !model.contains("K ") && !model.contains("MUB"))) ||
                 (model.contains("150"));
     }
 
-    private Fan getResultFan(List<WebElement> row) {
+    public Fan getResultFan(List<WebElement> row) {
         WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
         String phase = "";
         if (!row.get(2).findElement(By.tagName("small")).getText().equals("")) {
@@ -283,33 +262,37 @@ public class BrowserService {
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
-    private void sorting() {
+    @Override
+    public void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
         isSorting = true;
         LOGGER.info("Сортировка вентиляторов");
     }
 
-    private void hidingDiagram() {
+    @Override
+    public void hidingDiagram() {
         // Скрыть диаграммы
         onCheckboxDiagram(getWebElementByXpath(".//div[contains(@class, 'sc-cMljjf')]"));
         isHidingDiagram = true;
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
-    private void grouping() {
+    @Override
+    public void grouping() {
         isGrouping = true;
         changeValueComboBoxByLabel("Группировать по:", "Нет");
         LOGGER.info("Группировка вентиляторов");
     }
 
-    private void fillFlowAndDrop(String airFlow, String airDrop) {
+    @Override
+    public void fillFlowAndDrop(String airFlow, String airDrop) {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
             inputTextByLabel("Внешнее давление", airDrop);
-            sleep(500);
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-            sleep(500);
-        } catch (InterruptedException e) {
+            JSWaiter.waitAllRequest();
+            //waitForJQueryControls(sbc.getWait());
+        } catch (InterruptedException | ElementClickInterceptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
@@ -317,37 +300,8 @@ public class BrowserService {
             flagWarning = true;
     }
 
-    private boolean isWarning() {
-        return isExistElementMoreThen(By.xpath(".//span[@type='warning']"), 0);
-    }
-
-    private boolean isExistElementMoreThen(By by, int moreThen) {
-        boolean isExists;
-        try {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-            isExists = sbc.getDriver().findElements(by).size() > moreThen;
-        } finally {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
-        }
-        return isExists;
-    }
-
-    private void clickWithoutTimeOut(By by) {
-        try {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
-            sbc.getDriver().findElement(by).click();
-        } finally {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
-        }
-    }
-
-    private WebElement getWebElementByXpath(String xpath) {
-        List<Optional<WebElement>> webElements = sbc.getWait().until(ExpectedConditions.numberOfElementsToBeMoreThan(By.xpath(xpath), 0)).stream().map(Optional::of).collect(Collectors.toList());
-        return webElements.get(0).orElseThrow(IllegalArgumentException::new);
-    }
-
-
-    private void changeMeasureValueOnTableByIndex(String newValue, int index) {
+    @Override
+    public void changeMeasureValueOnTableByIndex(String newValue, int index) {
         String xpath = ".//th[@class='sc-hzDkRC kmzkGx'][" + index + "]/div[2]/div[1]";
         String checkingXpath = xpath + "/span[1]";
         WebElement checkingWb = sbc.getWait().until(visibilityOfElementLocated(By.xpath(checkingXpath)));
@@ -356,12 +310,14 @@ public class BrowserService {
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", javafx.scene.control.Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
         LOGGER.info("Заменили значение изменения на " + newValue);
+        isChangeMeasureValueTable = true;
     }
 
-    private void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
+    @Override
+    public void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
         By by = By.xpath(xpath + "/ancestor::div[1]");
         WebElement checkingWb = getWebElementByXpath(xpath);
@@ -376,7 +332,8 @@ public class BrowserService {
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
-    private void selectSubType(SubType subType) {
+    @Override
+    public void selectSubType(SubType subType) {
         /*
             0 - все
             1 - стандартные
@@ -437,7 +394,8 @@ public class BrowserService {
         LOGGER.info("Выбран подтип вентилятора...");
     }
 
-    private void onCheckbox(boolean onAction, WebElement webElement) {
+    @Override
+    public void onCheckbox(boolean onAction, WebElement webElement) {
         /*
         "kClLXW" - выкл.
         "eITjnS" - вкл.
@@ -449,7 +407,8 @@ public class BrowserService {
         }
     }
 
-    private void onCheckboxDiagram(WebElement webElement) {
+    @Override
+    public void onCheckboxDiagram(WebElement webElement) {
         /*
         "ineogT" - выкл.
         "hBEpsK" - вкл.
@@ -457,11 +416,9 @@ public class BrowserService {
         if (isContainsInClass(webElement, "hBEpsK")) webElement.click();
     }
 
-    private boolean isContainsInClass(WebElement webElement, String text) {
-        return webElement.getAttribute("class").contains(text);
-    }
 
-    private void selectTypeMontage(TypeMontage typeMontage) {
+    @Override
+    public void selectTypeMontage(TypeMontage typeMontage) {
         /*
             Круглые - 0
             Прямоугольные - 1
@@ -490,7 +447,8 @@ public class BrowserService {
         LOGGER.info("Выбран тип монтажа...");
     }
 
-    private void selectTwoTypeFan(int i1, int i2, List<WebElement> list) {
+    @Override
+    public void selectTwoTypeFan(int i1, int i2, List<WebElement> list) {
         /*
             "gHdNtY" - вкл.
             "cxjQFd" - выкл.
@@ -506,7 +464,8 @@ public class BrowserService {
         }
     }
 
-    private void selectTypeFan(int index, List<WebElement> list) {
+    @Override
+    public void selectTypeFan(int index, List<WebElement> list) {
         /*
         "gHdNtY" - вкл.
         "cxjQFd" - выкл.
@@ -522,6 +481,7 @@ public class BrowserService {
         }
     }
 
+    @Override
     public void initializeBrowser() {
         clickElementIfExistsByXpath(".//*[@id='CybotCookiebotDialogBodyLevelButtonLevelOptinAllowAll']");
         // Нажатие на вкладку  Подбор
@@ -530,19 +490,13 @@ public class BrowserService {
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
     }
 
-    public String getPositiveLimit() {
-        return positiveLimit;
-    }
-
-    public void setPositiveLimit(String positiveLimit) {
-        this.positiveLimit = positiveLimit;
-    }
-
-    public String getNegativeLimit() {
-        return negativeLimit;
-    }
-
+    @Override
     public void setNegativeLimit(String negativeLimit) {
-        this.negativeLimit = negativeLimit;
+
+    }
+
+    @Override
+    public void setPositiveLimit(String positiveLimit) {
+
     }
 }

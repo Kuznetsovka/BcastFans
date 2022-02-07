@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.staticClasses;
 
+import com.systemair.bcastfans.service.browser.JSWaiter;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.*;
@@ -31,6 +32,7 @@ public class SingletonBrowserClass {
             chromeOptions.addArguments("start-maximized");
             chromeOptions.setHeadless(true); //выбор фонового режима true
             driver = new ChromeDriver(chromeOptions);
+            JSWaiter.setDriver(driver);
             LOGGER.info("Запуск драйвера!");
             // Ожидание 20 секунд, опрос каждые 2 секунды
             wait = new FluentWait<>(driver)

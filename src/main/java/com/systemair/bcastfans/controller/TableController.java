@@ -1,9 +1,9 @@
 package com.systemair.bcastfans.controller;
 
 import com.systemair.bcastfans.domain.*;
-import com.systemair.bcastfans.service.CalculationService;
-import com.systemair.bcastfans.service.ExcelService;
-import com.systemair.bcastfans.service.TableService;
+import com.systemair.bcastfans.service.CalculationServiceImpl;
+import com.systemair.bcastfans.service.ExcelServiceImpl;
+import com.systemair.bcastfans.service.TableServiceImpl;
 import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,9 +41,9 @@ import static javafx.application.Platform.runLater;
 public class TableController implements Initializable {
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
-    private final TableService tableService = new TableService();
-    private final ExcelService excelService = new ExcelService();
-    private final CalculationService calculationService = new CalculationService(this);
+    private final TableServiceImpl tableServiceImpl = new TableServiceImpl();
+    private final ExcelServiceImpl excelServiceImpl = new ExcelServiceImpl();
+    private final CalculationServiceImpl calculationServiceImpl = new CalculationServiceImpl(this);
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -139,7 +139,7 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
-        calculationService.initializeBrowser();
+        calculationServiceImpl.initializeBrowser();
 //        table.widthProperty().addListener(new ChangeListener<Number>() {
 //            @Override
 //            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
@@ -188,10 +188,10 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        Workbook workbook = excelService.loadWorkbook(table, PATH_WORK);
+        Workbook workbook = excelServiceImpl.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
         Sheet worksheet = workbook.getSheetAt(0);
-        ArrayList<ArrayList<String>> cells = excelService.loadCellsFromWorksheet(worksheet);
+        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
         fillGUITableFromExcel(cells);
     }
 
@@ -201,15 +201,15 @@ public class TableController implements Initializable {
             list.add(new FanUnit(row));
         }
         data = FXCollections.observableArrayList(list);
-        tableService.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType, columnDimension);
+        tableServiceImpl.fillInputData(data, table, columnNumberSystem, columnAirFlow, columnAirDrop, columnTypeMontage, columnSubType, columnDimension);
     }
 
     public void save() {
         Workbook workbook = new XSSFWorkbook();
         Sheet worksheet = workbook.createSheet("sheet");
-        excelService.createCellsInWorksheet(worksheet, table);
-        excelService.setHeader(worksheet, table);
-        excelService.fillWorksheetFromGUI(worksheet, table);
+        excelServiceImpl.createCellsInWorksheet(worksheet, table);
+        excelServiceImpl.setHeader(worksheet, table);
+        excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
         try {
             FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
@@ -227,7 +227,7 @@ public class TableController implements Initializable {
             Instant start = Instant.now();
             if (data == null) showAlert(LOGGER, "Поле данных не заполнено!", Alert.AlertType.INFORMATION);
             if (data.isEmpty()) return;
-            data = calculationService.calculate(
+            data = calculationServiceImpl.calculate(
                     fieldNegativeLimit,
                     fieldPositiveLimit,
                     data,
@@ -239,7 +239,7 @@ public class TableController implements Initializable {
                     listRoofFans);
             if (radioFillAll.isSelected()) {
                 LOGGER.info("Заполнение вентиляторов в таблицу");
-                tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+                tableServiceImpl.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
             }
             Instant finish = Instant.now();
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
@@ -255,7 +255,7 @@ public class TableController implements Initializable {
     }
 
     public void fillFan(ObservableList<FanUnit> data) {
-        tableService.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+        tableServiceImpl.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
     }
 
     public void clear() {
@@ -267,7 +267,7 @@ public class TableController implements Initializable {
     }
 
     public void stop() {
-        calculationService.stopCalculation();
+        calculationServiceImpl.stopCalculation();
     }
 
     public void customPath() {
