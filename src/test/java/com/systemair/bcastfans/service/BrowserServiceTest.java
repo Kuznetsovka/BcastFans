@@ -29,36 +29,39 @@ class BrowserServiceTest {
         browserService.prepareStartPageBeforeCalculation();
     }
 
-    @RepeatedTest(5)
+    @RepeatedTest(2)
     public void calculationTwoFan(){
-        Fan fan = browserService.calculate("2000","500", TypeMontage.RECTANGLE, SubType.NONE,"");
-        String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
-        String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
-        WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
-        WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
-        String button = "(.//button[@class='sc-bxivhb SWiNZ'])[2]";
-        Assertions.assertEquals("2000",wbFlow.getAttribute("value"));
-        Assertions.assertEquals("500,00",wbDrop.getAttribute("value"));
-        Assertions.assertEquals(93098,Integer.valueOf(fan.getArticle()));
+        for (int i = 0; i < 2; i++) {
+            Fan fan = browserService.calculate(String.valueOf(i+2000),String.valueOf(500), TypeMontage.RECTANGLE, SubType.NONE,"");
+            String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
+            String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
+            WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
+            WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
+            String button = "(.//button[@class='sc-bxivhb SWiNZ'])[2]";
+            Assertions.assertEquals(String.valueOf(i+2000),wbFlow.getAttribute("value"));
+            Assertions.assertEquals(500 + ",00",wbDrop.getAttribute("value"));
+            Assertions.assertEquals(93098,Integer.valueOf(fan.getArticle()));
+        }
+
     }
 
-    @RepeatedTest(5)
+    @RepeatedTest(2)
     public void calculationOneFan(){
-        Fan fan = browserService.calculate("100","101", TypeMontage.ROUND, SubType.NONE,"");
-        String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
-        String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
-        WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
-        WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
-        Assertions.assertEquals("100",wbFlow.getAttribute("value"));
-        Assertions.assertEquals("101,00",wbDrop.getAttribute("value"));
-        Assertions.assertEquals(5756,Integer.valueOf(fan.getArticle()));
+        for (int i = 0; i < 2; i++) {
+            Fan fan = browserService.calculate(String.valueOf(100 + i), String.valueOf(101), TypeMontage.ROUND, SubType.NONE, "");
+            String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
+            String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
+            WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
+            WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
+            Assertions.assertEquals("100", wbFlow.getAttribute("value"));
+            Assertions.assertEquals("101,00", wbDrop.getAttribute("value"));
+            Assertions.assertEquals(5756, Integer.valueOf(fan.getArticle()));
+        }
     }
-
 
     @AfterAll
     public static void close(){
         browserService.getSbc().getDriver().quit();
     }
-
 
 }
