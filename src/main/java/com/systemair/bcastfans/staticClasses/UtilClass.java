@@ -5,11 +5,15 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+
+import static java.lang.Math.round;
 
 public class UtilClass {
     private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
@@ -61,6 +65,34 @@ public class UtilClass {
         else
             res = String.format("%dd %02d:%02d:%02d", days, hours, minutes, seconds);
         return res;
+    }
+
+
+    public static String getCorrectSavePath(String path, String name, String model) {
+        String fileName = name + " " + model + ".pdf";
+        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
+        return path + "/" + fileName;
+    }
+
+    public static String parseCell(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case BLANK:
+                return "";
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case NUMERIC:
+                return String.valueOf(round(cell.getNumericCellValue()));
+            case STRING:
+                return cell.getStringCellValue();
+            case FORMULA:
+                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
+                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
+            case ERROR:
+                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
+                throw new IllegalArgumentException("");
+        }
+        return "";
     }
 
     public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {

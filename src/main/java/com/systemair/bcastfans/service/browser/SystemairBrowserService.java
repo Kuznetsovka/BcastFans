@@ -82,16 +82,17 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         do {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
-        } while(!wb.getAttribute("value").equals(""));
-        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath),"class","lnjRPV"));
+        } while (!wb.getAttribute("value").equals(""));
+        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));
         if (sbc.getWait().until(ExpectedConditions.attributeToBe(wb, "value", "")))
-        do {
-            wb.sendKeys(newValue);
-        } while(!wb.getAttribute("value").equals(newValue));
-        JSWaiter.waitAllRequest();
-        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath),"class","fgkAsr"));
+            do {
+                wb.sendKeys(newValue);
+            } while (!wb.getAttribute("value").equals(newValue));
+        //JSWaiter.waitAllRequest();
+        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"));
         //waitForJQueryControls(sbc.getWait());
     }
+
     @Override
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension) {
         checkAvailableConfiguration(typeMontage, subType, dimension);
@@ -106,6 +107,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         Fan fan = fillTableUnit(subType, dimension);
         return (fan != null) ? fan : new Fan();
     }
+
     @Override
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String> selectedFans) {
         checkAvailableConfiguration(typeMontage, subType, dimension);
@@ -176,7 +178,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                 continue;
             }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
-            if(countRow == 1 && firstFan != null)
+            if (countRow == 1 && firstFan != null)
                 result = firstFan;
             else
                 result = getResultFan(row);
@@ -300,10 +302,9 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
             inputTextByLabel("Внешнее давление", airDrop);
-            JSWaiter.waitAllRequest();
+            //JSWaiter.waitAllRequest();
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-            JSWaiter.waitAllRequest();
-            //waitForJQueryControls(sbc.getWait());
+            //JSWaiter.waitAllRequest();
         } catch (InterruptedException | ElementClickInterceptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
@@ -504,12 +505,12 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void setNegativeLimit(String negativeLimit) {
-        this.negativeLimit =  negativeLimit;
+        this.negativeLimit = negativeLimit;
     }
 
     @Override
     public void setPositiveLimit(String positiveLimit) {
-        this.positiveLimit =  positiveLimit;
+        this.positiveLimit = positiveLimit;
     }
 
     @Override

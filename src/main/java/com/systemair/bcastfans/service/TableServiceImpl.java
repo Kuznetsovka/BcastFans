@@ -13,7 +13,8 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
-public class TableServiceImpl {
+public class TableServiceImpl implements TableService {
+    @Override
     public void fillInputData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnNumberSystem, TableColumn<FanUnit, String> columnAirFlow, TableColumn<FanUnit, String> columnAirDrop, TableColumn<FanUnit, TypeMontage> columnTypeMontage, TableColumn<FanUnit, SubType> columnSubType, TableColumn<FanUnit, String> columnDimension) {
         tableInputData.setEditable(true);
 
@@ -99,13 +100,13 @@ public class TableServiceImpl {
 
         tableInputData.setItems(inputData);
     }
-
-    private void setCellFactoryForColumn(TableColumn<FanUnit, String> column, String name) {
+    @Override
+    public void setCellFactoryForColumn(TableColumn<FanUnit, String> column, String name) {
         column.setCellValueFactory(
                 new PropertyValueFactory<>(name));
         column.setCellFactory(TextFieldTableCell.forTableColumn());
     }
-
+    @Override
     public void fillResultData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnModel, TableColumn<FanUnit, String> columnArticle, TableColumn<FanUnit, String> columnPower, TableColumn<FanUnit, String> columnPhase, TableColumn<FanUnit, String> columnPrice) {
         tableInputData.setEditable(true);
 

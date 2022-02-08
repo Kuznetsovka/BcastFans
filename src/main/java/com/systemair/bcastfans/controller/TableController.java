@@ -1,9 +1,7 @@
 package com.systemair.bcastfans.controller;
 
 import com.systemair.bcastfans.domain.*;
-import com.systemair.bcastfans.service.CalculationServiceImpl;
-import com.systemair.bcastfans.service.ExcelServiceImpl;
-import com.systemair.bcastfans.service.TableServiceImpl;
+import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,9 +39,9 @@ import static javafx.application.Platform.runLater;
 public class TableController implements Initializable {
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
-    private final TableServiceImpl tableServiceImpl = new TableServiceImpl();
-    private final ExcelServiceImpl excelServiceImpl = new ExcelServiceImpl();
-    private final CalculationServiceImpl calculationServiceImpl = new CalculationServiceImpl(this);
+    private final TableService tableServiceImpl = new TableServiceImpl();
+    private final ExcelService excelServiceImpl = new ExcelServiceImpl();
+    private final CalculationService calculationServiceImpl = new CalculationServiceImpl(this);
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -76,7 +74,7 @@ public class TableController implements Initializable {
     private Label labelTimeLong;
     @FXML
     private TableView<FanUnit> table;
-    private int[] width = {34, 50, 75, 50, 120, 120, 75, 140, 60, 70, 60, 50};
+    private final int[] width = {34, 50, 75, 50, 120, 120, 75, 140, 60, 70, 60, 50};
     @FXML
     private CheckBox checkBox;
     @FXML
@@ -139,19 +137,7 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
-        calculationServiceImpl.initializeBrowser();
-//        table.widthProperty().addListener(new ChangeListener<Number>() {
-//            @Override
-//            public void changed(ObservableValue<? extends Number> observableValue, Number number, Number t1) {
-//                int countColumns = table.getColumns().size();
-//                double coef = TABLE_SIZE / observableValue.getValue().doubleValue();
-//                for (int i = 0; i < countColumns; i++) {
-//                    table.getColumns().get(i).setMinWidth(width[i] * coef);
-//
-//                }
-//                table.getColumns().get(countColumns).setMinWidth(0);
-//            }
-//        });
+        calculationServiceImpl.getBrowserService().initializeBrowser();
         initializeListBoxes();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);

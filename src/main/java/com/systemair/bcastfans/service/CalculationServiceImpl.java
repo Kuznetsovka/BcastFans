@@ -22,10 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.systemair.bcastfans.staticClasses.UtilClass.getCorrectSavePath;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
-public class CalculationServiceImpl {
+public class CalculationServiceImpl implements CalculationService {
+
     private final BrowserService browserService = new SystemairBrowserService();
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(CalculationServiceImpl.class.getName());
@@ -37,6 +39,7 @@ public class CalculationServiceImpl {
         this.tableController = tableController;
     }
 
+    @Override
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
         isStop = false;
         AtomicInteger index = new AtomicInteger();
@@ -62,7 +65,7 @@ public class CalculationServiceImpl {
                                 t2.start();
                                 t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
-                                String absFileName = getCorrectSavePath(u.getName(), u.getModel());
+                                String absFileName = getCorrectSavePath(tableController.getFieldPathDownloading().toString(), u.getName(), u.getModel());
                                 if (!u.getModel().equals("") && tableController.isSaveTechData().isSelected()) {
                                     downloadUsingNIO(u.getFan().getShortLink(), absFileName);
                                     LOGGER.info("Установка " + u.getName() + " выгружена");
@@ -94,9 +97,6 @@ public class CalculationServiceImpl {
         }
     }
 
-    private <T> boolean notAllSelectedItemsInListBox(ListView<T> list) {
-        return list.getSelectionModel().getSelectedItems().size() != list.getItems().size();
-    }
 
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
@@ -117,6 +117,10 @@ public class CalculationServiceImpl {
         }
     }
 
+    private <T> boolean notAllSelectedItemsInListBox(ListView<T> list) {
+        return list.getSelectionModel().getSelectedItems().size() != list.getItems().size();
+    }
+
     private void initProgressBar(long count, ProgressIndicator pi, Label labelProgressBar) {
         Thread t1 = new Thread(() -> runLater(() -> {
                     pi.setProgress(0.0);
@@ -129,22 +133,12 @@ public class CalculationServiceImpl {
         t1.interrupt();
     }
 
-    private String getCorrectSavePath(String name, String model) {
-        String fileName = name + " " + model + ".pdf";
-        fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
-        String path = tableController.getFieldPathDownloading().getText();
-        return path + "/" + fileName;
-    }
-
     private synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
         pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
     }
 
-    public void initializeBrowser() {
-        browserService.initializeBrowser();
-    }
-
+    @Override
     public void stopCalculation() {
         isStop = true;
     }
@@ -161,5 +155,9 @@ public class CalculationServiceImpl {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
         }
+    }
+    @Override
+    public BrowserService getBrowserService() {
+        return browserService;
     }
 }

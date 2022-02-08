@@ -17,16 +17,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import static com.systemair.bcastfans.staticClasses.UtilClass.parseCell;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
-import static java.lang.Math.round;
 
-public class ExcelServiceImpl {
+public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger LOGGER = Logger.getLogger(ExcelServiceImpl.class.getName());
-    Workbook workbook;
 
+    @Override
     public Workbook loadWorkbook(TableView<FanUnit> table, String path) {
-        workbook = null;
+        Workbook workbook = null;
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open file");
         fileChooser.setInitialDirectory(new File(path));
@@ -48,6 +48,7 @@ public class ExcelServiceImpl {
         return workbook;
     }
 
+    @Override
     public void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
         int lastColumn = table.getColumns().size();
         int countSystems = table.getItems().size();
@@ -71,6 +72,7 @@ public class ExcelServiceImpl {
         worksheet.autoSizeColumn(1);
     }
 
+    @Override
     public void createCellsInWorksheet(Sheet worksheet, TableView<FanUnit> table) {
         int countSystems = table.getItems().size();
         for (int i = 0; i < countSystems + 1; i++) {
@@ -78,6 +80,7 @@ public class ExcelServiceImpl {
         }
     }
 
+    @Override
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
         int lastColumn = 7;
         int row = 0;
@@ -95,12 +98,13 @@ public class ExcelServiceImpl {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            showAlert(LOGGER,"Ошибка считывания данных, не должно быть формул", Alert.AlertType.ERROR);
+            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул", Alert.AlertType.ERROR);
             LOGGER.error(e.getMessage());
         }
         return cells;
     }
 
+    @Override
     public void setHeader(Sheet worksheet, TableView<FanUnit> table) {
         int lastColumn = table.getColumns().size();
         Cell[] cell = new XSSFCell[lastColumn];
@@ -121,24 +125,4 @@ public class ExcelServiceImpl {
         cell[11].setCellValue("Цена");
     }
 
-    public static String parseCell(Cell cell) {
-        if (cell == null) return "";
-        switch (cell.getCellType()) {
-            case BLANK:
-                return "";
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case NUMERIC:
-                return String.valueOf(round(cell.getNumericCellValue()));
-            case STRING:
-                return cell.getStringCellValue();
-            case FORMULA:
-                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
-            case ERROR:
-                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
-                throw new IllegalArgumentException("");
-        }
-        return "";
-    }
 }

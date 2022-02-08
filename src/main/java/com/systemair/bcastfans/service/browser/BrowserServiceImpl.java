@@ -20,6 +20,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
 public abstract class BrowserServiceImpl implements BrowserService {
 
     public SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
+
     protected boolean isContainsInClass(WebElement webElement, String text) {
         return webElement.getAttribute("class").contains(text);
     }
