@@ -10,7 +10,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -83,11 +82,13 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
-        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));
+        sbc.getWait().until(attributeToBe(wb,"value",""));
+        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));Долго
         do {
             wb.sendKeys(newValue);
         } while (!wb.getAttribute("value").equals(newValue));
-        sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"));
+        sbc.getWait().until(attributeToBe(wb,"value",newValue));
+        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"))Долго
     }
 
     @Override
