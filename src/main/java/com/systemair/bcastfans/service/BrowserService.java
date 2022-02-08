@@ -21,7 +21,7 @@ import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class BrowserService {
-    private static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
+    public static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
     private String positiveLimit;
     private String negativeLimit;
     private boolean isClear;
@@ -88,18 +88,38 @@ public class BrowserService {
         sbc.getWait().until(elementToBeClickable(webElement)).click();
     }
 
+
+
     private void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
-        String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
+        // "fgkAsr" - без ошибки "lnjRPV" - c ошибкой
+        String checkXPath = ".//span[text() = '" + findTextLabel + "']";
+        String xpath = checkXPath + "/following::input[1]";
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
-        if (wb.getText().equals(newValue)) return;
+        if (wb.getAttribute("value").equals(newValue)) return;
         LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
-        wb.sendKeys(Keys.CONTROL + "a");
-        sleep(300);
-        wb.sendKeys(Keys.DELETE);
-        sleep(300);
-        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
+        do {
+            wb.sendKeys(Keys.CONTROL + "a");
+            wb.sendKeys(Keys.DELETE);
+        } while (!wb.getAttribute("value").equals(""));
+        sbc.getWait().until(attributeToBe(wb,"value",""));
+        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));
+        do {
             wb.sendKeys(newValue);
+        } while (!wb.getAttribute("value").equals(newValue));
+        sbc.getWait().until(attributeToBe(wb,"value",newValue));
+        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"));
+//        String xpath = ".//span[text() = '" + findTextLabel + "']/following::input[1]";
+//        By by = By.xpath(xpath);
+//        WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
+//        if (wb.getText().equals(newValue)) return;
+//        LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
+//        wb.sendKeys(Keys.CONTROL + "a");
+//        sleep(300);
+//        wb.sendKeys(Keys.DELETE);
+//        sleep(300);
+//        if (sbc.getWait().until(textToBePresentInElement(wb, "")))
+//            wb.sendKeys(newValue);
     }
 
     public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension) {
