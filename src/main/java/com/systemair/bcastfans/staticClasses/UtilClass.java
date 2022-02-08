@@ -9,6 +9,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 
 import java.io.*;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -72,6 +75,20 @@ public class UtilClass {
         String fileName = name + " " + model + ".pdf";
         fileName = fileName.replaceAll("[^а-яА-Яa-zA-Z0-9 .\\-]", "_");
         return path + "/" + fileName;
+    }
+
+    public static void downloadUsingNIO(String urlStr, String file) {
+        try {
+            URL url = new URL(urlStr);
+            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public static String parseCell(Cell cell) {

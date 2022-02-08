@@ -41,7 +41,7 @@ public class TableController implements Initializable {
     public static final int TABLE_SIZE = 905;
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl();
-    private final CalculationService calculationServiceImpl = new CalculationServiceImpl(this);
+    private CalculationService calculationServiceImpl;
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -137,7 +137,8 @@ public class TableController implements Initializable {
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
-        calculationServiceImpl.getBrowserService().initializeBrowser();
+        calculationServiceImpl = new CalculationServiceImpl(this);
+
         initializeListBoxes();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
@@ -146,7 +147,6 @@ public class TableController implements Initializable {
         Image image = new Image(Objects.requireNonNull(input));
         idImage.setImage(image);
     }
-
     private void initializeListBoxes() {
         initializeListBox(listRoundFans, RoundModels.values());
         initializeListBox(listRectangleFans, RectangleModels.values());
@@ -266,6 +266,23 @@ public class TableController implements Initializable {
             fieldPathDownloading.setEditable(true);
             fieldPathDownloading.setText("");
         }
+    }
+
+    public void initProgressBar(long count, ProgressIndicator pi, Label labelProgressBar) {
+        Thread t1 = new Thread(() -> runLater(() -> {
+                    pi.setProgress(0.0);
+                    pi.setVisible(true);
+                    labelProgressBar.setText("Посчитано 0 установок из " + count);
+                    labelProgressBar.setVisible(true);
+                }
+        ));
+        t1.start();
+        t1.interrupt();
+    }
+
+    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
+        pi.setProgress((double) (index) / size);
+        labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {

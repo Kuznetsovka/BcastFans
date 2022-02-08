@@ -52,8 +52,8 @@ class BrowserServiceTest {
             String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
             WebElement wbFlow = sbc.getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
             WebElement wbDrop = sbc.getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
-            Assertions.assertEquals(String.valueOf(2000+i), wbFlow.getAttribute("value"));
-            Assertions.assertEquals((500+ i) +",00", wbDrop.getAttribute("value"));
+            Assertions.assertEquals(String.valueOf(2000 + i), wbFlow.getAttribute("value"));
+            Assertions.assertEquals((500 + i) +",00", wbDrop.getAttribute("value"));
             Assertions.assertEquals(93098, Integer.valueOf(fan.getArticle()));
         }
     }

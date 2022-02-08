@@ -10,11 +10,6 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.TimeoutException;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.getCorrectSavePath;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 import static javafx.application.Platform.runLater;
 
 public class CalculationServiceImpl implements CalculationService {
@@ -37,6 +31,7 @@ public class CalculationServiceImpl implements CalculationService {
 
     public CalculationServiceImpl(TableController tableController) {
         this.tableController = tableController;
+        browserService.initializeBrowser();
     }
 
     @Override
@@ -44,7 +39,7 @@ public class CalculationServiceImpl implements CalculationService {
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         long count = data.filtered(u -> u.getCheck().isSelected()).size();
-        initProgressBar(count, pi, labelProgressBar);
+        tableController.initProgressBar(count, pi, labelProgressBar);
         String negativeLimit = fieldNegativeLimit.getText();
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
@@ -61,7 +56,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 List<String> selectedList = getSelectedList(u.getTypeMontage(), listRectangleFans, listRoofFans, listRoundFans);
                                 getCurrentFan(u, selectedList);
                                 if (isFillTableByOne) tableController.fillFan(data);
-                                Thread t2 = new Thread(() -> runLater(() -> progressBar(index.get(), count, pi, labelProgressBar)));
+                                Thread t2 = new Thread(() -> runLater(() -> tableController.progressBar(index.get(), count, pi, labelProgressBar)));
                                 t2.start();
                                 t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
@@ -97,7 +92,6 @@ public class CalculationServiceImpl implements CalculationService {
         }
     }
 
-
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
             Fan currentFan = new Fan();
@@ -121,44 +115,8 @@ public class CalculationServiceImpl implements CalculationService {
         return list.getSelectionModel().getSelectedItems().size() != list.getItems().size();
     }
 
-    private void initProgressBar(long count, ProgressIndicator pi, Label labelProgressBar) {
-        Thread t1 = new Thread(() -> runLater(() -> {
-                    pi.setProgress(0.0);
-                    pi.setVisible(true);
-                    labelProgressBar.setText("Посчитано 0 установок из " + count);
-                    labelProgressBar.setVisible(true);
-                }
-        ));
-        t1.start();
-        t1.interrupt();
-    }
-
-    private synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
-        pi.setProgress((double) (index) / size);
-        labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
-    }
-
     @Override
     public void stopCalculation() {
         isStop = true;
-    }
-
-    private static void downloadUsingNIO(String urlStr, String file) {
-        try {
-            URL url = new URL(urlStr);
-            ReadableByteChannel rbc = Channels.newChannel(url.openStream());
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
-            rbc.close();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public BrowserService getBrowserService() {
-        return browserService;
     }
 }

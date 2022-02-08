@@ -29,7 +29,7 @@ class BrowserServiceTest {
         browserService.prepareStartPageBeforeCalculation();
     }
 
-    @RepeatedTest(50)
+    //@RepeatedTest(50)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(100 + i), String.valueOf(101 + i), TypeMontage.ROUND, SubType.NONE, "");
@@ -37,8 +37,8 @@ class BrowserServiceTest {
             String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
             WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
             WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
-            Assertions.assertEquals(String.valueOf(100+i), wbFlow.getAttribute("value"));
-            Assertions.assertEquals((101+ i) +",00", wbDrop.getAttribute("value"));
+            Assertions.assertEquals(String.valueOf(100 + i), wbFlow.getAttribute("value"));
+            Assertions.assertEquals((101 + i) +",00", wbDrop.getAttribute("value"));
             Assertions.assertEquals(5756, Integer.valueOf(fan.getArticle()));
         }
     }
@@ -52,8 +52,8 @@ class BrowserServiceTest {
             WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
             WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
             String button = "(.//button[@class='sc-bxivhb SWiNZ'])[2]";
-            Assertions.assertEquals(String.valueOf(2000+i), wbFlow.getAttribute("value"));
-            Assertions.assertEquals((500+ i) +",00", wbDrop.getAttribute("value"));
+            Assertions.assertEquals(String.valueOf(2000 + i), wbFlow.getAttribute("value"));
+            Assertions.assertEquals((500 + i) +",00", wbDrop.getAttribute("value"));
             Assertions.assertEquals(93098, Integer.valueOf(fan.getArticle()));
         }
     }

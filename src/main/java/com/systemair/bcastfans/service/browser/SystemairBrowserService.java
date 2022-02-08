@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.domain.TypeMontage.*;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class SystemairBrowserService extends BrowserServiceImpl {
@@ -83,12 +84,13 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
         sbc.getWait().until(attributeToBe(wb,"value",""));
-        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));Долго
+        //sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS lnjRPV"));
         do {
             wb.sendKeys(newValue);
         } while (!wb.getAttribute("value").equals(newValue));
-        sbc.getWait().until(attributeToBe(wb,"value",newValue));
-        //sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"))Долго
+        sleep(300);
+        //sbc.getWait().until(attributeToBe(wb,"value",newValue));
+        //sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS fgkAsr"));
     }
 
     @Override
@@ -300,9 +302,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         try {
             inputTextByLabel("Расход воздуха", airFlow);
             inputTextByLabel("Внешнее давление", airDrop);
-            //JSWaiter.waitAllRequest();
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-            //JSWaiter.waitAllRequest();
         } catch (InterruptedException | ElementClickInterceptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
@@ -500,7 +500,6 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
     }
-
     @Override
     public void setNegativeLimit(String negativeLimit) {
         this.negativeLimit = negativeLimit;
