@@ -77,20 +77,17 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         String xpath = checkXPath + "/following::input[1]";
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
-        if (wb.getText().equals(newValue)) return;
+        if (wb.getAttribute("value").equals(newValue)) return;
         LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
         do {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
         sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "lnjRPV"));
-        if (sbc.getWait().until(ExpectedConditions.attributeToBe(wb, "value", "")))
-            do {
-                wb.sendKeys(newValue);
-            } while (!wb.getAttribute("value").equals(newValue));
-        //JSWaiter.waitAllRequest();
+        do {
+            wb.sendKeys(newValue);
+        } while (!wb.getAttribute("value").equals(newValue));
         sbc.getWait().until(ExpectedConditions.attributeContains(By.xpath(checkXPath), "class", "fgkAsr"));
-        //waitForJQueryControls(sbc.getWait());
     }
 
     @Override

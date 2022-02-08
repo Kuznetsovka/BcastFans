@@ -100,12 +100,14 @@ public class TableServiceImpl implements TableService {
 
         tableInputData.setItems(inputData);
     }
+
     @Override
     public void setCellFactoryForColumn(TableColumn<FanUnit, String> column, String name) {
         column.setCellValueFactory(
                 new PropertyValueFactory<>(name));
         column.setCellFactory(TextFieldTableCell.forTableColumn());
     }
+
     @Override
     public void fillResultData(ObservableList<FanUnit> inputData, TableView<FanUnit> tableInputData, TableColumn<FanUnit, String> columnModel, TableColumn<FanUnit, String> columnArticle, TableColumn<FanUnit, String> columnPower, TableColumn<FanUnit, String> columnPhase, TableColumn<FanUnit, String> columnPrice) {
         tableInputData.setEditable(true);

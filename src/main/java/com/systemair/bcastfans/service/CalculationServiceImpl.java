@@ -156,6 +156,7 @@ public class CalculationServiceImpl implements CalculationService {
             e.printStackTrace();
         }
     }
+
     @Override
     public BrowserService getBrowserService() {
         return browserService;
