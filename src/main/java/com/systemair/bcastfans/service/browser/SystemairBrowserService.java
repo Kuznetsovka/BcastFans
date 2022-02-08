@@ -83,7 +83,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
-        sbc.getWait().until(attributeToBe(wb,"value",""));
+        sbc.getWait().until(attributeToBe(wb, "value", ""));
         //sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS lnjRPV"));
         do {
             wb.sendKeys(newValue);
@@ -500,6 +500,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
     }
+
     @Override
     public void setNegativeLimit(String negativeLimit) {
         this.negativeLimit = negativeLimit;

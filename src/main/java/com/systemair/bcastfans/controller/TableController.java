@@ -147,6 +147,7 @@ public class TableController implements Initializable {
         Image image = new Image(Objects.requireNonNull(input));
         idImage.setImage(image);
     }
+
     private void initializeListBoxes() {
         initializeListBox(listRoundFans, RoundModels.values());
         initializeListBox(listRectangleFans, RectangleModels.values());
