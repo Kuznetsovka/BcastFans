@@ -76,6 +76,8 @@ public class BrowserService {
                 String value = attributeAndValue[1];
                 if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
             }
+
+            while(!sbc.getDriver().findElement(by).isEnabled()){}
             sbc.getWait().until(elementToBeClickable(by)).click();
         } catch (ElementClickInterceptedException e) {
             LOGGER.error(e.getMessage());
@@ -328,7 +330,6 @@ public class BrowserService {
             inputTextByLabel("Внешнее давление", airDrop);
             sleep(500);
             clickElementIfExistsByXpath("(.//button[@class='sc-bxivhb SWiNZ'])[2]");
-            sleep(500);
         } catch (InterruptedException e) {
             LOGGER.error(e.getMessage());
             e.printStackTrace();
