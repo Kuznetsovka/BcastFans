@@ -208,7 +208,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public boolean isContinueFan(String price, SubType subType, String model, String phase) {
         return ((price.equals("")) ||
-                !phase.contains("поворот на 90") || // Подбирать MUB только версии Прямой поток
+                phase.contains("поворот на 90") || // Подбирать MUB только версии Прямой поток
                 (subType == SubType.ON_ROOF && !model.contains("K ") && !model.contains("MUB"))) ||
                 (model.contains("150"));
     }
