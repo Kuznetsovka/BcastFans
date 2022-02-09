@@ -24,7 +24,7 @@ public class SingletonBrowserClass {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private static WebDriver driver;
     private static Wait<WebDriver> wait;
-    public static final int MAX_LIMIT_TIMEOUT = 20;
+    public static final int MAX_LIMIT_TIMEOUT = 40;
     public static final int LIMIT_REPEAT_TIMEOUT = 500;
 
     private SingletonBrowserClass() {

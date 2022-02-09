@@ -25,6 +25,8 @@ public class BCastFanApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.getIcons().add(new Image("/logo.ico"));
         stage.setTitle("Подбор вентиляторов");
+        stage.setMinWidth(1100.0);
+        stage.setMinHeight(530.0);
         stage.setScene(scene);
         stage.show();
         loadingWindow.dispose();
