@@ -138,7 +138,6 @@ public class TableController implements Initializable {
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
         fieldPathDownloading.setText(PATH_WORK);
         calculationServiceImpl = new CalculationServiceImpl(this);
-
         initializeListBoxes();
         final DirectoryChooser directoryChooser = new DirectoryChooser();
         configuringDirectoryChooser(directoryChooser);
@@ -158,8 +157,6 @@ public class TableController implements Initializable {
         listBox.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listBox.setItems(FXCollections.observableArrayList(values));
         listBox.getSelectionModel().selectAll();
-        listBox.setFixedCellSize(CELL_SIZE);
-        listBox.setPrefHeight(CELL_SIZE * values.length);
     }
 
     private void changeFieldPathDownloading(DirectoryChooser directoryChooser, MouseEvent event) {
