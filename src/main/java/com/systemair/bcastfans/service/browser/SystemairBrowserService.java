@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.domain.TypeMontage.*;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
-import static java.lang.Thread.sleep;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class SystemairBrowserService extends BrowserServiceImpl {
@@ -83,18 +82,18 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
-        sbc.getWait().until(attributeToBe(wb, "value", ""));
-        //sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS lnjRPV"));
+        //sbc.getWait().until(attributeToBe(wb, "value", "")); //Быстрая версия
+        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS lnjRPV"));
         do {
             wb.sendKeys(newValue);
         } while (!wb.getAttribute("value").equals(newValue));
-        sleep(300);
-        //sbc.getWait().until(attributeToBe(wb,"value",newValue));
-        //sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS fgkAsr"));
+        //sleep(300); //Быстрая версия
+        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS fgkAsr"));
     }
 
+    @SafeVarargs
     @Override
-    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension) {
+    public final Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String>... selectedFans) {
         checkAvailableConfiguration(typeMontage, subType, dimension);
         selectSubType(subType);
         selectTypeMontage(typeMontage);
@@ -104,22 +103,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             return new Fan();
         }
         prepareListBeforeCalculation();
-        Fan fan = fillTableUnit(subType, dimension);
-        return (fan != null) ? fan : new Fan();
-    }
-
-    @Override
-    public Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String> selectedFans) {
-        checkAvailableConfiguration(typeMontage, subType, dimension);
-        selectSubType(subType);
-        selectTypeMontage(typeMontage);
-        fillFlowAndDrop(airFlow, airDrop);
-        if (flagWarning) {
-            flagWarning = false;
-            return new Fan();
-        }
-        prepareListBeforeCalculation();
-        Fan fan = fillTableUnit(subType, dimension, selectedFans);
+        Fan fan = findFan(subType, dimension, selectedFans);
         return (fan != null) ? fan : new Fan();
     }
 
@@ -147,17 +131,24 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         isClear = true;
     }
 
-    private Fan fillTableUnit(SubType subType, String dimension) {
+    @SafeVarargs
+    @Override
+    public final Fan findFan(SubType subType, String dimension, List<String>... selectedList) {
         By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
-        Fan result = null;
         boolean isFirst = false;
-        Fan firstFan = new Fan();
+        Fan firstFan = null;
+        Fan result = null;
         List<WebElement> row;
         int countRow = 1;
         int lastRows;
-        while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
-            clickButtonMoreFans(moreFansButtonBy);
-        }
+        if (selectedList.length == 0)
+            while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
+                clickButtonMoreFans(moreFansButtonBy);
+            }
+        else
+            while (isExistElementMoreThen(moreFansButtonBy, 2)) {
+                clickButtonMoreFans(moreFansButtonBy);
+            }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
         do {
             if (countRow > lastRows && !dimension.isEmpty())
@@ -165,7 +156,13 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
             String price = row.get(4).getText();
             String model = row.get(2).findElement(By.tagName("a")).getText();
-            if (isContinueFan(price, subType, model)) {
+            String phase = row.get(2).findElement(By.tagName("small")).getText();
+            if (selectedList.length != 0)
+                if (checkAvailableFanModel(model, selectedList[0])) {
+                    countRow++;
+                    continue;
+                }
+            if (isContinueFan(price, subType, model, phase)) {
                 countRow++;
                 continue;
             }
@@ -182,47 +179,6 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                 result = firstFan;
             else
                 result = getResultFan(row);
-        } while (result == null);
-        return result;
-    }
-
-
-    private Fan fillTableUnit(SubType subType, String dimension, List<String> selectedList) {
-        By moreFansButtonBy = By.xpath(".//button[@class='sc-bxivhb SWiNZ']");
-        boolean isFirst = false;
-        Fan firstFan = null;
-        Fan result = null;
-        List<WebElement> row;
-        int countRow = 1;
-        int lastRows;
-        while (isExistElementMoreThen(moreFansButtonBy, 2)) {
-            clickButtonMoreFans(moreFansButtonBy);
-        }
-        lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
-        do {
-            if (countRow > lastRows && !dimension.isEmpty())
-                return firstFan;
-            row = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[" + countRow + "]/td[contains(@class,'sc-jhAzac')]")));
-            String price = row.get(4).getText();
-            String model = row.get(2).findElement(By.tagName("a")).getText();
-            if (checkAvailableFanModel(model, selectedList)) {
-                countRow++;
-                continue;
-            }
-            if (isContinueFan(price, subType, model)) {
-                countRow++;
-                continue;
-            }
-            if (!isFirst) {
-                firstFan = getResultFan(row);
-                isFirst = true;
-            }
-            if (!model.contains(dimension)) {
-                countRow++;
-                continue;
-            }
-            LOGGER.info("Выбран вентилятор с индексом " + countRow);
-            result = getResultFan(row);
         } while (result == null);
         return result;
     }
@@ -250,8 +206,9 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     }
 
     @Override
-    public boolean isContinueFan(String price, SubType subType, String model) {
+    public boolean isContinueFan(String price, SubType subType, String model, String phase) {
         return ((price.equals("")) ||
+                !phase.contains("поворот на 90") || // Подбирать MUB только версии Прямой поток
                 (subType == SubType.ON_ROOF && !model.contains("K ") && !model.contains("MUB"))) ||
                 (model.contains("150"));
     }

@@ -25,7 +25,7 @@ public class SingletonBrowserClass {
     private static WebDriver driver;
     private static Wait<WebDriver> wait;
     public static final int MAX_LIMIT_TIMEOUT = 20;
-    public static final int LIMIT_REPEAT_TIMEOUT = 2;
+    public static final int LIMIT_REPEAT_TIMEOUT = 500;
 
     private SingletonBrowserClass() {
         try {
@@ -39,7 +39,7 @@ public class SingletonBrowserClass {
             // Ожидание 20 секунд, опрос каждые 2 секунды
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
-                    .pollingEvery(Duration.ofSeconds(LIMIT_REPEAT_TIMEOUT))
+                    .pollingEvery(Duration.ofNanos(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
             LOGGER.info("Загрузка страницы!");
             driver.navigate().to(HOME_URL);

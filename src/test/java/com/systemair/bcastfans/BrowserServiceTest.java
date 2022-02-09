@@ -30,7 +30,7 @@ class BrowserServiceTest {
         browserService.prepareStartPageBeforeCalculation();
     }
 
-    @RepeatedTest(50)
+    @RepeatedTest(5)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(100 + i), String.valueOf(101 + i), TypeMontage.ROUND, SubType.NONE, "");
@@ -44,7 +44,7 @@ class BrowserServiceTest {
         }
     }
 
-    @RepeatedTest(50)
+    @RepeatedTest(5)
     public void calculationTwoFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(2000 + i), String.valueOf(500 + i), TypeMontage.RECTANGLE, SubType.NONE, "");

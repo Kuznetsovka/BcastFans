@@ -32,19 +32,19 @@ public interface BrowserService {
 
     void prepareStartPageBeforeCalculation();
 
-    Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String> selectedList);
-
     void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException;
 
-    Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension);
+    Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String>... selectedFans);
 
     void clearTypeMontage();
 
-    boolean checkAvailableFanModel(String model, List<String> selectedList);
+    Fan findFan(SubType subType, String dimension, List<String>... selectedList);
 
     void fillFlowAndDrop(String airFlow, String airDrop);
 
-    boolean isContinueFan(String price, SubType subType, String model);
+    boolean checkAvailableFanModel(String model, List<String> selectedList);
+
+    boolean isContinueFan(String price, SubType subType, String model, String phase);
 
     void sorting();
 
