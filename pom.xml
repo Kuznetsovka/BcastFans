@@ -6,7 +6,7 @@
 
     <groupId>com.systemair</groupId>
     <artifactId>BcastFans</artifactId>
-    <version>v1.4a</version>
+    <version>v1.5</version>
     <description>Program for calculation fans Systemair</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
@@ -149,11 +149,11 @@
                                 <path>C:\ProgramData\DriverChrome\jre</path>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.4.0</fileVersion>
+                                <fileVersion>1.0.5.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>${project.description}</fileDescription>
                                 <copyright>© 2021 Systemair (KuznetsovKA)</copyright>
-                                <productVersion>1.0.4.0</productVersion>
+                                <productVersion>1.0.5.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>
                                 <companyName>Systemair</companyName>
