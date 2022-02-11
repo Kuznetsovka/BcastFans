@@ -16,6 +16,7 @@ import java.time.Duration;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_DRIVER;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static java.lang.System.exit;
 
 public class SingletonBrowserClass {
 
@@ -45,7 +46,9 @@ public class SingletonBrowserClass {
             driver.navigate().to(HOME_URL);
             LOGGER.info("Страница загружена!");
         } catch (SessionNotCreatedException e) {
-            showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.ERROR);
+            if (driver != null) driver.quit();
+            exit(0);
         } catch (IllegalArgumentException e) {
             showAlert(LOGGER, "Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + PATH_DRIVER, Alert.AlertType.WARNING);
         }

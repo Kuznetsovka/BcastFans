@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -51,6 +52,24 @@ class BrowserServiceTest {
         Assertions.assertEquals(resultArticle, Integer.valueOf(fan.getArticle()));
     }
 
+    @ParameterizedTest
+    @CsvFileSource(resources = "/tests.csv", numLinesToSkip = 1,encoding = "CP1251")
+    void test_CsvFileSource_MultipleParams(String airflow, String airDrop,String typeMontage, String subType, String dimension, String resultArticle) {
+        Fan fan = browserService.calculate(airflow, airDrop, TypeMontage.getByDescription(typeMontage), SubType.getByDescription(subType), dimension);
+        String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
+        String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
+        String negativeLimitXPath = ".//span[text() = 'Отрицательный допуск']/following::input[1]";
+        String positiveLimitXPath = ".//span[text() = 'Положительный допуск']/following::input[1]";
+        WebElement wbFlow = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airFlowXPath)));
+        WebElement wbDrop = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(airDropXPath)));
+        WebElement wbNegativeLimit = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(negativeLimitXPath)));
+        WebElement wbPositiveLimit = browserService.getSbc().getWait().until(visibilityOfElementLocated(By.xpath(positiveLimitXPath)));
+        Assertions.assertEquals(airflow, wbFlow.getAttribute("value"));
+        Assertions.assertEquals(airDrop + ",00", wbDrop.getAttribute("value"));
+        Assertions.assertEquals(String.valueOf(negativeLimit), wbNegativeLimit.getAttribute("value"));
+        Assertions.assertEquals(String.valueOf(positiveLimit), wbPositiveLimit.getAttribute("value"));
+        Assertions.assertEquals(resultArticle, fan.getArticle());
+    }
     //@RepeatedTest(50)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {

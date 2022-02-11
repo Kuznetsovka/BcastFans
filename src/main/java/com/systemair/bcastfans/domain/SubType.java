@@ -22,7 +22,7 @@ public enum SubType implements Describable {
         return this.description;
     }
 
-    static SubType getByDescription(String description) {
+    public static SubType getByDescription(String description) {
         for (SubType desc : SubType.values()) {
             if (desc.getDescription().equals(description)) {
                 return desc;

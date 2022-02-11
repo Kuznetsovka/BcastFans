@@ -106,7 +106,7 @@ public class UtilClass {
                 FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                 return String.valueOf(evaluator.evaluate(cell).getNumberValue());
             case ERROR:
-                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
+                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
                 throw new IllegalArgumentException("");
         }
         return "";
@@ -118,12 +118,21 @@ public class UtilClass {
         alert.setHeaderText("Description:");
         alert.setContentText(alertTxt);
         alert.showAndWait();
-        if (type.equals(Alert.AlertType.WARNING) || type.equals(Alert.AlertType.ERROR)) {
-            LOGGER.error(alertTxt);
-            if (SingletonBrowserClass.getInstanceOfSingletonBrowserClass().getDriver() != null)
-                SingletonBrowserClass.getInstanceOfSingletonBrowserClass().getDriver().close();
-        } else if (type.equals(Alert.AlertType.INFORMATION))
-            LOGGER.info(alertTxt);
+        show(LOGGER, alertTxt, type);
+    }
+
+    private static void show(Logger LOGGER, String alertTxt, Alert.AlertType type) {
+        switch (type) {
+            case WARNING:
+                LOGGER.warn(alertTxt);
+                break;
+            case ERROR:
+                LOGGER.error(alertTxt);
+                break;
+            case INFORMATION:
+                LOGGER.info(alertTxt);
+                break;
+        }
     }
 
     private static String rightStringCase(String txt) {

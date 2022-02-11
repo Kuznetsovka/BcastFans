@@ -98,7 +98,7 @@ public class ExcelServiceImpl implements ExcelService {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул", Alert.AlertType.ERROR);
+            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул", Alert.AlertType.WARNING);
             LOGGER.error(e.getMessage());
         }
         return cells;

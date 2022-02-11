@@ -18,7 +18,7 @@ public enum TypeMontage implements Describable {
         return this.description;
     }
 
-    static TypeMontage getByDescription(String description) {
+    public static TypeMontage getByDescription(String description) {
         for (TypeMontage desc : TypeMontage.values()) {
             if (desc.getDescription().equals(description)) {
                 return desc;
