@@ -33,7 +33,8 @@ public abstract class BrowserServiceImpl implements BrowserService {
     protected boolean isExistElementMoreThen(By by, int moreThen) {
         boolean isExists;
         try {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            //TODO найти более правильный вариант решения
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
             isExists = sbc.getDriver().findElements(by).size() > moreThen;
         } finally {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));

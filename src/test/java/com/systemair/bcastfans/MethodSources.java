@@ -19,6 +19,6 @@ public class MethodSources {
 		return Stream.of(
 				Arguments.of(100, 100, TypeMontage.ROUND, SubType.NONE,"",5756),
 				Arguments.of(2000, 500, TypeMontage.RECTANGLE,SubType.NONE,"", 93098),
-				Arguments.of(340, 200, TypeMontage.ROUND_AND_RECTANGLE,SubType.ON_ROOF,"315", 251015));
+				Arguments.of(340, 200, TypeMontage.ROUND,SubType.ON_ROOF,"315", 251015));
 	}
 }

@@ -142,11 +142,11 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         int countRow = 1;
         int lastRows;
         if (selectedList.length == 0)
-            while (isExistElementMoreThen(moreFansButtonBy, 2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
+            while (isExistElementMoreThen(moreFansButtonBy,2) && (subType.equals(SubType.ON_ROOF) || !dimension.isEmpty())) {
                 clickButtonMoreFans(moreFansButtonBy);
             }
         else
-            while (isExistElementMoreThen(moreFansButtonBy, 2)) {
+            while (isExistElementMoreThen(moreFansButtonBy,2)) {
                 clickButtonMoreFans(moreFansButtonBy);
             }
         lastRows = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody/tr[@class='sc-bRBYWo hmjjYh']"))).size();
@@ -175,7 +175,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                 continue;
             }
             LOGGER.info("Выбран вентилятор с индексом " + countRow);
-            if (countRow == lastRows && firstFan != null)
+            if (countRow == 1 && firstFan != null)
                 result = firstFan;
             else
                 result = getResultFan(row);

@@ -53,9 +53,9 @@ class BrowserServiceTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/tests.csv", numLinesToSkip = 1,encoding = "CP1251")
+    @CsvFileSource(resources = "/tests.csv", numLinesToSkip = 1,encoding = "CP1251",delimiter = ';')
     void test_CsvFileSource_MultipleParams(String airflow, String airDrop,String typeMontage, String subType, String dimension, String resultArticle) {
-        Fan fan = browserService.calculate(airflow, airDrop, TypeMontage.getByDescription(typeMontage), SubType.getByDescription(subType), dimension);
+        Fan fan = browserService.calculate(airflow, airDrop, TypeMontage.getByDescription(typeMontage), SubType.getByDescription(checkAndGet(subType)), checkAndGet(dimension));
         String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
         String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
         String negativeLimitXPath = ".//span[text() = 'Отрицательный допуск']/following::input[1]";
@@ -70,6 +70,11 @@ class BrowserServiceTest {
         Assertions.assertEquals(String.valueOf(positiveLimit), wbPositiveLimit.getAttribute("value"));
         Assertions.assertEquals(resultArticle, fan.getArticle());
     }
+
+    private String checkAndGet(String value) {
+        return (value==null?"":value);
+    }
+
     //@RepeatedTest(50)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {

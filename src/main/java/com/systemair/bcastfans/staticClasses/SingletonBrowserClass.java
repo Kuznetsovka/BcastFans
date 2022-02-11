@@ -37,7 +37,7 @@ public class SingletonBrowserClass {
             driver = new ChromeDriver(chromeOptions);
             JSWaiter.setDriver(driver);
             LOGGER.info("Запуск драйвера!");
-            // Ожидание 20 секунд, опрос каждые 2 секунды
+            // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofNanos(LIMIT_REPEAT_TIMEOUT))
