@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.service.browser;
 
 import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -19,7 +20,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClick
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 public abstract class BrowserServiceImpl implements BrowserService {
-
+    private static final Logger LOGGER = Logger.getLogger(BrowserServiceImpl.class.getName());
     public static final SingletonBrowserClass sbc = SingletonBrowserClass.getInstanceOfSingletonBrowserClass();
 
     protected boolean isContainsInClass(WebElement webElement, String text) {
@@ -27,18 +28,24 @@ public abstract class BrowserServiceImpl implements BrowserService {
     }
 
     protected boolean isWarning() {
-        return isExistElementMoreThen(By.xpath(".//span[@type='warning']"), 0);
-    }
-
-    protected boolean isExistElementMoreThen(By by, int moreThen) {
-        boolean isExists;
+        boolean isWarning;
+        By byWarning = By.xpath(".//span[@type='warning']");
+//        By byTable = By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody");
         try {
-            //TODO найти более правильный вариант решения
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
-            isExists = sbc.getDriver().findElements(by).size() > moreThen;
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            isWarning = sbc.getDriver().findElements(byWarning).size() > 0;
         } finally {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
         }
+//        sbc.getWait().until(or(visibilityOfElementLocated(byWarning),visibilityOfElementLocated(byTable)));
+//        isWarning = sbc.getDriver().findElements(byWarning).size() > 0;
+        LOGGER.info("Warning is " + isWarning);
+        return isWarning;
+    }
+
+    protected boolean isExistElementMoreThenTwo(By by) {
+        boolean isExists;
+        isExists = sbc.getDriver().findElements(by).size() > 2;
         return isExists;
     }
 
@@ -60,13 +67,16 @@ public abstract class BrowserServiceImpl implements BrowserService {
         By by = By.xpath(xpath);
 
         sbc.getWait().until(visibilityOfElementLocated(by));
+        LOGGER.info("Кнопка найдена!");
         if (attributeAndValue.length > 0) {
             String attribute = attributeAndValue[0];
             String value = attributeAndValue[1];
             if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
         }
         waitEnableElement(sbc.getDriver().findElement(by));
+        LOGGER.info("Кнопка доступна!");
         sbc.getWait().until(elementToBeClickable(by)).click();
+        LOGGER.info("Кнопка нажата!");
     }
 
     public static void waitEnableElement(WebElement wb) {

@@ -34,8 +34,8 @@ class BrowserServiceTest {
 
 
     @ParameterizedTest
-    @MethodSource("com.systemair.bcastfans.MethodSources#argumentOfTests")
-    void test_MethodSource_MultipleParams(Integer airflow, Integer airDrop,TypeMontage typeMontage, SubType subType, String dimension, Integer resultArticle) {
+    @MethodSource({"com.systemair.bcastfans.MethodSources#argumentOfTests"})
+    void test_MethodSource_MultipleParams(Integer airflow, Integer airDrop,TypeMontage typeMontage, SubType subType, String dimension, String resultArticle) {
         Fan fan = browserService.calculate(String.valueOf(airflow), String.valueOf(airDrop), typeMontage, subType, dimension);
         String airFlowXPath = ".//span[text() = 'Расход воздуха']/following::input[1]";
         String airDropXPath = ".//span[text() = 'Внешнее давление']/following::input[1]";
@@ -49,8 +49,9 @@ class BrowserServiceTest {
         Assertions.assertEquals(airDrop + ",00", wbDrop.getAttribute("value"));
         Assertions.assertEquals(String.valueOf(negativeLimit), wbNegativeLimit.getAttribute("value"));
         Assertions.assertEquals(String.valueOf(positiveLimit), wbPositiveLimit.getAttribute("value"));
-        Assertions.assertEquals(resultArticle, Integer.valueOf(fan.getArticle()));
+        Assertions.assertEquals(resultArticle, fan.getArticle());
     }
+
 
     @ParameterizedTest
     @CsvFileSource(resources = "/tests.csv", numLinesToSkip = 1,encoding = "CP1251",delimiter = ';')
@@ -68,7 +69,7 @@ class BrowserServiceTest {
         Assertions.assertEquals(airDrop + ",00", wbDrop.getAttribute("value"));
         Assertions.assertEquals(String.valueOf(negativeLimit), wbNegativeLimit.getAttribute("value"));
         Assertions.assertEquals(String.valueOf(positiveLimit), wbPositiveLimit.getAttribute("value"));
-        Assertions.assertEquals(resultArticle, fan.getArticle());
+        Assertions.assertEquals(checkAndGet(resultArticle), fan.getArticle());
     }
 
     private String checkAndGet(String value) {
