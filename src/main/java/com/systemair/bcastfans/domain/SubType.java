@@ -1,6 +1,6 @@
 package com.systemair.bcastfans.domain;
 
-import com.systemair.bcastfans.intarface.Describable;
+import com.systemair.bcastfans.myInterface.Describable;
 
 public enum SubType implements Describable {
     NONE(""),
