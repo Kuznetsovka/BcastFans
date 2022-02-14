@@ -8,6 +8,7 @@ import com.systemair.bcastfans.service.browser.SystemairBrowserService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -76,7 +77,7 @@ class BrowserServiceTest {
         return (value==null?"":value);
     }
 
-    //@RepeatedTest(50)
+    @RepeatedTest(50)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(100 + i), String.valueOf(101 + i), TypeMontage.ROUND, SubType.NONE, "");
@@ -90,7 +91,7 @@ class BrowserServiceTest {
         }
     }
 
-    //@RepeatedTest(50)
+    @RepeatedTest(50)
     public void calculationTwoFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(2000 + i), String.valueOf(500 + i), TypeMontage.RECTANGLE, SubType.NONE, "");
@@ -110,6 +111,5 @@ class BrowserServiceTest {
     public static void close(){
         browserService.getSbc().getDriver().quit();
     }
-
 
 }

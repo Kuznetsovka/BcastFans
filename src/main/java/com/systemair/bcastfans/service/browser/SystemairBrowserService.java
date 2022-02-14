@@ -94,7 +94,8 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @SafeVarargs
     @Override
     public final Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String>... selectedFans) {
-        checkAvailableConfiguration(typeMontage, subType, dimension);
+        if (!checkAvailableConfiguration(typeMontage, subType, dimension))
+            return new Fan();
         selectSubType(subType);
         selectTypeMontage(typeMontage);
         fillFlowAndDrop(airFlow, airDrop);
@@ -107,13 +108,32 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         return (fan != null) ? fan : new Fan();
     }
 
-    private void checkAvailableConfiguration(TypeMontage typeMontage, SubType subType, String dimension) {
-        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT)
+    private boolean checkAvailableConfiguration(TypeMontage typeMontage, SubType subType, String dimension) {
+        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT) {
             showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-        if (typeMontage == ROUND && subType == SubType.KITCHEN)
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухоненных не существует!", Alert.AlertType.WARNING);
-        if (!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) && !dimension.isEmpty())
+            return false;
+        }
+        if (typeMontage == ROUND_AND_RECTANGLE && subType == SubType.SMOKE_EXTRACT) {
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            return false;
+        }
+        if (typeMontage == ROOF && subType == SubType.ON_ROOF) {
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            return false;
+        }
+        if (typeMontage == ROUND && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
+            return false;
+        }
+        if (typeMontage == ROUND_AND_RECTANGLE && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
+            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
+            return false;
+        }
+        if ((!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) || (subType == SubType.KITCHEN || subType == SubType.SMOKE_EXTRACT)) && !dimension.isEmpty()) {
             showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+            return false;
+        }
+        return true;
     }
 
     private void prepareListBeforeCalculation() {
