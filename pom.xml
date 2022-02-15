@@ -6,7 +6,7 @@
 
     <groupId>com.systemair</groupId>
     <artifactId>BcastFans</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>v1.6</version>
     <description>Program for calculation fans Systemair</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
@@ -91,11 +91,6 @@
             <artifactId>selenium-support</artifactId>
             <version>4.1.2</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.seleniumhq.selenium</groupId>-->
-<!--            <artifactId>selenium-devtools-v93</artifactId>-->
-<!--            <version>4.0.0-rc-1</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
@@ -163,11 +158,11 @@
                                 <path>C:\ProgramData\DriverChrome\jre</path>
                             </jre>
                             <versionInfo>
-                                <fileVersion>1.0.5.1</fileVersion>
+                                <fileVersion>1.0.6.0</fileVersion>
                                 <txtFileVersion>${project.version}</txtFileVersion>
                                 <fileDescription>${project.description}</fileDescription>
                                 <copyright>© 2021 Systemair (KuznetsovKA)</copyright>
-                                <productVersion>1.0.5.1</productVersion>
+                                <productVersion>1.0.6.0</productVersion>
                                 <txtProductVersion>${project.version}</txtProductVersion>
                                 <productName>${project.name}</productName>
                                 <companyName>Systemair</companyName>

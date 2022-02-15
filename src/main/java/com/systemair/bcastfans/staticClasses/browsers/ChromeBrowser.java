@@ -6,7 +6,7 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.Wait;
 
@@ -14,7 +14,7 @@ import java.time.Duration;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
-public class ChromeBrowser implements Browser<ChromeDriver> {
+public class ChromeBrowser {
 
     private ChromeDriver driver;
     private Wait<ChromeDriver> wait;
@@ -22,7 +22,7 @@ public class ChromeBrowser implements Browser<ChromeDriver> {
     public ChromeBrowser() {
         try{
         System.setProperty("webdriver.edge.driver", CHROME_DRIVER);
-        EdgeOptions chromeOptions = new EdgeOptions();
+        ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setBrowserVersion("93");
         chromeOptions.addArguments("start-maximized");
         chromeOptions.addArguments("enable-automation");
@@ -44,11 +44,10 @@ public class ChromeBrowser implements Browser<ChromeDriver> {
         }
     }
 
-    @Override
+
     public Wait<ChromeDriver> getWait() {
         return wait;
     }
-    @Override
     public ChromeDriver getDriver() {
         return driver;
     }

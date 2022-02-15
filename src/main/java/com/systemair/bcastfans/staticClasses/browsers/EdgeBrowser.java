@@ -14,18 +14,18 @@ import java.time.Duration;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
-public class EdgeBrowser implements Browser<EdgeDriver> {
+public class EdgeBrowser {
     EdgeDriver driver;
     Wait<EdgeDriver> wait;
     private static final Logger LOGGER = Logger.getLogger(EdgeBrowser.class.getName());
     public EdgeBrowser() {
         try {
             System.setProperty("webdriver.edge.driver", EDGE_DRIVER);
-            EdgeOptions chromeOptions = new EdgeOptions();
-            chromeOptions.addArguments("start-maximized");
-            chromeOptions.addArguments("enable-automation");
-            chromeOptions.addArguments("--headless");
-            driver = new EdgeDriver(chromeOptions);
+            EdgeOptions edgeOptions = new EdgeOptions();
+            edgeOptions.addArguments("start-maximized");
+            edgeOptions.addArguments("enable-automation");
+            edgeOptions.addArguments("--headless");
+            driver = new EdgeDriver(edgeOptions);
             JSWaiter.setDriver(driver);
             // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)
@@ -37,7 +37,6 @@ public class EdgeBrowser implements Browser<EdgeDriver> {
         }
     }
 
-    @Override
     public Wait<EdgeDriver> getWait() {
         return wait;
     }
