@@ -1,5 +1,9 @@
 package com.systemair.bcastfans.staticClasses;
 
+import com.systemair.bcastfans.staticClasses.browsers.Browser;
+import com.systemair.bcastfans.staticClasses.browsers.ChromeBrowser;
+import com.systemair.bcastfans.staticClasses.browsers.EdgeBrowser;
+import com.systemair.bcastfans.staticClasses.browsers.TypeBrowser;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.SessionNotCreatedException;
@@ -8,9 +12,9 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.support.ui.Wait;
 
-import static com.systemair.bcastfans.staticClasses.TypeBrowser.CHROME;
-import static com.systemair.bcastfans.staticClasses.TypeBrowser.EDGE;
 import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.browsers.TypeBrowser.CHROME;
+import static com.systemair.bcastfans.staticClasses.browsers.TypeBrowser.EDGE;
 import static java.lang.System.exit;
 
 public class SingletonBrowserClass {
@@ -24,7 +28,6 @@ public class SingletonBrowserClass {
 
     private SingletonBrowserClass() {
         try {
-            Browser browser;
             if (typeBrowser == EDGE) {
                 Browser<EdgeDriver> browser = new EdgeBrowser();
                 wait = browser.getWait();
@@ -32,17 +35,15 @@ public class SingletonBrowserClass {
             } else if (typeBrowser == CHROME) {
                 Browser<ChromeDriver> browser = new ChromeBrowser();
                 wait = browser.getWait();
-                driver = ((ChromeDriver) browser).getDriver();
+                driver = ((ChromeBrowser) browser).getDriver();
             }
             LOGGER.info("Загрузка страницы!");
-            browser.getDriver.navigate().to(HOME_URL);
+            driver.navigate().to(HOME_URL);
             LOGGER.info("Страница загружена!");
         } catch (SessionNotCreatedException e) {
             showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.ERROR);
             if (driver != null) driver.quit();
             exit(0);
-        } catch (IllegalArgumentException e) {
-            showAlert(LOGGER, "Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + PATH_DRIVER, Alert.AlertType.WARNING);
         }
     }
 
@@ -57,4 +58,7 @@ public class SingletonBrowserClass {
         return driver;
     }
 
+    public Wait<WebDriver> getWait() {
+        return wait;
+    }
 }

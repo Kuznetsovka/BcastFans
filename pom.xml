@@ -6,7 +6,7 @@
 
     <groupId>com.systemair</groupId>
     <artifactId>BcastFans</artifactId>
-    <version>v1.5</version>
+    <version>0.0.1-SNAPSHOT</version>
     <description>Program for calculation fans Systemair</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
@@ -131,6 +131,15 @@
             <version>1.2.17</version>
         </dependency>
     </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.systemair</groupId>
+                <artifactId>BcastFans</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <build>
         <plugins>
             <plugin>

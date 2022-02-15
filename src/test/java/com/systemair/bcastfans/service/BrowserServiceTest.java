@@ -15,12 +15,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_DRIVER;
+import static com.systemair.bcastfans.staticClasses.UtilClass.EDGE_DRIVER;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 class BrowserServiceTest {
     static{
-        PATH_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
+        EDGE_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
     }
     private static final BrowserService browserService = new SystemairBrowserService();
     private int negativeLimit = 0;

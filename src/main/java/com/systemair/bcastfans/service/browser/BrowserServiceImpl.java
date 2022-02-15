@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.systemair.bcastfans.staticClasses.SingletonBrowserClass.MAX_LIMIT_TIMEOUT;
+import static com.systemair.bcastfans.staticClasses.UtilClass.MAX_LIMIT_TIMEOUT;
 import static org.awaitility.Awaitility.with;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
