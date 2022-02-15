@@ -21,7 +21,6 @@ import static java.lang.Math.round;
 public class UtilClass {
     private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
     private static final Logger LOGGER = Logger.getLogger(UtilClass.class.getName());
-    private static String PATH_JRE;
     public static String PATH_WORK;
     public static String PATH_DRIVER;
 
@@ -46,7 +45,6 @@ public class UtilClass {
             properties.load(in);
             PATH_WORK = properties.getProperty("path.work");
             PATH_DRIVER = properties.getProperty("path.driver");
-            PATH_JRE = properties.getProperty("path.jre");
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(LOGGER, "Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);

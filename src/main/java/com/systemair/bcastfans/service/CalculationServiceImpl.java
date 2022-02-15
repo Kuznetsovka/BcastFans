@@ -60,7 +60,7 @@ public class CalculationServiceImpl implements CalculationService {
                                 t2.start();
                                 t2.interrupt();
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
-                                String absFileName = getCorrectSavePath(tableController.getFieldPathDownloading().toString(), u.getName(), u.getModel());
+                                String absFileName = getCorrectSavePath(tableController.getFieldPathDownloading().getText(), u.getName(), u.getModel());
                                 if (!u.getModel().equals("") && tableController.isSaveTechData().isSelected()) {
                                     downloadUsingNIO(u.getFan().getShortLink(), absFileName);
                                     LOGGER.info("Установка " + u.getName() + " выгружена");

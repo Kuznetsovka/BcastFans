@@ -30,15 +30,12 @@ public abstract class BrowserServiceImpl implements BrowserService {
     protected boolean isWarning() {
         boolean isWarning;
         By byWarning = By.xpath(".//span[@type='warning']");
-//        By byTable = By.xpath(".//table[@class='sc-Rmtcm djcDFD']/tbody");
         try {
-            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(1));
+            sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofMillis(1500));
             isWarning = sbc.getDriver().findElements(byWarning).size() > 0;
         } finally {
             sbc.getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(MAX_LIMIT_TIMEOUT));
         }
-//        sbc.getWait().until(or(visibilityOfElementLocated(byWarning),visibilityOfElementLocated(byTable)));
-//        isWarning = sbc.getDriver().findElements(byWarning).size() > 0;
         LOGGER.info("Warning is " + isWarning);
         return isWarning;
     }
@@ -65,15 +62,13 @@ public abstract class BrowserServiceImpl implements BrowserService {
 
     protected void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) throws ElementClickInterceptedException {
         By by = By.xpath(xpath);
-
         sbc.getWait().until(visibilityOfElementLocated(by));
-        LOGGER.info("Кнопка найдена!");
         if (attributeAndValue.length > 0) {
             String attribute = attributeAndValue[0];
             String value = attributeAndValue[1];
             if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
         }
-        waitEnableElement(sbc.getDriver().findElement(by));
+        //waitEnableElement(sbc.getDriver().findElement(by));
         LOGGER.info("Кнопка доступна!");
         sbc.getWait().until(elementToBeClickable(by)).click();
         LOGGER.info("Кнопка нажата!");
