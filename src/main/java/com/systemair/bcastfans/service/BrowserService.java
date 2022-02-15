@@ -260,7 +260,7 @@ public class BrowserService {
 
     private boolean isContinueFan(String price, SubType subType, String model) {
         return ((price.equals("")) ||
-                (subType == SubType.ON_ROOF && !model.contains("K ") && !model.contains("MUB"))) ||
+                (subType == SubType.ON_ROOF && !model.matches("K ") && !model.contains("MUB"))) ||
                 (model.contains("150"));
     }
 
