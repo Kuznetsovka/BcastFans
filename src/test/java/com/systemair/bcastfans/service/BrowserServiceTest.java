@@ -20,7 +20,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElem
 
 class BrowserServiceTest {
     static{
-        PATH_DRIVER ="C:\\ProgramData\\DriverChrome\\chromedriver\\chromedriver.exe";
+        PATH_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
     }
     private static final BrowserService browserService = new SystemairBrowserService();
     private int negativeLimit = 0;
@@ -77,7 +77,7 @@ class BrowserServiceTest {
         return (value==null?"":value);
     }
 
-    @RepeatedTest(30)
+    @RepeatedTest(150)
     public void calculationOneFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(100 + i), String.valueOf(101 + i), TypeMontage.ROUND, SubType.NONE, "");

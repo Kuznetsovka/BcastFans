@@ -22,7 +22,10 @@ public class UtilClass {
     private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
     private static final Logger LOGGER = Logger.getLogger(UtilClass.class.getName());
     public static String PATH_WORK;
-    public static String PATH_DRIVER;
+    public static String CHROME_DRIVER;
+    public static String EDGE_DRIVER;
+    public static final int MAX_LIMIT_TIMEOUT = 40;
+    public static final int LIMIT_REPEAT_TIMEOUT = 500;
 
     public static FileOutputStream getFileOutputStream(TableView<FanUnit> table, String path) throws FileNotFoundException {
         FileChooser fileChooser = new FileChooser();
@@ -44,7 +47,8 @@ public class UtilClass {
                     StandardCharsets.UTF_8));
             properties.load(in);
             PATH_WORK = properties.getProperty("path.work");
-            PATH_DRIVER = properties.getProperty("path.driver");
+            CHROME_DRIVER = properties.getProperty("path.driver");
+            EDGE_DRIVER = properties.getProperty("path.edge.driver");
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(LOGGER, "Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
