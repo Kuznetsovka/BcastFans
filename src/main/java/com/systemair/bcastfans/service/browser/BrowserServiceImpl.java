@@ -11,11 +11,9 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.MAX_LIMIT_TIMEOUT;
-import static org.awaitility.Awaitility.with;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
@@ -68,15 +66,9 @@ public abstract class BrowserServiceImpl implements BrowserService {
             String value = attributeAndValue[1];
             if (getWebElementByXpath(xpath).getAttribute(attribute).equals(value)) return;
         }
-        //waitEnableElement(sbc.getDriver().findElement(by));
         LOGGER.info("Кнопка доступна!");
         sbc.getWait().until(elementToBeClickable(by)).click();
         LOGGER.info("Кнопка нажата!");
-    }
-
-    public static void waitEnableElement(WebElement wb) {
-        with().pollDelay(100, TimeUnit.MILLISECONDS).await().atMost
-                (10, TimeUnit.SECONDS).until(wb::isEnabled);
     }
 
     protected void clickElementWithScroll(WebElement webElement) {

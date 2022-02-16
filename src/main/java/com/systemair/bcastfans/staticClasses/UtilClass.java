@@ -117,12 +117,15 @@ public class UtilClass {
     }
 
     public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(rightStringCase(type.toString()));
-        alert.setHeaderText("Description:");
-        alert.setContentText(alertTxt);
-        alert.showAndWait();
-        show(LOGGER, alertTxt, type);
+//        try {
+//            Alert alert = new Alert(type);
+//            alert.setTitle(rightStringCase(type.toString()));
+//            alert.setHeaderText("Description:");
+//            alert.setContentText(alertTxt);
+//            alert.showAndWait();
+//            show(LOGGER, alertTxt, type);
+//        } catch(Exception ignored) {
+//        }
     }
 
     private static void show(Logger LOGGER, String alertTxt, Alert.AlertType type) {

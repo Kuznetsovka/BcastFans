@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.staticClasses.browsers;
 
-import com.systemair.bcastfans.service.browser.JSWaiter;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -21,7 +20,7 @@ public class ChromeBrowser {
     private static final Logger LOGGER = Logger.getLogger(ChromeBrowser.class.getName());
     public ChromeBrowser() {
         try{
-        System.setProperty("webdriver.edge.driver", CHROME_DRIVER);
+        System.setProperty("webdriver.chrome.driver", CHROME_DRIVER);
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setBrowserVersion("93");
         chromeOptions.addArguments("start-maximized");
@@ -33,7 +32,6 @@ public class ChromeBrowser {
         chromeOptions.addArguments("--disable-browser-side-navigation");
         chromeOptions.addArguments("--disable-gpu");
         driver = new ChromeDriver(chromeOptions);
-        JSWaiter.setDriver(driver);
         // Ожидание 40 секунд, опрос каждые 0.5 секунды
         wait = new FluentWait<>(driver)
                 .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))

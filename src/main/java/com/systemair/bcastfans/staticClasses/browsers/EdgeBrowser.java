@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.staticClasses.browsers;
 
-import com.systemair.bcastfans.service.browser.JSWaiter;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -26,7 +25,6 @@ public class EdgeBrowser {
             edgeOptions.addArguments("enable-automation");
             edgeOptions.addArguments("--headless");
             driver = new EdgeDriver(edgeOptions);
-            JSWaiter.setDriver(driver);
             // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))

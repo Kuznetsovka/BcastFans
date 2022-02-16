@@ -15,16 +15,16 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.EDGE_DRIVER;
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
 class BrowserServiceTest {
-    static{
-        EDGE_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
-    }
+//    static{
+//        EDGE_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
+//        BROWSER = "EDGE";
+//    }
     private static final BrowserService browserService = new SystemairBrowserService();
-    private int negativeLimit = 0;
-    private int positiveLimit = 100;
+    private final int negativeLimit = 0;
+    private final int positiveLimit = 100;
     @BeforeAll
     public static void init(){
         browserService.setNegativeLimit("0");
@@ -91,7 +91,7 @@ class BrowserServiceTest {
         }
     }
 
-    @RepeatedTest(30)
+    @RepeatedTest(150)
     public void calculationTwoFan(){
         for (int i = 0; i < 2; i++) {
             Fan fan = browserService.calculate(String.valueOf(2000 + i), String.valueOf(500 + i), TypeMontage.RECTANGLE, SubType.NONE, "");
