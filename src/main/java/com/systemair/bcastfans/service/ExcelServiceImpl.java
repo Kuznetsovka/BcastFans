@@ -50,12 +50,16 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
+        String url;
         int lastColumn = table.getColumns().size();
         int countSystems = table.getItems().size();
         Cell[] cell = new XSSFCell[lastColumn];
         for (int count = 0; count < countSystems; count++) {
             FanUnit cells = table.getItems().get(count);
-            String url = cells.getFan().getShortLink();
+            if (cells.getFan() != null)
+                url = cells.getFan().getShortLink();
+            else
+                url = "";
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
                 Integer column = entry.getKey();
                 String value = entry.getValue();

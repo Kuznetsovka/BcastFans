@@ -17,6 +17,7 @@ import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.round;
+import static javafx.application.Platform.runLater;
 
 public class UtilClass {
     private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
@@ -117,15 +118,14 @@ public class UtilClass {
     }
 
     public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
-//        try {
-//            Alert alert = new Alert(type);
-//            alert.setTitle(rightStringCase(type.toString()));
-//            alert.setHeaderText("Description:");
-//            alert.setContentText(alertTxt);
-//            alert.showAndWait();
-//            show(LOGGER, alertTxt, type);
-//        } catch(Exception ignored) {
-//        }
+        new Thread(() -> runLater(() -> {
+            Alert alert = new Alert(type);
+            alert.setTitle(rightStringCase(type.toString()));
+            alert.setHeaderText("Description:");
+            alert.setContentText(alertTxt);
+            alert.showAndWait();
+            show(LOGGER, alertTxt, type);
+        })).start();
     }
 
     private static void show(Logger LOGGER, String alertTxt, Alert.AlertType type) {

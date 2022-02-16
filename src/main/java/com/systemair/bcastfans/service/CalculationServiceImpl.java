@@ -100,8 +100,8 @@ public class CalculationServiceImpl implements CalculationService {
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
             } catch (TimeoutException | NoSuchSessionException e) {
-                Thread t = new Thread(() -> runLater(() -> showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING)));
-                t.start();
+                showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING);
+
             }
             u.setFan(currentFan);
             hashMap.put(u, currentFan);
