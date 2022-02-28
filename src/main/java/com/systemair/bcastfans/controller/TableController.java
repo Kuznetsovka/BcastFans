@@ -5,6 +5,7 @@ import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -37,6 +38,7 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
+    //protected App exchangersApplication;
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
     private final TableService tableServiceImpl = new TableServiceImpl();
@@ -294,5 +296,9 @@ public class TableController implements Initializable {
 
     public CheckBox isSaveTechData() {
         return isSaveTechData;
+    }
+
+    public void calcExchangers(ActionEvent actionEvent) {
+        //exchangersApplication.run();
     }
 }

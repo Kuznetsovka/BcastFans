@@ -19,8 +19,8 @@ public class FanUnit {
     private SimpleStringProperty price;
     private TypeMontage typeMontage;
     private SubType subType;
-    private SimpleStringProperty dimension;
-    private CheckBox check = new CheckBox();
+    private final SimpleStringProperty dimension;
+    private final CheckBox check = new CheckBox();
     private Fan fan;
     private Map<Integer, String> row = new HashMap<>();
 

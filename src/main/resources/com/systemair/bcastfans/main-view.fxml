@@ -5,8 +5,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="-Infinity" minWidth="1100.0" prefHeight="560.0" minHeight="460.0" prefWidth="1060.0"
-      spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
+<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="-Infinity" minHeight="460.0" minWidth="1100.0" prefHeight="560.0"
+      prefWidth="1060.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
@@ -36,16 +36,14 @@
                           style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
                         <HBox spacing="10.0">
                             <Label prefWidth="150.0" text="Отрицательный допуск"/>
-                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
-                                       text="0"/>
+                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="0"/>
                             <VBox.margin>
                                 <Insets/>
                             </VBox.margin>
                         </HBox>
                         <HBox spacing="10.0">
                             <Label prefWidth="150.0" text="Положительный допуск"/>
-                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
-                                       text="100"/>
+                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="100"/>
                         </HBox>
                         <HBox>
                             <Label prefHeight="17.0" text="Путь сохранения" HBox.hgrow="ALWAYS">
@@ -59,8 +57,8 @@
                                     <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
                                 </padding>
                             </CheckBox>
-                            <TextField fx:id="fieldPathDownloading" disable="true" editable="false"
-                                       prefHeight="25.0" prefWidth="300.0">
+                            <TextField fx:id="fieldPathDownloading" disable="true" editable="false" prefHeight="25.0"
+                                       prefWidth="300.0">
                                 <HBox.margin>
                                     <Insets left="30.0"/>
                                 </HBox.margin>
@@ -72,8 +70,7 @@
                             <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0"
                                   style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;"
                                   HBox.hgrow="ALWAYS">
-                                <Label text="Выбор способа заполнения таблицы" wrapText="true"
-                                       VBox.vgrow="ALWAYS">
+                                <Label text="Выбор способа заполнения таблицы" wrapText="true" VBox.vgrow="ALWAYS">
                                     <VBox.margin>
                                         <Insets/>
                                     </VBox.margin>
@@ -89,11 +86,9 @@
                                              nodeOrientation="LEFT_TO_RIGHT" selected="true"
                                              text="Заполнение после подбора" toggleGroup="$methodFillTable"/>
                             </VBox>
-                            <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0"
-                                  HBox.hgrow="ALWAYS">
+                            <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                                 <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0"
-                                          spacing="10.0"
+                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0"
                                           style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;"
                                           HBox.hgrow="ALWAYS">
                                         <Label alignment="TOP_CENTER" contentDisplay="TOP" minWidth="-Infinity"
@@ -103,8 +98,7 @@
                                                   text="Да/Нет"/>
                                     </VBox>
                                     <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                                        <ProgressIndicator fx:id="progressIndicator" progress="0.0"
-                                                           visible="false">
+                                        <ProgressIndicator fx:id="progressIndicator" progress="0.0" visible="false">
                                         </ProgressIndicator>
                                     </VBox>
                                 </HBox>
@@ -129,23 +123,23 @@
                 <HBox VBox.vgrow="ALWAYS">
                     <TableView fx:id="table" maxHeight="500.0" minWidth="905.0" HBox.hgrow="ALWAYS">
                         <columns>
-                            <TableColumn fx:id="columnChoose" prefWidth="35.0" minWidth="35.0" resizable="false">
+                            <TableColumn fx:id="columnChoose" minWidth="35.0" prefWidth="35.0" resizable="false">
                                 <graphic>
-                                    <CheckBox fx:id="checkBox" mnemonicParsing="false"
-                                              onAction="#checkBoxInitialize" prefHeight="20.0"
-                                              prefWidth="10.0"/>
+                                    <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize"
+                                              prefHeight="20.0" prefWidth="10.0"/>
                                 </graphic>
                             </TableColumn>
                             <TableColumn fx:id="columnNumberSystem" minWidth="50.0" prefWidth="50.0" text="#"/>
                             <TableColumn fx:id="columnAirFlow" minWidth="75.0" prefWidth="75.0" text="Расход"/>
                             <TableColumn fx:id="columnAirDrop" minWidth="50.0" prefWidth="50.0" text="Потери"/>
-                            <TableColumn fx:id="columnTypeMontage" minWidth="120.0" prefWidth="120.0" text="Тип монтажа"/>
+                            <TableColumn fx:id="columnTypeMontage" minWidth="120.0" prefWidth="120.0"
+                                         text="Тип монтажа"/>
                             <TableColumn fx:id="columnSubType" minWidth="120.0" prefWidth="120.0" text="Тип установки"/>
                             <TableColumn fx:id="columnDimension" minWidth="75.0" prefWidth="75.0" text="Размер"/>
                             <TableColumn fx:id="columnModel" minWidth="140.0" prefWidth="140.0" text="Модель"/>
                             <TableColumn fx:id="columnArticle" minWidth="60.0" prefWidth="60.0" text="Артикул"/>
                             <TableColumn fx:id="columnPower" minWidth="70.0" prefWidth="70.0" text="Мощность"/>
-                            <TableColumn fx:id="columnPhase"  minWidth="60.0" prefWidth="60.0" text="Фазность"/>
+                            <TableColumn fx:id="columnPhase" minWidth="60.0" prefWidth="60.0" text="Фазность"/>
                             <TableColumn fx:id="columnPrice" minWidth="50.0" prefWidth="50.0" text="Цена"/>
                         </columns>
                         <columnResizePolicy>
@@ -157,8 +151,8 @@
                         <VBox alignment="CENTER" spacing="20.0">
                             <Button alignment="CENTER" mnemonicParsing="false" onAction="#load" prefWidth="80.0"
                                     text="Загрузить"/>
-                            <Button alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false"
-                                    onAction="#save" prefWidth="80.0" text="Сохранить"/>
+                            <Button alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#save"
+                                    prefWidth="80.0" text="Сохранить"/>
                             <opaqueInsets>
                                 <Insets/>
                             </opaqueInsets>
@@ -167,12 +161,14 @@
                             </padding>
                         </VBox>
                         <VBox alignment="CENTER" prefWidth="100.0" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#clear"
-                                    prefWidth="80.0" text="Очистить"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#clear" prefWidth="80.0"
+                                    text="Очистить"/>
                         </VBox>
                         <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate"
-                                    prefWidth="80.0" text="Расчет"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calcExchangers"
+                                    prefWidth="80.0" text="Расчет т/о"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0"
+                                    text="Расчет"/>
                             <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0"
                                     text="СТОП">
                                 <VBox.margin>

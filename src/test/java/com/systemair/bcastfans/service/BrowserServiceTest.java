@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 
 import static org.openqa.selenium.support.ui.ExpectedConditions.visibilityOfElementLocated;
 
+@SuppressWarnings("ALL")
 class BrowserServiceTest {
 //    static{
 //        EDGE_DRIVER ="C:\\ProgramData\\DriverChrome\\edgedriver\\edgedriver.exe";
@@ -52,7 +53,6 @@ class BrowserServiceTest {
         Assertions.assertEquals(String.valueOf(positiveLimit), wbPositiveLimit.getAttribute("value"));
         Assertions.assertEquals(resultArticle, fan.getArticle());
     }
-
 
     @ParameterizedTest
     @CsvFileSource(resources = "/tests.csv", numLinesToSkip = 1,encoding = "CP1251",delimiter = ';')
@@ -111,5 +111,6 @@ class BrowserServiceTest {
     public static void close(){
         browserService.getSbc().getDriver().quit();
     }
+
 
 }
