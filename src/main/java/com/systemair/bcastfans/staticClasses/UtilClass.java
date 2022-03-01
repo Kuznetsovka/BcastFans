@@ -115,9 +115,8 @@ public class UtilClass {
             case FORMULA:
                 FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                 registryCustomFunction(cell.getSheet().getWorkbook());
-                evaluator.setDebugEvaluationOutputForNextEval(true);
-                evaluator.evaluateFormulaCell(cell);
-                return cell.getStringCellValue();
+                evaluator.evaluate(cell);
+                return String.valueOf(round(cell.getNumericCellValue()));
             case ERROR:
                 showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
                 throw new IllegalArgumentException("");

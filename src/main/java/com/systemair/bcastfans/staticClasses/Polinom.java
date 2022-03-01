@@ -89,24 +89,28 @@ public class Polinom implements FreeRefFunction {
     }
 
     public Integer calculateDropByPolinom(Integer flow, String searchValue, List<List<String>> table, int index ) {
-        for (List<String> row : table) {
-            if (row.get(0).equals(searchValue)) {
-                switch(index){
-                    case 6:
-                        return Math.toIntExact((long) (getPart(flow, 6, row.get(1)) + getPart(flow, 5, row.get(2)) + getPart(flow, 4, row.get(3)) + getPart(flow, 3, row.get(4)) + getPart(flow, 2, row.get(5)) + getPart(flow, 1, row.get(6)) + getPart(flow, 0, row.get(7))));
-                    case 5:
-                        return Math.toIntExact((long) (getPart(flow, 5, row.get(1)) + getPart(flow, 4, row.get(2)) + getPart(flow, 3, row.get(3)) + getPart(flow, 2, row.get(4)) + getPart(flow, 1, row.get(5)) + getPart(flow, 0, row.get(6))));
-                    case 4:
-                        return Math.toIntExact((long) (getPart(flow, 4, row.get(1)) + getPart(flow, 3, row.get(2)) + getPart(flow, 2, row.get(3)) + getPart(flow, 1, row.get(4)) + getPart(flow, 0, row.get(5))));
-                    case 3:
-                        return Math.toIntExact((long) (getPart(flow, 3, row.get(1)) + getPart(flow, 2, row.get(2)) + getPart(flow, 1, row.get(3)) + getPart(flow, 0, row.get(4))));
-                    case 2:
-                        return Math.toIntExact((long) (getPart(flow, 2, row.get(1)) + getPart(flow, 1, row.get(2)) + getPart(flow, 0, row.get(3))));
+        try {
+            for (List<String> row : table) {
+                if (row.get(0).equals(searchValue)) {
+                    switch (index) {
+                        case 6:
+                            return Math.toIntExact((long) (getPart(flow, 6, row.get(1)) + getPart(flow, 5, row.get(2)) + getPart(flow, 4, row.get(3)) + getPart(flow, 3, row.get(4)) + getPart(flow, 2, row.get(5)) + getPart(flow, 1, row.get(6)) + getPart(flow, 0, row.get(7))));
+                        case 5:
+                            return Math.toIntExact((long) (getPart(flow, 5, row.get(1)) + getPart(flow, 4, row.get(2)) + getPart(flow, 3, row.get(3)) + getPart(flow, 2, row.get(4)) + getPart(flow, 1, row.get(5)) + getPart(flow, 0, row.get(6))));
+                        case 4:
+                            return Math.toIntExact((long) (getPart(flow, 4, row.get(1)) + getPart(flow, 3, row.get(2)) + getPart(flow, 2, row.get(3)) + getPart(flow, 1, row.get(4)) + getPart(flow, 0, row.get(5))));
+                        case 3:
+                            return Math.toIntExact((long) (getPart(flow, 3, row.get(1)) + getPart(flow, 2, row.get(2)) + getPart(flow, 1, row.get(3)) + getPart(flow, 0, row.get(4))));
+                        case 2:
+                            return Math.toIntExact((long) (getPart(flow, 2, row.get(1)) + getPart(flow, 1, row.get(2)) + getPart(flow, 0, row.get(3))));
+                    }
+
                 }
-            
             }
+        } catch(Exception e) {
+
         }
-        return null;
+        return 0;
     }
 
 
