@@ -155,11 +155,12 @@ public class ExcelServiceImpl implements ExcelService {
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
+        Cell cell = null;
         try {
             while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
                 rows = new ArrayList<>();
                 for (int column = 0; column < lastColumn; column++) {
-                    Cell cell = worksheet.getRow(row).getCell(column);
+                    cell = worksheet.getRow(row).getCell(column);
                     if (cell != null)
                         rows.add(parseCell(cell));
                 }
@@ -167,7 +168,7 @@ public class ExcelServiceImpl implements ExcelService {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул", Alert.AlertType.WARNING);
+            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул, ячейка:" + cell.getAddress().formatAsString(), Alert.AlertType.WARNING);
             LOGGER.error(e.getMessage());
         }
         return cells;

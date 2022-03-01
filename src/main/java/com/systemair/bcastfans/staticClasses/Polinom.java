@@ -16,9 +16,10 @@ public class Polinom implements FreeRefFunction {
         if (args.length != 4) {
             return ErrorEval.VALUE_INVALID;
         }
-        List<List<Double>> table;
+        List<List<String>> table;
         double result;
-        int flow, index, searchValue;
+        int flow, index;
+        String searchValue;
         try {
             ValueEval v1 = OperandResolver.getSingleValue( args[0],
                                                            ec.getRowIndex(), 
@@ -32,7 +33,7 @@ public class Polinom implements FreeRefFunction {
                     ec.getColumnIndex() ) ;
 
             flow  = OperandResolver.coerceValueToInt( v1 ) ;
-            searchValue  = OperandResolver.coerceValueToInt( v2 ) ;
+            searchValue  = OperandResolver.coerceValueToString( v2 ) ;
             index = OperandResolver.coerceValueToInt( v4 ) ;
             table = getTableDoubles(v3);
             result = calculateDropByPolinom(flow, searchValue, table, index);
@@ -45,12 +46,12 @@ public class Polinom implements FreeRefFunction {
     }
 
     @SneakyThrows
-    private List<List<Double>> getTableDoubles(List<List<ValueEval>> v3) {
-        List<List<Double> > list = new ArrayList<>();
-        List<Double> row = new ArrayList<>();
+    private List<List<String>> getTableDoubles(List<List<ValueEval>> v3) {
+        List<List<String> > list = new ArrayList<>();
+        List<String> row = new ArrayList<>();
         for (List<ValueEval> rows : v3) {
             for (ValueEval cell : rows) {
-                row.add(OperandResolver.coerceValueToDouble( cell ));
+                row.add(OperandResolver.coerceValueToString( cell ));
             }
             list.add(row);
             row = new ArrayList<>();
@@ -87,9 +88,9 @@ public class Polinom implements FreeRefFunction {
         }
     }
 
-    public Integer calculateDropByPolinom(Integer flow, Integer searchValue, List<List<Double>> table, int index ) {
-        for (List<Double> row : table) {
-            if (row.get(0).intValue() == searchValue) {
+    public Integer calculateDropByPolinom(Integer flow, String searchValue, List<List<String>> table, int index ) {
+        for (List<String> row : table) {
+            if (row.get(0).equals(searchValue)) {
                 switch(index){
                     case 6:
                         return Math.toIntExact((long) (getPart(flow, 6, row.get(1)) + getPart(flow, 5, row.get(2)) + getPart(flow, 4, row.get(3)) + getPart(flow, 3, row.get(4)) + getPart(flow, 2, row.get(5)) + getPart(flow, 1, row.get(6)) + getPart(flow, 0, row.get(7))));
@@ -109,8 +110,8 @@ public class Polinom implements FreeRefFunction {
     }
 
 
-    private Double getPart(int flow, int index, Double coef) {
-        return coef * pow(flow, index);
+    private Double getPart(int flow, int index, String coef) {
+        return Double.parseDouble(coef) * pow(flow, index);
     }
 
     /**
