@@ -3,6 +3,8 @@ package com.systemair.bcastfans.controller;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
+import com.systemair.exchangers.ExchangersApplication;
+import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -28,9 +30,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
@@ -38,12 +38,14 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
-    //protected App exchangersApplication;
+    protected final ExchangersApplication exchangersApplication = new ExchangersApplication();
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
     private final TableService tableServiceImpl = new TableServiceImpl();
-    private final ExcelService excelServiceImpl = new ExcelServiceImpl();
+    private final ExcelService excelServiceImpl = new ExcelServiceImpl(exchangersApplication.getExchangersService());
     private CalculationService calculationServiceImpl;
+    private Map<Integer, Exchanger> mapHeater = new HashMap<>();
+    private Map<Integer, Exchanger> mapCooler = new HashMap<>();
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -179,6 +181,8 @@ public class TableController implements Initializable {
         Sheet worksheet = workbook.getSheetAt(0);
         ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
         fillGUITableFromExcel(cells);
+        mapHeater = excelServiceImpl.getHeaterExchanger(worksheet);
+        mapCooler = excelServiceImpl.getCoolerExchanger(worksheet);
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
@@ -196,6 +200,8 @@ public class TableController implements Initializable {
         excelServiceImpl.createCellsInWorksheet(worksheet, table);
         excelServiceImpl.setHeader(worksheet, table);
         excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
+        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeater);
+        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCooler);
         try {
             FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
@@ -299,6 +305,13 @@ public class TableController implements Initializable {
     }
 
     public void calcExchangers(ActionEvent actionEvent) {
-        //exchangersApplication.run();
+        if (!mapHeater.isEmpty())
+            for (Integer integer : mapHeater.keySet()) {
+                mapHeater.replace(integer,exchangersApplication.run(mapHeater.get(integer)));
+            }
+        if (!mapCooler.isEmpty())
+            for (Integer integer : mapCooler.keySet()) {
+                mapCooler.replace(integer,exchangersApplication.run(mapCooler.get(integer)));
+            }
     }
 }

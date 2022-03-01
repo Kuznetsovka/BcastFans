@@ -1,13 +1,15 @@
 module com.systemair.bcastfans {
-    requires javafx.fxml;
-    requires javafx.controls;
     requires org.seleniumhq.selenium.chrome_driver;
     requires org.seleniumhq.selenium.edge_driver;
     requires org.seleniumhq.selenium.support;
-    requires org.apache.poi.poi;
-    requires org.apache.poi.ooxml;
+    requires javafx.fxml;
+    requires javafx.controls;
     requires log4j;
     requires java.desktop;
+    requires com.systemair.exchangers;
+    requires org.apache.poi.poi;
+    requires org.apache.poi.ooxml;
+    requires lombok;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;

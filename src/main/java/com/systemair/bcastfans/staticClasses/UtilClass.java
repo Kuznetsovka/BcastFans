@@ -5,8 +5,13 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.formula.functions.FreeRefFunction;
+import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
+import org.apache.poi.ss.formula.udf.DefaultUDFFinder;
+import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.*;
 import java.net.URL;
@@ -109,12 +114,23 @@ public class UtilClass {
                 return cell.getStringCellValue();
             case FORMULA:
                 FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
+                registryCustomFunction(cell.getSheet().getWorkbook());
+                evaluator.setDebugEvaluationOutputForNextEval(true);
+                evaluator.evaluateFormulaCell(cell);
+                return cell.getStringCellValue();
             case ERROR:
                 showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
                 throw new IllegalArgumentException("");
         }
         return "";
+    }
+
+    private static void registryCustomFunction(Workbook workbook) {
+        String[] functionNames = { "polinom" } ;
+        FreeRefFunction[] functionImpls = { new Polinom() } ;
+        UDFFinder udfs = new DefaultUDFFinder( functionNames, functionImpls ) ;
+        UDFFinder udfToolpack = new AggregatingUDFFinder( udfs ) ;
+        workbook.addToolPack(udfToolpack);
     }
 
     public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
