@@ -38,9 +38,9 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
-    protected final ExchangersApplication exchangersApplication = new ExchangersApplication();
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
+    protected final ExchangersApplication exchangersApplication = new ExchangersApplication();
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl(exchangersApplication.getExchangersService());
     private CalculationService calculationServiceImpl;
@@ -305,13 +305,7 @@ public class TableController implements Initializable {
     }
 
     public void calcExchangers(ActionEvent actionEvent) {
-        if (!mapHeater.isEmpty())
-            for (Integer integer : mapHeater.keySet()) {
-                mapHeater.replace(integer,exchangersApplication.run(mapHeater.get(integer)));
-            }
-        if (!mapCooler.isEmpty())
-            for (Integer integer : mapCooler.keySet()) {
-                mapCooler.replace(integer,exchangersApplication.run(mapCooler.get(integer)));
-            }
+        calculationServiceImpl.calculationExchangers(exchangersApplication,mapHeater,mapCooler);
     }
+
 }

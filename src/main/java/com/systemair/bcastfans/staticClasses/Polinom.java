@@ -103,10 +103,9 @@ public class Polinom implements FreeRefFunction {
                     case 2:
                         return Math.toIntExact((long) (getPart(flow, 2, row.get(1)) + getPart(flow, 1, row.get(2)) + getPart(flow, 0, row.get(3))));
                 }
-            
             }
         }
-        return null;
+        return 0;
     }
 
 
