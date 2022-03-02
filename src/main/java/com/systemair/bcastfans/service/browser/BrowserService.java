@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.service.browser;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
@@ -28,7 +29,7 @@ public interface BrowserService {
 
     void selectSubType(SubType subType);
 
-    void changeValueComboBoxByLabel(String findTextLabel, String newValue);
+    void changeValueComboBoxByLabel(String findTextLabel, String newValue) throws MyCatchException;
 
     void prepareStartPageBeforeCalculation();
 

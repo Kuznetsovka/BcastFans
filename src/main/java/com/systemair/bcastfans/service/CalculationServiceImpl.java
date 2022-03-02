@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.browser.BrowserService;
@@ -8,6 +9,7 @@ import com.systemair.exchangers.ExchangersApplication;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.TimeoutException;
@@ -37,7 +39,8 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
-        browserService.getSbc().getDriver().switchTo().window("0");
+        if (!browserService.getSbc().isOriginTab())
+            browserService.getSbc().switchToOrigin();
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         long count = data.filtered(u -> u.getCheck().isSelected()).size();
@@ -94,6 +97,7 @@ public class CalculationServiceImpl implements CalculationService {
         }
     }
 
+    @SneakyThrows
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
             Fan currentFan = new Fan();
@@ -102,8 +106,7 @@ public class CalculationServiceImpl implements CalculationService {
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
             } catch (TimeoutException | NoSuchSessionException e) {
-                showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING);
-
+                throw new MyCatchException(e.getMessage(), Alert.AlertType.WARNING);
             }
             u.setFan(currentFan);
             hashMap.put(u, currentFan);

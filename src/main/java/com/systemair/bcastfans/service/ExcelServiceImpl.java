@@ -1,11 +1,13 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import com.systemair.exchangers.service.ExchangersService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -22,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.parseCell;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 
 public class ExcelServiceImpl implements ExcelService {
 
@@ -105,7 +106,7 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
-    public Map<Integer, Exchanger> getHeaterExchanger(Sheet worksheet) {
+    public Map<Integer, Exchanger> getHeaterExchangers(Sheet worksheet) {
         int columnStart = 33;
         int columnFinish = 40;
         Process process = Process.HEAT;
@@ -113,15 +114,16 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
-    public Map<Integer, Exchanger> getCoolerExchanger(Sheet worksheet) {
+    public Map<Integer, Exchanger> getCoolerExchangers(Sheet worksheet) {
         int columnStart = 46;
         int columnFinish = 53;
         Process process = Process.COOL;
         return getExchangerMapFromExcel(worksheet, columnStart, columnFinish, process);
     }
 
+    @SneakyThrows
     private Map<Integer, Exchanger> getExchangerMapFromExcel(Sheet worksheet, int columnStart, int columnFinish, Process process) {
-        Map<Integer, Exchanger> exchangerMap = new HashMap<>();
+        Map<Integer, Exchanger> exchangerMaps = new HashMap<>();
         int row = 0;
         ArrayList<String> rows;
         Cell cell = null;
@@ -136,19 +138,19 @@ public class ExcelServiceImpl implements ExcelService {
                 rows.add(parseCell(worksheet.getRow(row).getCell(4)));
                 rows.add(parseCell(worksheet.getRow(row).getCell(2)));
                 if (rows.size() == 10)
-                    exchangerMap.put(row, exchangersService.getExchanger(rows, process));
+                    exchangerMaps.put(row, exchangersService.getExchanger(rows, process));
             }
             //TODO решить проблему не соответствия моделей
         } catch (IllegalArgumentException e) {
-            showAlert(LOGGER, "Ошибка считывания данных, не соответствующий аргумент, адрес ячейки" + cell.getAddress(), Alert.AlertType.WARNING);
-            LOGGER.error(e.getMessage());
+            throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки" + cell.getAddress(), Alert.AlertType.WARNING);
         }
-        return exchangerMap;
+        return exchangerMaps;
     }
 
 
+    @SneakyThrows
     @Override
-    public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
+    public ArrayList<ArrayList<String>> loadFansWorksheet(Sheet worksheet) {
         int lastColumn = 7;
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
@@ -166,8 +168,7 @@ public class ExcelServiceImpl implements ExcelService {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            showAlert(LOGGER, "Ошибка считывания данных, не должно быть формул, ячейка:" + cell.getAddress().formatAsString(), Alert.AlertType.WARNING);
-            LOGGER.error(e.getMessage());
+            throw new MyCatchException("Ошибка считывания данных, не должно быть формул, ячейка:" + cell.getAddress().formatAsString(), Alert.AlertType.WARNING);
         }
         return cells;
     }

@@ -1,9 +1,11 @@
 package com.systemair.bcastfans.staticClasses;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.formula.functions.FreeRefFunction;
 import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
@@ -47,6 +49,7 @@ public class UtilClass {
     }
 
 
+    @SneakyThrows
     public static void initProperties() {
         Properties properties = new Properties();
         try {
@@ -59,7 +62,7 @@ public class UtilClass {
             BROWSER = properties.getProperty("type.browser");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(LOGGER, "Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            throw new MyCatchException("Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
         }
     }
 
@@ -101,6 +104,7 @@ public class UtilClass {
         }
     }
 
+    @SneakyThrows
     public static String parseCell(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
@@ -118,8 +122,7 @@ public class UtilClass {
                 evaluator.evaluate(cell);
                 return String.valueOf(round(cell.getNumericCellValue()));
             case ERROR:
-                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
-                throw new IllegalArgumentException("");
+                throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
         }
         return "";
     }
@@ -132,29 +135,14 @@ public class UtilClass {
         workbook.addToolPack(udfToolpack);
     }
 
-    public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
+    public static void showAlert(String alertTxt, Alert.AlertType type) {
         new Thread(() -> runLater(() -> {
             Alert alert = new Alert(type);
             alert.setTitle(rightStringCase(type.toString()));
             alert.setHeaderText("Description:");
             alert.setContentText(alertTxt);
             alert.showAndWait();
-            show(LOGGER, alertTxt, type);
         })).start();
-    }
-
-    private static void show(Logger LOGGER, String alertTxt, Alert.AlertType type) {
-        switch (type) {
-            case WARNING:
-                LOGGER.warn(alertTxt);
-                break;
-            case ERROR:
-                LOGGER.error(alertTxt);
-                break;
-            case INFORMATION:
-                LOGGER.info(alertTxt);
-                break;
-        }
     }
 
     private static String rightStringCase(String txt) {

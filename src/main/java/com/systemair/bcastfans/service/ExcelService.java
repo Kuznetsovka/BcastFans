@@ -16,15 +16,15 @@ public interface ExcelService {
 
     void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table);
 
-    ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet);
+    ArrayList<ArrayList<String>> loadFansWorksheet(Sheet worksheet);
 
     void setHeader(Sheet worksheet, TableView<FanUnit> table);
 
     void createCellsInWorksheet(Sheet worksheet, TableView<FanUnit> table);
 
-    Map<Integer, Exchanger> getHeaterExchanger(Sheet worksheet);
+    Map<Integer, Exchanger> getHeaterExchangers(Sheet worksheet);
 
-    Map<Integer, Exchanger> getCoolerExchanger(Sheet worksheet);
+    Map<Integer, Exchanger> getCoolerExchangers(Sheet worksheet);
 
     void fillHeaterFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapHeater);
 

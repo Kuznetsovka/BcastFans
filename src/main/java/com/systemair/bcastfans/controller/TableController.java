@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.controller;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
@@ -18,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -44,8 +46,8 @@ public class TableController implements Initializable {
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl(exchangersApplication.getExchangersService());
     private CalculationService calculationServiceImpl;
-    private Map<Integer, Exchanger> mapHeater = new HashMap<>();
-    private Map<Integer, Exchanger> mapCooler = new HashMap<>();
+    private Map<Integer, Exchanger> mapHeaters = new HashMap<>();
+    private Map<Integer, Exchanger> mapCoolers = new HashMap<>();
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -179,10 +181,11 @@ public class TableController implements Initializable {
         Workbook workbook = excelServiceImpl.loadWorkbook(table, PATH_WORK);
         if (workbook == null) return;
         Sheet worksheet = workbook.getSheetAt(0);
-        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
+        mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
+        mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
+        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
         fillGUITableFromExcel(cells);
-        mapHeater = excelServiceImpl.getHeaterExchanger(worksheet);
-        mapCooler = excelServiceImpl.getCoolerExchanger(worksheet);
+
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
@@ -200,8 +203,8 @@ public class TableController implements Initializable {
         excelServiceImpl.createCellsInWorksheet(worksheet, table);
         excelServiceImpl.setHeader(worksheet, table);
         excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
-        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeater);
-        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCooler);
+        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeaters);
+        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCoolers);
         try {
             FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
@@ -213,11 +216,14 @@ public class TableController implements Initializable {
             e.printStackTrace();
         }
     }
-
     public void calculate() {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
-            if (data == null) showAlert(LOGGER, "Поле данных не заполнено!", Alert.AlertType.INFORMATION);
+            if (data == null) try {
+                throw new MyCatchException("Поле данных не заполнено!", Alert.AlertType.INFORMATION);
+            } catch (MyCatchException e) {
+                e.printStackTrace();
+            }
             if (data.isEmpty()) return;
             data = calculationServiceImpl.calculate(
                     fieldNegativeLimit,
@@ -237,7 +243,11 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                showAlert(LOGGER, "Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                try {
+                    throw new MyCatchException("Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                } catch (MyCatchException e) {
+                    e.printStackTrace();
+                }
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));
@@ -305,7 +315,7 @@ public class TableController implements Initializable {
     }
 
     public void calcExchangers(ActionEvent actionEvent) {
-        calculationServiceImpl.calculationExchangers(exchangersApplication,mapHeater,mapCooler);
+        calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, mapCoolers);
     }
 
 }

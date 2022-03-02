@@ -1,10 +1,12 @@
 package com.systemair.bcastfans.service.browser;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.Fan;
 import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -35,6 +37,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         super();
     }
 
+    @SneakyThrows
     @Override
     public void prepareStartPageBeforeCalculation() {
         try {
@@ -63,8 +66,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
             LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
         } catch (InterruptedException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
+            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
         }
 
     }
@@ -109,28 +111,27 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     }
 
     private boolean checkAvailableConfiguration(TypeMontage typeMontage, SubType subType, String dimension) {
-        if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT) {
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-            return false;
-        }
-        if (typeMontage == ROUND_AND_RECTANGLE && subType == SubType.SMOKE_EXTRACT) {
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-            return false;
-        }
-        if (typeMontage == ROOF && subType == SubType.ON_ROOF) {
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
-            return false;
-        }
-        if (typeMontage == ROUND && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
-            return false;
-        }
-        if (typeMontage == ROUND_AND_RECTANGLE && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
-            showAlert(LOGGER, "Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
-            return false;
-        }
-        if ((!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) || (subType == SubType.KITCHEN || subType == SubType.SMOKE_EXTRACT)) && !dimension.isEmpty()) {
-            showAlert(LOGGER, "Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+        try {
+            if (typeMontage == ROUND && subType == SubType.SMOKE_EXTRACT) {
+                throw new MyCatchException("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            }
+            if (typeMontage == ROUND_AND_RECTANGLE && subType == SubType.SMOKE_EXTRACT) {
+                throw new MyCatchException("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            }
+            if (typeMontage == ROOF && subType == SubType.ON_ROOF) {
+                throw new MyCatchException("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+            }
+            if (typeMontage == ROUND && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
+                throw new MyCatchException("Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
+            }
+            if (typeMontage == ROUND_AND_RECTANGLE && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
+                throw new MyCatchException("Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);
+            }
+            if ((!(typeMontage == ROUND || typeMontage == RECTANGLE || typeMontage == ROUND_AND_RECTANGLE) || (subType == SubType.KITCHEN || subType == SubType.SMOKE_EXTRACT)) && !dimension.isEmpty()) {
+                throw new MyCatchException("Не допустимая конфигурация, выбранный тип вентилятора не будет найден согласно заданному размеру!", Alert.AlertType.WARNING);
+            }
+        } catch (MyCatchException e) {
+            e.printStackTrace();
             return false;
         }
         return true;
@@ -258,6 +259,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
+    @SneakyThrows
     @Override
     public void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
@@ -273,6 +275,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
+    @SneakyThrows
     @Override
     public void grouping() {
         isGrouping = true;
@@ -294,6 +297,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             flagWarning = true;
     }
 
+    @SneakyThrows
     @Override
     public void changeMeasureValueOnTableByIndex(String newValue, int index) {
         String xpath = ".//th[@class='sc-hzDkRC kmzkGx'][" + index + "]/div[2]/div[1]";
@@ -304,14 +308,14 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", javafx.scene.control.Alert.AlertType.WARNING);
+            throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
         LOGGER.info("Заменили значение изменения на " + newValue);
         isChangeMeasureValueTable = true;
     }
 
     @Override
-    public void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
+    public void changeValueComboBoxByLabel(String findTextLabel, String newValue) throws MyCatchException {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
         By by = By.xpath(xpath + "/ancestor::div[1]");
         WebElement checkingWb = getWebElementByXpath(xpath);
@@ -322,7 +326,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         List<WebElement> list = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, 'sc-gzVnrw')]")));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            showAlert(LOGGER, "Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 
