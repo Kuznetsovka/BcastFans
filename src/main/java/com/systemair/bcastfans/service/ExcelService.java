@@ -1,10 +1,9 @@
 package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.exchangers.domain.exchangers.Cooler;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
-import com.systemair.exchangers.domain.exchangers.Heater;
 import javafx.scene.control.TableView;
+import javafx.stage.Window;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public interface ExcelService {
-    Workbook loadWorkbook(TableView<FanUnit> table, String path);
+    Workbook loadWorkbook(Window table, String path);
 
     void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table);
 

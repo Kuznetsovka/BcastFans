@@ -19,5 +19,5 @@ public interface CalculationService {
 
     void stopCalculation();
 
-    void calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> mapHeater, Map<Integer, Exchanger> mapCooler);
+    Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap);
 }

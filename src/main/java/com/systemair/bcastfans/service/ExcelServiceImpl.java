@@ -3,10 +3,12 @@ package com.systemair.bcastfans.service;
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
+import com.systemair.exchangers.domain.exchangers.Heater;
 import com.systemair.exchangers.service.ExchangersService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.common.usermodel.HyperlinkType;
@@ -34,26 +36,31 @@ public class ExcelServiceImpl implements ExcelService {
         this.exchangersService = exchangersService;
     }
 
+    @SneakyThrows
     @Override
-    public Workbook loadWorkbook(TableView<FanUnit> table, String path) {
+    public Workbook loadWorkbook(Window window, String path) {
         Workbook workbook = null;
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open file");
-        fileChooser.setInitialDirectory(new File(path));
-        File file = fileChooser.showOpenDialog(table.getScene().getWindow());
-        if (file != null) {
-            try {
-                FileInputStream inputStream = new FileInputStream(file);
-                if (file.getName().contains(".xlsx")) {
-                    workbook = new XSSFWorkbook(inputStream);
-                } else {
-                    workbook = new HSSFWorkbook(inputStream);
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Open file");
+            fileChooser.setInitialDirectory(new File(path));
+            File file = fileChooser.showOpenDialog(window);
+            if (file != null) {
+                try {
+                    FileInputStream inputStream = new FileInputStream(file);
+                    if (file.getName().contains(".xlsx")) {
+                        workbook = new XSSFWorkbook(inputStream);
+                    } else {
+                        workbook = new HSSFWorkbook(inputStream);
+                    }
+                    inputStream.close();
+                } catch (IOException e) {
+                    LOGGER.error(e.getMessage());
+                    e.printStackTrace();
                 }
-                inputStream.close();
-            } catch (IOException e) {
-                LOGGER.error(e.getMessage());
-                e.printStackTrace();
             }
+        } catch(IllegalArgumentException e){
+            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
         }
         return workbook;
     }
@@ -61,12 +68,38 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void fillHeaterFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapHeater) {
         int countSystems = mapHeater.size();
-
+        int columnStart = 40;
+        int countColumn = 5;
+        Cell[] cell = new XSSFCell[countColumn];
+        for (int row = 1; row < countSystems; row++) {
+            if (mapHeater.get(row) == null) continue;
+            String modelSystemair = mapHeater.get(row).getModelByVeabModel(mapHeater.get(row).getResult().getModel());
+            fillCell(worksheet, cell, row, columnStart, modelSystemair);
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getCapacity()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getFluidFlow()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getFluidDrop()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getAirDrop()));
+        }
     }
 
     @Override
     public void fillCoolerFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapCooler) {
         int countSystems = mapCooler.size();
+        int columnStart = 53;
+        int countColumn = 5;
+        Cell[] cell = new XSSFCell[countColumn];
+        for (int row = 1; row < countSystems; row++) {
+            fillCell(worksheet, cell, row, columnStart, mapCooler.get(row).getResult().getModel());
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getCapacity()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getFluidFlow()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getFluidDrop()));
+            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getAirDrop()));
+        }
+    }
+
+    private void fillCell(Sheet worksheet, Cell[] cell, int row, int col, String value) {
+        cell[col] = worksheet.getRow(row).createCell(col, CellType.STRING);
+        cell[col].setCellValue(value);
     }
 
     @Override

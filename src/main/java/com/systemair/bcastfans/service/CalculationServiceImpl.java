@@ -126,14 +126,11 @@ public class CalculationServiceImpl implements CalculationService {
     }
 
     @Override
-    public void calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> mapHeater, Map<Integer, Exchanger> mapCooler) {
-        if (!mapHeater.isEmpty())
-            for (Integer integer : mapHeater.keySet()) {
-                mapHeater.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), mapHeater.get(integer)));
+    public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap) {
+        if (!exchangerMap.isEmpty())
+            for (Integer integer : exchangerMap.keySet()) {
+                exchangerMap.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
             }
-        if (!mapCooler.isEmpty())
-            for (Integer integer : mapCooler.keySet()) {
-                mapCooler.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), mapCooler.get(integer)));
-            }
+        return exchangerMap;
     }
 }

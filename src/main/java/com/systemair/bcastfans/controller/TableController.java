@@ -178,11 +178,14 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        Workbook workbook = excelServiceImpl.loadWorkbook(table, PATH_WORK);
-        if (workbook == null) return;
+        Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
         Sheet worksheet = workbook.getSheetAt(0);
         mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
         mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
+        mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters);
+        mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers);
+        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeaters);
+        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCoolers);
         ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
         fillGUITableFromExcel(cells);
 
@@ -203,8 +206,6 @@ public class TableController implements Initializable {
         excelServiceImpl.createCellsInWorksheet(worksheet, table);
         excelServiceImpl.setHeader(worksheet, table);
         excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
-        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeaters);
-        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCoolers);
         try {
             FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
@@ -312,10 +313,6 @@ public class TableController implements Initializable {
 
     public CheckBox isSaveTechData() {
         return isSaveTechData;
-    }
-
-    public void calcExchangers(ActionEvent actionEvent) {
-        calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, mapCoolers);
     }
 
 }
