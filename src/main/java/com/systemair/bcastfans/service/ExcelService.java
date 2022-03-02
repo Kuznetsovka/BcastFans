@@ -28,4 +28,8 @@ public interface ExcelService {
     void fillHeaterFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapHeater);
 
     void fillCoolerFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapCooler);
+
+    void fillExchangersFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapHeaters, Map<Integer, Exchanger> mapCoolers);
+
+    Workbook reOpen();
 }

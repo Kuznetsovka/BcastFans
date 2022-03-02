@@ -182,10 +182,13 @@ public class TableController implements Initializable {
         Sheet worksheet = workbook.getSheetAt(0);
         mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
         mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
-        mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters);
-        mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers);
-        excelServiceImpl.fillHeaterFromGUI(worksheet, mapHeaters);
-        excelServiceImpl.fillCoolerFromGUI(worksheet, mapCoolers);
+        if (mapHeaters.values().stream().anyMatch(Objects::nonNull) || mapCoolers.values().stream().anyMatch(Objects::nonNull)) {
+            mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters);
+            mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers);
+            excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
+            workbook = excelServiceImpl.reOpen();
+            worksheet = workbook.getSheetAt(0);
+        }
         ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
         fillGUITableFromExcel(cells);
 

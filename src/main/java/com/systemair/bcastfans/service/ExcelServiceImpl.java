@@ -2,8 +2,8 @@ package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.exchangers.domain.Process;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
-import com.systemair.exchangers.domain.exchangers.Heater;
 import com.systemair.exchangers.service.ExchangersService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
@@ -16,10 +16,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import com.systemair.exchangers.domain.Process;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,7 +31,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     private static final Logger LOGGER = Logger.getLogger(ExcelServiceImpl.class.getName());
     private final ExchangersService exchangersService;
-
+    private String fileExcelOLPath;
     public ExcelServiceImpl(ExchangersService exchangersService) {
         this.exchangersService = exchangersService;
     }
@@ -44,22 +44,23 @@ public class ExcelServiceImpl implements ExcelService {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open file");
             fileChooser.setInitialDirectory(new File(path));
-            File file = fileChooser.showOpenDialog(window);
-            if (file != null) {
+            File fileExcelOL = fileChooser.showOpenDialog(window);
+            if (fileExcelOL != null) {
                 try {
-                    FileInputStream inputStream = new FileInputStream(file);
-                    if (file.getName().contains(".xlsx")) {
+                    FileInputStream inputStream = new FileInputStream(fileExcelOL);
+                    if (fileExcelOL.getName().contains(".xlsx")) {
                         workbook = new XSSFWorkbook(inputStream);
                     } else {
                         workbook = new HSSFWorkbook(inputStream);
                     }
+                    fileExcelOLPath = fileExcelOL.getAbsolutePath();
                     inputStream.close();
                 } catch (IOException e) {
                     LOGGER.error(e.getMessage());
                     e.printStackTrace();
                 }
             }
-        } catch(IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
         }
         return workbook;
@@ -70,15 +71,14 @@ public class ExcelServiceImpl implements ExcelService {
         int countSystems = mapHeater.size();
         int columnStart = 40;
         int countColumn = 5;
-        Cell[] cell = new XSSFCell[countColumn];
         for (int row = 1; row < countSystems; row++) {
             if (mapHeater.get(row) == null) continue;
             String modelSystemair = mapHeater.get(row).getModelByVeabModel(mapHeater.get(row).getResult().getModel());
-            fillCell(worksheet, cell, row, columnStart, modelSystemair);
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getCapacity()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getFluidFlow()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getFluidDrop()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapHeater.get(row).getResult().getAirDrop()));
+            fillCell(worksheet, columnStart++, row, modelSystemair);
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapHeater.get(row).getResult().getCapacity()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapHeater.get(row).getResult().getFluidFlow()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapHeater.get(row).getResult().getFluidDrop()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapHeater.get(row).getResult().getAirDrop()));
         }
     }
 
@@ -87,19 +87,57 @@ public class ExcelServiceImpl implements ExcelService {
         int countSystems = mapCooler.size();
         int columnStart = 53;
         int countColumn = 5;
-        Cell[] cell = new XSSFCell[countColumn];
         for (int row = 1; row < countSystems; row++) {
-            fillCell(worksheet, cell, row, columnStart, mapCooler.get(row).getResult().getModel());
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getCapacity()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getFluidFlow()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getFluidDrop()));
-            fillCell(worksheet, cell, row, columnStart++, String.valueOf(mapCooler.get(row).getResult().getAirDrop()));
+            if (mapCooler.get(row) == null) continue;
+            String modelSystemair = mapCooler.get(row).getModelByVeabModel(mapCooler.get(row).getResult().getModel());
+            fillCell(worksheet, columnStart++, row, modelSystemair);
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapCooler.get(row).getResult().getCapacity()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapCooler.get(row).getResult().getFluidFlow()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapCooler.get(row).getResult().getFluidDrop()));
+            fillCell(worksheet, columnStart++, row, String.valueOf(mapCooler.get(row).getResult().getAirDrop()));
         }
     }
 
-    private void fillCell(Sheet worksheet, Cell[] cell, int row, int col, String value) {
-        cell[col] = worksheet.getRow(row).createCell(col, CellType.STRING);
-        cell[col].setCellValue(value);
+    @Override
+    public void fillExchangersFromGUI(Sheet worksheet, Map<Integer, Exchanger> mapHeaters, Map<Integer, Exchanger> mapCoolers) {
+        fillHeaterFromGUI(worksheet, mapHeaters);
+        fillCoolerFromGUI(worksheet, mapCoolers);
+        writeWorkbook(worksheet.getWorkbook(),fileExcelOLPath);
+    }
+
+    @Override
+    public Workbook reOpen() {
+        return readWorkbook(fileExcelOLPath);
+    }
+
+    @SneakyThrows
+    public static Workbook readWorkbook(String filename) {
+        try {
+            if (filename.contains(".xlsx")) {
+                return new XSSFWorkbook(filename);
+            } else {
+                return new HSSFWorkbook(new FileInputStream(filename));
+            }
+        } catch (Exception e) {
+            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    @SneakyThrows
+    public static void writeWorkbook(Workbook wb, String fileName) {
+        try {
+            FileOutputStream fileOut = new FileOutputStream(fileName);
+            wb.write(fileOut);
+            fileOut.close();
+        } catch (Exception e) {
+            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+        }
+    }
+
+    private void fillCell(Sheet worksheet, int cellIdx, int rowIdx, String value) {
+        Row row = (worksheet.getRow(rowIdx) == null) ? worksheet.createRow(rowIdx) : worksheet.getRow(rowIdx);
+        Cell cell = (row.getCell(cellIdx) == null) ? row.createCell(cellIdx) : row.getCell(cellIdx);
+        cell.setCellValue(value);
     }
 
     @Override
@@ -163,6 +201,10 @@ public class ExcelServiceImpl implements ExcelService {
         try {
             while (worksheet.getRow(++row).getCell(2).getCellType() != CellType.BLANK) {
                 rows = new ArrayList<>();
+                if (worksheet.getRow(row).getCell(columnStart - 1) == null) {
+                    exchangerMaps.put(row, null);
+                    continue;
+                }
                 if (worksheet.getRow(row).getCell(columnStart - 1).getCellType() == CellType.BLANK) continue;
                 for (int column = columnStart; column <= columnFinish; column++) {
                     cell = worksheet.getRow(row).getCell(column);
@@ -175,7 +217,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
             //TODO решить проблему не соответствия моделей
         } catch (IllegalArgumentException e) {
-            throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки" + cell.getAddress(), Alert.AlertType.WARNING);
+            throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки " + cell.getAddress(), Alert.AlertType.WARNING);
         }
         return exchangerMaps;
     }
