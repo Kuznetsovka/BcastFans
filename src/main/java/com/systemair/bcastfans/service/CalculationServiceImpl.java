@@ -4,6 +4,8 @@ import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.browser.BrowserService;
 import com.systemair.bcastfans.service.browser.SystemairBrowserService;
+import com.systemair.exchangers.ExchangersApplication;
+import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import org.apache.log4j.Logger;
@@ -21,7 +23,6 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 import static javafx.application.Platform.runLater;
 
 public class CalculationServiceImpl implements CalculationService {
-
     private final BrowserService browserService = new SystemairBrowserService();
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(CalculationServiceImpl.class.getName());
@@ -36,6 +37,7 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
+        browserService.getSbc().getDriver().switchTo().window("0");
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         long count = data.filtered(u -> u.getCheck().isSelected()).size();
@@ -118,5 +120,17 @@ public class CalculationServiceImpl implements CalculationService {
     @Override
     public void stopCalculation() {
         isStop = true;
+    }
+
+    @Override
+    public void calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> mapHeater, Map<Integer, Exchanger> mapCooler) {
+        if (!mapHeater.isEmpty())
+            for (Integer integer : mapHeater.keySet()) {
+                mapHeater.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), mapHeater.get(integer)));
+            }
+        if (!mapCooler.isEmpty())
+            for (Integer integer : mapCooler.keySet()) {
+                mapCooler.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), mapCooler.get(integer)));
+            }
     }
 }

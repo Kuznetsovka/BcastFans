@@ -1,9 +1,7 @@
 package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.exchangers.domain.exchangers.Cooler;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
-import com.systemair.exchangers.domain.exchangers.Heater;
 import com.systemair.exchangers.service.ExchangersService;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
