@@ -17,6 +17,7 @@ import org.openqa.selenium.TimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -100,7 +101,7 @@ public class CalculationServiceImpl implements CalculationService {
     @SneakyThrows
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
-            Fan currentFan = new Fan();
+            Fan currentFan;
             try {
                 currentFan = isFilterFans ?
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
@@ -126,10 +127,19 @@ public class CalculationServiceImpl implements CalculationService {
     }
 
     @Override
-    public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap) {
+    public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
+        long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
+        tableController.initProgressBar(count, pi, labelProgressBar);
+        AtomicInteger index = new AtomicInteger();
         if (!exchangerMap.isEmpty())
             for (Integer integer : exchangerMap.keySet()) {
+                index.set(integer);
+                Thread t2 = new Thread(() -> runLater(() -> {
+                    tableController.progressBar(index.get(), count, pi, labelProgressBar,exchangerMap.get(integer).getProcess().getTxt());
+                }));
+                t2.start();
                 exchangerMap.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
+                index.getAndIncrement();
             }
         return exchangerMap;
     }

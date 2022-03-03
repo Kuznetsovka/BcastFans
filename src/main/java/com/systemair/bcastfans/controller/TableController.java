@@ -178,20 +178,21 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
-        Sheet worksheet = workbook.getSheetAt(0);
-        mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
-        mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
-        if (mapHeaters.values().stream().anyMatch(Objects::nonNull) || mapCoolers.values().stream().anyMatch(Objects::nonNull)) {
-            mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters);
-            mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers);
-            excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
-            workbook = excelServiceImpl.reOpen();
-            worksheet = workbook.getSheetAt(0);
-        }
-        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
-        fillGUITableFromExcel(cells);
-
+        new Thread(() -> runLater(() -> {
+            Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
+            Sheet worksheet = workbook.getSheetAt(0);
+            mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
+            mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
+            if (mapHeaters.values().stream().anyMatch(Objects::nonNull) || mapCoolers.values().stream().anyMatch(Objects::nonNull)) {
+                mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
+                mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
+                excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
+                workbook = excelServiceImpl.reOpen();
+                worksheet = workbook.getSheetAt(0);
+            }
+            ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
+            fillGUITableFromExcel(cells);
+        })).start();
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
@@ -303,6 +304,11 @@ public class TableController implements Initializable {
     public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
         pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
+    }
+
+    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar,String type) {
+        pi.setProgress((double) (index) / size);
+        labelProgressBar.setText(String.format("Посчитано %d теплообменников (%s) из %d", index,"type", size));
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {

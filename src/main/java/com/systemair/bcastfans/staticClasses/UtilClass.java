@@ -32,6 +32,7 @@ public class UtilClass {
     public static String PATH_WORK;
     public static String CHROME_DRIVER;
     public static String EDGE_DRIVER;
+    public static String SECURITY_CODE;
     public static String BROWSER;
     public static final int MAX_LIMIT_TIMEOUT = 40;
     public static final int LIMIT_REPEAT_TIMEOUT = 500;
@@ -60,6 +61,7 @@ public class UtilClass {
             CHROME_DRIVER = properties.getProperty("path.driver");
             EDGE_DRIVER = properties.getProperty("path.edge.driver");
             BROWSER = properties.getProperty("type.browser");
+            SECURITY_CODE = properties.getProperty("security.password");
         } catch (IOException e) {
             e.printStackTrace();
             throw new MyCatchException("Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
