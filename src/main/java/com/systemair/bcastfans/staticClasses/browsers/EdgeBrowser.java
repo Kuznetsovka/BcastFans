@@ -16,9 +16,10 @@ import java.time.Duration;
 import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
 public class EdgeBrowser {
-    private EdgeDriver driver;
-    private Wait<EdgeDriver> wait;
+    private final EdgeDriver driver;
+    private final Wait<EdgeDriver> wait;
     private static final Logger LOGGER = Logger.getLogger(EdgeBrowser.class.getName());
+
     @SneakyThrows
     public EdgeBrowser() {
         try {

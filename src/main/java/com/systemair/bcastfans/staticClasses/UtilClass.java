@@ -121,6 +121,7 @@ public class UtilClass {
             case FORMULA:
                 FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                 registryCustomFunction(cell.getSheet().getWorkbook());
+                evaluator.evaluateFormulaCell(cell);
                 evaluator.evaluate(cell);
                 return String.valueOf(round(cell.getNumericCellValue()));
             case ERROR:
@@ -130,10 +131,10 @@ public class UtilClass {
     }
 
     private static void registryCustomFunction(Workbook workbook) {
-        String[] functionNames = { "polinom" } ;
-        FreeRefFunction[] functionImpls = { new Polinom() } ;
-        UDFFinder udfs = new DefaultUDFFinder( functionNames, functionImpls ) ;
-        UDFFinder udfToolpack = new AggregatingUDFFinder( udfs ) ;
+        String[] functionNames = {"polinom"};
+        FreeRefFunction[] functionImpls = {new Polinom()};
+        UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
+        UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
         workbook.addToolPack(udfToolpack);
     }
 

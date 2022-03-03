@@ -44,9 +44,9 @@ public class ExcelServiceImpl implements ExcelService {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Open file");
             fileChooser.setInitialDirectory(new File(path));
-            File fileExcelOL = fileChooser.showOpenDialog(window);
-            if (fileExcelOL != null) {
-                fileExcelOLPath = fileExcelOL.getAbsolutePath();
+            File fileExcel = fileChooser.showOpenDialog(window);
+            if (fileExcel != null) {
+                fileExcelOLPath = fileExcel.getAbsolutePath();
                 workbook = readWorkbook(fileExcelOLPath);
             }
         } catch (IllegalArgumentException e) {
@@ -72,7 +72,7 @@ public class ExcelServiceImpl implements ExcelService {
             fillCell(worksheet, startCellResult + 1, row, exchanger.get(row).getResult().getCapacity().getValueWithMeasure());
             fillCell(worksheet, startCellResult + 2, row, exchanger.get(row).getResult().getFluidFlow().getValueWithMeasure());
             fillCell(worksheet, startCellResult + 3, row, exchanger.get(row).getResult().getFluidDrop().getValueWithMeasure());
-            fillCell(worksheet, startCellResult + 4, row, exchanger.get(row).getResult().getAirDrop().getValue());
+            fillCell(worksheet, startCellResult + 4, row, Integer.parseInt(exchanger.get(row).getResult().getAirDrop().getValue()));
             fillCell(worksheet, startCellResult - 5, row, Double.parseDouble(exchanger.get(row).getResult().getTOut().getValue()));
         }
     }
@@ -116,7 +116,7 @@ public class ExcelServiceImpl implements ExcelService {
     private void fillCell(Sheet worksheet, int cellIdx, int rowIdx, String value) {
         Row row = (worksheet.getRow(rowIdx) == null) ? worksheet.createRow(rowIdx) : worksheet.getRow(rowIdx);
         Cell cell = (row.getCell(cellIdx) == null) ? row.createCell(cellIdx) : row.getCell(cellIdx);
-            cell.setCellValue(value);
+        cell.setCellValue(value);
     }
 
     private void fillCell(Sheet worksheet, int cellIdx, int rowIdx, double value) {
@@ -164,7 +164,7 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public Map<Integer, Exchanger> getHeaterExchangers(Sheet worksheet) {
         int columnStart = 33;
-        int columnFinish = 39;
+        int columnFinish = 40;
         Process process = Process.HEAT;
         return getExchangerMapFromExcel(worksheet, columnStart, columnFinish, process);
     }

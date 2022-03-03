@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.systemair.bcastfans.domain.TypeMontage.*;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 
 public class SystemairBrowserService extends BrowserServiceImpl {

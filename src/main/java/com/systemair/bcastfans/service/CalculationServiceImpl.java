@@ -22,7 +22,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.*;
+import static com.systemair.bcastfans.staticClasses.UtilClass.downloadUsingNIO;
+import static com.systemair.bcastfans.staticClasses.UtilClass.getCorrectSavePath;
 import static javafx.application.Platform.runLater;
 
 public class CalculationServiceImpl implements CalculationService {
@@ -128,17 +129,17 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
-        long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
+        long count = exchangerMap.values().stream().filter(Objects::nonNull).count(); //TODO Не считает нулевых т/о
         tableController.initProgressBar(count, pi, labelProgressBar);
         AtomicInteger index = new AtomicInteger();
         if (!exchangerMap.isEmpty())
             for (Integer integer : exchangerMap.keySet()) {
                 index.set(integer);
                 Thread t2 = new Thread(() -> runLater(() -> {
-                    tableController.progressBar(index.get(), count, pi, labelProgressBar,exchangerMap.get(integer).getProcess().getTxt());
+                    tableController.progressBar(index.get(), count, pi, labelProgressBar, exchangerMap.get(integer).getProcess().getTxt());
                 }));
                 t2.start();
-                exchangerMap.replace(integer,exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
+                exchangerMap.replace(integer, exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
                 index.getAndIncrement();
             }
         return exchangerMap;

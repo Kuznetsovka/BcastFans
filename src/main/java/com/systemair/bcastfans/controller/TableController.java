@@ -8,7 +8,6 @@ import com.systemair.exchangers.ExchangersApplication;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -19,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Window;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -36,7 +34,6 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
@@ -178,21 +175,22 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        new Thread(() -> runLater(() -> {
-            Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
-            Sheet worksheet = workbook.getSheetAt(0);
-            mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet);
-            mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet);
+        final Workbook[] workbook = {excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK)};
+        if (workbook[0] == null) return;
+        final Sheet[] worksheet = {workbook[0].getSheetAt(0)};
+        new Thread(() -> {
+            mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet[0]);
+            mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet[0]);
             if (mapHeaters.values().stream().anyMatch(Objects::nonNull) || mapCoolers.values().stream().anyMatch(Objects::nonNull)) {
                 mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
                 mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
-                excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
-                workbook = excelServiceImpl.reOpen();
-                worksheet = workbook.getSheetAt(0);
+                excelServiceImpl.fillExchangersFromGUI(worksheet[0], mapHeaters, mapCoolers);
+                workbook[0] = excelServiceImpl.reOpen();
+                worksheet[0] = workbook[0].getSheetAt(0);
             }
-            ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet);
+            ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet[0]);
             fillGUITableFromExcel(cells);
-        })).start();
+        }).start();
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
@@ -221,6 +219,7 @@ public class TableController implements Initializable {
             e.printStackTrace();
         }
     }
+
     public void calculate() {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
@@ -306,9 +305,9 @@ public class TableController implements Initializable {
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
     }
 
-    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar,String type) {
+    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar, String type) {
         pi.setProgress((double) (index) / size);
-        labelProgressBar.setText(String.format("Посчитано %d теплообменников (%s) из %d", index,"type", size));
+        labelProgressBar.setText(String.format("Посчитано %d теплообменников (%s) из %d", index, type, size));
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {

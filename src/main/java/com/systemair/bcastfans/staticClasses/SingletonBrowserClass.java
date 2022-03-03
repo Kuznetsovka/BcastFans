@@ -4,14 +4,12 @@ import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.staticClasses.browsers.ChromeBrowser;
 import com.systemair.bcastfans.staticClasses.browsers.EdgeBrowser;
 import javafx.scene.control.Alert;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.SessionNotCreatedException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Wait;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.BROWSER;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static java.lang.System.exit;
 
 public class SingletonBrowserClass {
