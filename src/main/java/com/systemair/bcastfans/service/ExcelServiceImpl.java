@@ -76,7 +76,6 @@ public class ExcelServiceImpl implements ExcelService {
             fillCell(worksheet, startCellResult + 2, row, currentExchanger.getResult().getFluidFlow().getValueWithMeasure());
             fillCell(worksheet, startCellResult + 3, row, currentExchanger.getResult().getFluidDrop().getValueWithMeasure());
             fillCell(worksheet, startCellResult + 4, row, Integer.parseInt(currentExchanger.getResult().getAirDrop().getValue()));
-            fillCell(worksheet, startCellResult + 5, row, currentExchanger.getModelSystemair());
             fillCell(worksheet, startCellResult - 5, row, Double.parseDouble(currentExchanger.getResult().getTOut().getValue()));
         }
     }
