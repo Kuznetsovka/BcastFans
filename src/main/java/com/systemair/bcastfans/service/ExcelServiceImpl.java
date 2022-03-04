@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.parseCell;
 
@@ -66,14 +67,17 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     private void fillExchangerToExcel(Sheet worksheet, Map<Integer, Exchanger> exchanger, int startCellResult) {
+        Exchanger currentExchanger;
         for (int row = 1; row < exchanger.size(); row++) {
-            if (exchanger.get(row) == null) continue;
-            fillCell(worksheet, startCellResult, row, exchanger.get(row).getModelSystemair());
-            fillCell(worksheet, startCellResult + 1, row, exchanger.get(row).getResult().getCapacity().getValueWithMeasure());
-            fillCell(worksheet, startCellResult + 2, row, exchanger.get(row).getResult().getFluidFlow().getValueWithMeasure());
-            fillCell(worksheet, startCellResult + 3, row, exchanger.get(row).getResult().getFluidDrop().getValueWithMeasure());
-            fillCell(worksheet, startCellResult + 4, row, Integer.parseInt(exchanger.get(row).getResult().getAirDrop().getValue()));
-            fillCell(worksheet, startCellResult - 5, row, Double.parseDouble(exchanger.get(row).getResult().getTOut().getValue()));
+            currentExchanger = exchanger.get(row);
+            if (currentExchanger == null || currentExchanger.getResult() == null) continue;
+            fillCell(worksheet, startCellResult, row, currentExchanger.getModelSystemair());
+            fillCell(worksheet, startCellResult + 1, row, currentExchanger.getResult().getCapacity().getValueWithMeasure());
+            fillCell(worksheet, startCellResult + 2, row, currentExchanger.getResult().getFluidFlow().getValueWithMeasure());
+            fillCell(worksheet, startCellResult + 3, row, currentExchanger.getResult().getFluidDrop().getValueWithMeasure());
+            fillCell(worksheet, startCellResult + 4, row, Integer.parseInt(currentExchanger.getResult().getAirDrop().getValue()));
+            fillCell(worksheet, startCellResult + 5, row, currentExchanger.getModelSystemair());
+            fillCell(worksheet, startCellResult - 5, row, Double.parseDouble(currentExchanger.getResult().getTOut().getValue()));
         }
     }
 
@@ -186,7 +190,7 @@ public class ExcelServiceImpl implements ExcelService {
         try {
             while (worksheet.getRow(++row).getCell(2).getCellType() != CellType.BLANK) {
                 rows = new ArrayList<>();
-                if (worksheet.getRow(row).getCell(columnStart - 1) == null) {
+                if (isEmptyExchanger(worksheet, columnStart, row)) {
                     exchangerMaps.put(row, null);
                     continue;
                 }
@@ -200,11 +204,15 @@ public class ExcelServiceImpl implements ExcelService {
                 if (rows.size() == 10)
                     exchangerMaps.put(row, exchangersService.getExchanger(rows, process));
             }
-            //TODO решить проблему не соответствия моделей
         } catch (IllegalArgumentException e) {
             throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки " + cell.getAddress(), Alert.AlertType.WARNING);
         }
         return exchangerMaps;
+    }
+
+    private boolean isEmptyExchanger(Sheet worksheet, int columnStart, int row) {
+        if (worksheet.getRow(row).getCell(columnStart - 1) == null) return true;
+        return parseCell(worksheet.getRow(row).getCell(columnStart - 1)).isEmpty();
     }
 
 
@@ -228,7 +236,7 @@ public class ExcelServiceImpl implements ExcelService {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            throw new MyCatchException("Ошибка считывания данных, не должно быть формул, ячейка:" + cell.getAddress().formatAsString(), Alert.AlertType.WARNING);
+            throw new MyCatchException("Ошибка считывания данных, не должно быть формул, ячейка:" + Objects.requireNonNull(cell).getAddress().formatAsString(), Alert.AlertType.WARNING);
         }
         return cells;
     }

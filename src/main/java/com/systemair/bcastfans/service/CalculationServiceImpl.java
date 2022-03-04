@@ -129,18 +129,18 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
-        long count = exchangerMap.values().stream().filter(Objects::nonNull).count(); //TODO Не считает нулевых т/о
+        long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
         tableController.initProgressBar(count, pi, labelProgressBar);
-        AtomicInteger index = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger(0);
         if (!exchangerMap.isEmpty())
             for (Integer integer : exchangerMap.keySet()) {
-                index.set(integer);
-                Thread t2 = new Thread(() -> runLater(() -> {
-                    tableController.progressBar(index.get(), count, pi, labelProgressBar, exchangerMap.get(integer).getProcess().getTxt());
-                }));
+                if (exchangerMap.get(integer) == null) continue;
+                index.getAndIncrement();
+                Thread t2 = new Thread(() -> runLater(() ->
+                    tableController.progressBar(index.get(), count, pi, labelProgressBar, exchangerMap.get(integer).getProcess().getTxt())
+                ));
                 t2.start();
                 exchangerMap.replace(integer, exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
-                index.getAndIncrement();
             }
         return exchangerMap;
     }

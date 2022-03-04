@@ -181,16 +181,25 @@ public class TableController implements Initializable {
         new Thread(() -> {
             mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet[0]);
             mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet[0]);
-            if (mapHeaters.values().stream().anyMatch(Objects::nonNull) || mapCoolers.values().stream().anyMatch(Objects::nonNull)) {
-                mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
-                mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
-                excelServiceImpl.fillExchangersFromGUI(worksheet[0], mapHeaters, mapCoolers);
-                workbook[0] = excelServiceImpl.reOpen();
-                worksheet[0] = workbook[0].getSheetAt(0);
+            if (isNotNullValue(mapHeaters) || isNotNullValue(mapCoolers)) {
+                worksheet[0] = calculateAndFillingAllExchanger(worksheet[0]);
             }
             ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet[0]);
             fillGUITableFromExcel(cells);
         }).start();
+    }
+
+    private Sheet calculateAndFillingAllExchanger(Sheet worksheet) {
+        mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
+        mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
+        excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
+        Workbook workbook = excelServiceImpl.reOpen();
+        worksheet = workbook.getSheetAt(0);
+        return worksheet;
+    }
+
+    private boolean isNotNullValue(Map<Integer,Exchanger> map) {
+        return map.values().stream().anyMatch(Objects::nonNull);
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
