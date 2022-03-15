@@ -9,7 +9,6 @@ import com.systemair.exchangers.ExchangersApplication;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.NoSuchSessionException;
 import org.openqa.selenium.TimeoutException;
@@ -99,16 +98,19 @@ public class CalculationServiceImpl implements CalculationService {
         }
     }
 
-    @SneakyThrows
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
-            Fan currentFan;
+            Fan currentFan = null;
             try {
                 currentFan = isFilterFans ?
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
             } catch (TimeoutException | NoSuchSessionException e) {
-                throw new MyCatchException(e.getMessage(), Alert.AlertType.WARNING);
+                try {
+                    throw new MyCatchException(e.getMessage(), Alert.AlertType.WARNING);
+                } catch (MyCatchException ex) {
+                    ex.printStackTrace();
+                }
             }
             u.setFan(currentFan);
             hashMap.put(u, currentFan);
@@ -127,7 +129,6 @@ public class CalculationServiceImpl implements CalculationService {
         isStop = true;
     }
 
-    @Override
     public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
         long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
         tableController.initProgressBar(count, pi, labelProgressBar);

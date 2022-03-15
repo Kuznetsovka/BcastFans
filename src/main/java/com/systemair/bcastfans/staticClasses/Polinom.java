@@ -59,7 +59,6 @@ public class Polinom implements FreeRefFunction {
         return list;
     }
 
-    @SneakyThrows
     private List<List<ValueEval>> getListRow(ValueEval arg) {
         int lastRow = 0, firstRow = 0;
         if (arg instanceof AreaEval) {
@@ -69,7 +68,7 @@ public class Polinom implements FreeRefFunction {
         return getValues(arg, lastRow == firstRow);
     }
 
-    private List<List<ValueEval>> getValues(ValueEval eval, boolean lastRowOnly) throws EvaluationException {
+    private List<List<ValueEval>> getValues(ValueEval eval, boolean lastRowOnly) {
         if (eval instanceof AreaEval) {
             AreaEval ae = (AreaEval) eval;
             List<List<ValueEval>> list = new ArrayList<>();
@@ -77,7 +76,11 @@ public class Polinom implements FreeRefFunction {
             int startRow = lastRowOnly ? ae.getLastRow() : ae.getFirstRow();
             for (int r = startRow; r <= ae.getLastRow(); r++) {
                 for (int c = ae.getFirstColumn(); c <= ae.getLastColumn(); c++) {
-                    row.add(OperandResolver.getSingleValue(ae.getAbsoluteValue(r, c), r, c));
+                    try {
+                        row.add(OperandResolver.getSingleValue(ae.getAbsoluteValue(r, c), r, c));
+                    } catch (EvaluationException e) {
+                        e.printStackTrace();
+                    }
                 }
                 list.add(row);
                 row = new ArrayList<>();

@@ -4,6 +4,7 @@ import com.systemair.bcastfans.domain.FanUnit;
 import com.systemair.bcastfans.domain.RectangleModels;
 import com.systemair.bcastfans.domain.RoofModels;
 import com.systemair.bcastfans.domain.RoundModels;
+
 import com.systemair.exchangers.ExchangersApplication;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
@@ -19,5 +20,5 @@ public interface CalculationService {
 
     void stopCalculation();
 
-    Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar);
+    Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> mapHeaters, ProgressIndicator progressIndicator, Label labelProgressBar);
 }

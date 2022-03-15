@@ -6,10 +6,10 @@ module com.systemair.bcastfans {
     requires javafx.controls;
     requires log4j;
     requires java.desktop;
-    requires com.systemair.exchangers;
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
     requires lombok;
+    requires com.systemair.exchangers;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;

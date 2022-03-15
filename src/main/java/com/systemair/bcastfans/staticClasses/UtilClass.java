@@ -50,7 +50,6 @@ public class UtilClass {
     }
 
 
-    @SneakyThrows
     public static void initProperties() {
         Properties properties = new Properties();
         try {
@@ -64,7 +63,11 @@ public class UtilClass {
             SECURITY_CODE = properties.getProperty("security.password");
         } catch (IOException e) {
             e.printStackTrace();
-            throw new MyCatchException("Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -106,7 +109,6 @@ public class UtilClass {
         }
     }
 
-    @SneakyThrows
     public static String parseCell(Cell cell) {
         if (cell == null) return "";
         switch (cell.getCellType()) {
@@ -125,7 +127,11 @@ public class UtilClass {
                 evaluator.evaluate(cell);
                 return String.valueOf(round(cell.getNumericCellValue()));
             case ERROR:
-                throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
+                try {
+                    throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
+                } catch (MyCatchException e) {
+                    e.printStackTrace();
+                }
         }
         return "";
     }

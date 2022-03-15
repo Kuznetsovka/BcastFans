@@ -36,11 +36,10 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         super();
     }
 
-    @SneakyThrows
     @Override
     public void prepareStartPageBeforeCalculation() {
-        try {
             // Внесение данных Отрицательный допуск
+        try {
             inputTextByLabel("Отрицательный допуск", negativeLimit);
             LOGGER.info("Заполнен отрицательный допуск");
             // Внесение данных Положительный допуск
@@ -65,9 +64,8 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
             LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
         } catch (InterruptedException e) {
-            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            e.printStackTrace();
         }
-
     }
 
     @Override
@@ -259,7 +257,6 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
-    @SneakyThrows
     @Override
     public void sorting() {
         changeValueComboBoxByLabel("Сортировать по:", "Цена (По возрастающей)");
@@ -275,7 +272,6 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         LOGGER.info("Скрытие диаграмм вентиляторов");
     }
 
-    @SneakyThrows
     @Override
     public void grouping() {
         isGrouping = true;
@@ -297,7 +293,6 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             flagWarning = true;
     }
 
-    @SneakyThrows
     @Override
     public void changeMeasureValueOnTableByIndex(String newValue, int index) {
         String xpath = ".//th[@class='sc-hzDkRC kmzkGx'][" + index + "]/div[2]/div[1]";
@@ -308,14 +303,18 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            } catch (MyCatchException e) {
+                e.printStackTrace();
+            }
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
         LOGGER.info("Заменили значение изменения на " + newValue);
         isChangeMeasureValueTable = true;
     }
 
     @Override
-    public void changeValueComboBoxByLabel(String findTextLabel, String newValue) throws MyCatchException {
+    public void changeValueComboBoxByLabel(String findTextLabel, String newValue) {
         String xpath = ".//span[text() = '" + findTextLabel + "']/following::div[1]//span[1]";
         By by = By.xpath(xpath + "/ancestor::div[1]");
         WebElement checkingWb = getWebElementByXpath(xpath);
@@ -326,7 +325,11 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         List<WebElement> list = sbc.getWait().until(visibilityOfAllElementsLocatedBy(By.xpath(".//div[contains(@class, 'sc-gzVnrw')]")));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
-            throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Запрос " + xpath + " не дал результата! Значение " + newValue + " не было найдено в списке!", Alert.AlertType.WARNING);
+            } catch (MyCatchException e) {
+                e.printStackTrace();
+            }
         sbc.getWait().until(elementToBeClickable(changingElement)).click();
     }
 

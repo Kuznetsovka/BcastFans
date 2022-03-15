@@ -17,11 +17,10 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
 public class ChromeBrowser {
 
-    private final ChromeDriver driver;
-    private final Wait<ChromeDriver> wait;
+    private ChromeDriver driver;
+    private Wait<ChromeDriver> wait;
     private static final Logger LOGGER = Logger.getLogger(ChromeBrowser.class.getName());
 
-    @SneakyThrows
     public ChromeBrowser() {
         try {
             System.setProperty("webdriver.chrome.driver", CHROME_DRIVER);
@@ -42,7 +41,11 @@ public class ChromeBrowser {
                     .pollingEvery(Duration.ofNanos(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
         } catch (IllegalArgumentException e) {
-            throw new MyCatchException("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + CHROME_DRIVER, Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + CHROME_DRIVER, Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

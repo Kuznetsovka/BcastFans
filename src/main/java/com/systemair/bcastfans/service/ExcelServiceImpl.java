@@ -2,9 +2,9 @@ package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.exchangers.domain.Process;
 import com.systemair.exchangers.domain.exchangers.Exchanger;
 import com.systemair.exchangers.service.ExchangersService;
+import com.systemair.exchangers.domain.Process;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
@@ -37,7 +37,6 @@ public class ExcelServiceImpl implements ExcelService {
         this.exchangersService = exchangersService;
     }
 
-    @SneakyThrows
     @Override
     public Workbook loadWorkbook(Window window, String path) {
         Workbook workbook = null;
@@ -51,7 +50,11 @@ public class ExcelServiceImpl implements ExcelService {
                 workbook = readWorkbook(fileExcelOLPath);
             }
         } catch (IllegalArgumentException e) {
-            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            try {
+                throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
         return workbook;
     }
@@ -92,7 +95,6 @@ public class ExcelServiceImpl implements ExcelService {
         return readWorkbook(fileExcelOLPath);
     }
 
-    @SneakyThrows
     public static Workbook readWorkbook(String filename) {
         try {
             if (filename.contains(".xlsx")) {
@@ -101,18 +103,26 @@ public class ExcelServiceImpl implements ExcelService {
                 return new HSSFWorkbook(new FileInputStream(filename));
             }
         } catch (Exception e) {
-            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            try {
+                throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
+        return null;
     }
 
-    @SneakyThrows
     public static void writeWorkbook(Workbook wb, String fileName) {
         try {
             FileOutputStream fileOut = new FileOutputStream(fileName);
             wb.write(fileOut);
             fileOut.close();
         } catch (Exception e) {
-            throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            try {
+                throw new MyCatchException(e.getMessage(), Alert.AlertType.ERROR);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -180,7 +190,6 @@ public class ExcelServiceImpl implements ExcelService {
         return getExchangerMapFromExcel(worksheet, columnStart, columnFinish, process);
     }
 
-    @SneakyThrows
     private Map<Integer, Exchanger> getExchangerMapFromExcel(Sheet worksheet, int columnStart, int columnFinish, Process process) {
         Map<Integer, Exchanger> exchangerMaps = new HashMap<>();
         int row = 0;
@@ -204,7 +213,11 @@ public class ExcelServiceImpl implements ExcelService {
                     exchangerMaps.put(row, exchangersService.getExchanger(rows, process));
             }
         } catch (IllegalArgumentException e) {
-            throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки " + cell.getAddress(), Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Ошибка считывания данных, не соответствующий аргумент, адрес ячейки " + cell.getAddress(), Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
         return exchangerMaps;
     }
@@ -215,7 +228,6 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
 
-    @SneakyThrows
     @Override
     public ArrayList<ArrayList<String>> loadFansWorksheet(Sheet worksheet) {
         int lastColumn = 7;
@@ -235,7 +247,11 @@ public class ExcelServiceImpl implements ExcelService {
                     cells.add(rows);
             }
         } catch (Exception e) {
-            throw new MyCatchException("Ошибка считывания данных, не должно быть формул, ячейка:" + Objects.requireNonNull(cell).getAddress().formatAsString(), Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Ошибка считывания данных, не должно быть формул, ячейка:" + Objects.requireNonNull(cell).getAddress().formatAsString(), Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
         return cells;
     }

@@ -16,11 +16,10 @@ import java.time.Duration;
 import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
 public class EdgeBrowser {
-    private final EdgeDriver driver;
-    private final Wait<EdgeDriver> wait;
+    private EdgeDriver driver;
+    private Wait<EdgeDriver> wait;
     private static final Logger LOGGER = Logger.getLogger(EdgeBrowser.class.getName());
 
-    @SneakyThrows
     public EdgeBrowser() {
         try {
             System.setProperty("webdriver.edge.driver", EDGE_DRIVER);
@@ -35,7 +34,11 @@ public class EdgeBrowser {
                     .pollingEvery(Duration.ofNanos(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
         } catch (IllegalStateException e) {
-            throw new MyCatchException("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + EDGE_DRIVER, Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + EDGE_DRIVER, Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
