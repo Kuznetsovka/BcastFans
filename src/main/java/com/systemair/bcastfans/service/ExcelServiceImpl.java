@@ -260,31 +260,31 @@ public class ExcelServiceImpl implements ExcelService {
         cell[10].setCellValue("Фазность");
         cell[11].setCellValue("Цена");
 
-        cell[12].setCellValue("Температура входа");
-        cell[13].setCellValue("Влажность входа");
-        cell[14].setCellValue("Температура выхода");
-        cell[15].setCellValue("Среда");
-        cell[16].setCellValue("Процент смеси");
-        cell[17].setCellValue("Температура входа жидкости");
-        cell[18].setCellValue("Температура выхода жидкости");
-        cell[19].setCellValue("Модель нагревателя");
-        cell[20].setCellValue("Мощность");
-        cell[21].setCellValue("Расход жидности");
-        cell[22].setCellValue("Потери по жидности");
-        cell[23].setCellValue("Потери");
-
-        cell[24].setCellValue("Температура входа");
-        cell[25].setCellValue("Влажность входа");
-        cell[26].setCellValue("Температура выхода");
-        cell[27].setCellValue("Среда");
-        cell[28].setCellValue("Процент смеси");
-        cell[29].setCellValue("Температура входа жидкости");
-        cell[30].setCellValue("Температура выхода жидкости");
-        cell[31].setCellValue("Модель охладителя");
-        cell[32].setCellValue("Мощность");
-        cell[33].setCellValue("Расход жидности");
-        cell[34].setCellValue("Потери по жидности");
-        cell[35].setCellValue("Потери");
+//        cell[12].setCellValue("Температура входа");
+//        cell[13].setCellValue("Влажность входа");
+//        cell[14].setCellValue("Температура выхода");
+//        cell[15].setCellValue("Среда");
+//        cell[16].setCellValue("Процент смеси");
+//        cell[17].setCellValue("Температура входа жидкости");
+//        cell[18].setCellValue("Температура выхода жидкости");
+//        cell[19].setCellValue("Модель нагревателя");
+//        cell[20].setCellValue("Мощность");
+//        cell[21].setCellValue("Расход жидности");
+//        cell[22].setCellValue("Потери по жидности");
+//        cell[23].setCellValue("Потери");
+//
+//        cell[24].setCellValue("Температура входа");
+//        cell[25].setCellValue("Влажность входа");
+//        cell[26].setCellValue("Температура выхода");
+//        cell[27].setCellValue("Среда");
+//        cell[28].setCellValue("Процент смеси");
+//        cell[29].setCellValue("Температура входа жидкости");
+//        cell[30].setCellValue("Температура выхода жидкости");
+//        cell[31].setCellValue("Модель охладителя");
+//        cell[32].setCellValue("Мощность");
+//        cell[33].setCellValue("Расход жидности");
+//        cell[34].setCellValue("Потери по жидности");
+//        cell[35].setCellValue("Потери");
     }
 
 }

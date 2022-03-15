@@ -34,6 +34,7 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
+import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
@@ -184,6 +185,7 @@ public class TableController implements Initializable {
             if (isNotNullValue(mapHeaters) || isNotNullValue(mapCoolers)) {
                 worksheet[0] = calculateAndFillingAllExchanger(worksheet[0]);
             }
+            workbook[0].setForceFormulaRecalculation(true);
             ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet[0]);
             fillGUITableFromExcel(cells);
         }).start();
@@ -256,11 +258,7 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                try {
-                    throw new MyCatchException("Все установки посчитаны!", Alert.AlertType.INFORMATION);
-                } catch (MyCatchException e) {
-                    e.printStackTrace();
-                }
+                showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));
