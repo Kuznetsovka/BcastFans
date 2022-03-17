@@ -38,8 +38,6 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
-    public static final int CELL_SIZE = 20;
-    public static final int TABLE_SIZE = 905;
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl();
     private CalculationService calculationServiceImpl;
@@ -75,7 +73,6 @@ public class TableController implements Initializable {
     private Label labelTimeLong;
     @FXML
     private TableView<FanUnit> table;
-    private final int[] width = {34, 50, 75, 50, 120, 120, 75, 140, 60, 70, 60, 50};
     @FXML
     private CheckBox checkBox;
     @FXML
@@ -110,6 +107,7 @@ public class TableController implements Initializable {
             return change; //else make no change
         }
         change.setText("");
+        calculationServiceImpl.setIsChangeLimit(true);
         return change; //if change is a number
     };
 
@@ -119,10 +117,12 @@ public class TableController implements Initializable {
         } else {
             change.setText("");
         }
+        calculationServiceImpl.setIsChangeLimit(true);
         return change;
     };
 
     private ObservableList<FanUnit> data;
+    private Thread calculationThread;
 
     @FXML
     public void checkBoxInitialize() {
@@ -208,7 +208,7 @@ public class TableController implements Initializable {
     }
 
     public void calculate() {
-        Thread thread = new Thread(() -> {
+        calculationThread = new Thread(() -> {
             Instant start = Instant.now();
             if (data == null) try {
                 throw new MyCatchException("Поле данных не заполнено!", Alert.AlertType.INFORMATION);
@@ -240,7 +240,7 @@ public class TableController implements Initializable {
             }));
             t2.start();
         });
-        thread.start();
+        calculationThread.start();
     }
 
     public void fillFan(ObservableList<FanUnit> data) {
@@ -256,6 +256,8 @@ public class TableController implements Initializable {
     }
 
     public void stop() {
+        calculationThread.interrupt();
+
         calculationServiceImpl.stopCalculation();
     }
 
@@ -286,11 +288,6 @@ public class TableController implements Initializable {
     public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar) {
         pi.setProgress((double) (index) / size);
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
-    }
-
-    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar, String type) {
-        pi.setProgress((double) (index) / size);
-        labelProgressBar.setText(String.format("Посчитано %d теплообменников (%s) из %d", index, type, size));
     }
 
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {

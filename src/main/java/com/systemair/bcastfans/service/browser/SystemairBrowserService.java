@@ -37,13 +37,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void prepareStartPageBeforeCalculation() {
-            // Внесение данных Отрицательный допуск
         try {
-            inputTextByLabel("Отрицательный допуск", negativeLimit);
-            LOGGER.info("Заполнен отрицательный допуск");
-            // Внесение данных Положительный допуск
-            inputTextByLabel("Положительный допуск", positiveLimit);
-            LOGGER.info("Заполнен положительный допуск");
             // Проверка и изменение значения Макс. температура воздуха на 40
             inputTextByLabel("Макс. температура воздуха", "40");
             LOGGER.info("Заполнена макс. температура воздуха");
@@ -62,6 +56,20 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             // Проверка и изменение единиц измерения Макс. температура воздуха на °С
             changeValueComboBoxByLabel("Макс. температура воздуха", "°C");
             LOGGER.info("Изменено единицы измерения макс. температуры воздуха");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void changeLimitBeforeCalculation() {
+        // Внесение данных Отрицательный допуск
+        try {
+            inputTextByLabel("Отрицательный допуск", negativeLimit);
+            LOGGER.info("Заполнен отрицательный допуск");
+            // Внесение данных Положительный допуск
+            inputTextByLabel("Положительный допуск", positiveLimit);
+            LOGGER.info("Заполнен положительный допуск");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

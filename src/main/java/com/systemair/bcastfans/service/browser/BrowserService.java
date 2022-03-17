@@ -33,6 +33,8 @@ public interface BrowserService {
 
     void prepareStartPageBeforeCalculation();
 
+    void changeLimitBeforeCalculation();
+
     void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException;
 
     Fan calculate(String airFlow, String airDrop, TypeMontage typeMontage, SubType subType, String dimension, List<String>... selectedFans);

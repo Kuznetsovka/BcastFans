@@ -109,28 +109,33 @@ public class UtilClass {
     }
 
     public static String parseCell(Cell cell) {
-        if (cell == null) return "";
-        switch (cell.getCellType()) {
-            case BLANK:
-                return "";
-            case BOOLEAN:
-                return String.valueOf(cell.getBooleanCellValue());
-            case NUMERIC:
-                return String.valueOf(round(cell.getNumericCellValue()));
-            case STRING:
-                return cell.getStringCellValue();
-            case FORMULA:
-                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                registryCustomFunction(cell.getSheet().getWorkbook());
-                evaluator.evaluateFormulaCell(cell);
-                evaluator.evaluate(cell);
-                return String.valueOf(round(cell.getNumericCellValue()));
-            case ERROR:
-                try {
+        try {
+            if (cell == null) return "";
+            switch (cell.getCellType()) {
+                case BLANK:
+                    return "";
+                case BOOLEAN:
+                    return String.valueOf(cell.getBooleanCellValue());
+                case NUMERIC:
+                    return String.valueOf(round(cell.getNumericCellValue()));
+                case STRING:
+                    return cell.getStringCellValue();
+                case FORMULA:
+                    FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
+                    registryCustomFunction(cell.getSheet().getWorkbook());
+                    evaluator.evaluateFormulaCell(cell);
+                    evaluator.evaluate(cell);
+                    return String.valueOf(round(cell.getNumericCellValue()));
+                case ERROR:
                     throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
-                } catch (MyCatchException e) {
-                    e.printStackTrace();
-                }
+
+            }
+        } catch (Exception e) {
+            try {
+                throw new MyCatchException("Ошибка считывания данных, не должно быть формул" + "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
         return "";
     }

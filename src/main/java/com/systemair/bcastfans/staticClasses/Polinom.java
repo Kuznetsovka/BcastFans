@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.staticClasses;
 
-import lombok.SneakyThrows;
 import org.apache.poi.ss.formula.OperationEvaluationContext;
 import org.apache.poi.ss.formula.eval.*;
 import org.apache.poi.ss.formula.functions.FreeRefFunction;
@@ -45,7 +44,6 @@ public class Polinom implements FreeRefFunction {
         return new NumberEval(result);
     }
 
-    @SneakyThrows
     private List<List<String>> getTableDoubles(List<List<ValueEval>> v3) {
         List<List<String>> list = new ArrayList<>();
         List<String> row = new ArrayList<>();

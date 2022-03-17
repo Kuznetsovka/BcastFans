@@ -59,7 +59,6 @@ public class ExcelServiceImpl implements ExcelService {
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
-        try {
             while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
                 rows = new ArrayList<>();
                 for (int column = 0; column < lastColumn; column++) {
@@ -70,13 +69,6 @@ public class ExcelServiceImpl implements ExcelService {
                 if (!rows.isEmpty())
                     cells.add(rows);
             }
-        } catch (Exception e) {
-            try {
-                throw new MyCatchException("Ошибка считывания данных, не должно быть формул", Alert.AlertType.ERROR);
-            } catch (MyCatchException ex) {
-                ex.printStackTrace();
-            }
-        }
         return cells;
     }
 

@@ -5,8 +5,6 @@ import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.browser.BrowserService;
 import com.systemair.bcastfans.service.browser.SystemairBrowserService;
-import com.systemair.exchangers.ExchangersApplication;
-import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import org.apache.log4j.Logger;
@@ -16,7 +14,6 @@ import org.openqa.selenium.TimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,10 +25,12 @@ import static javafx.application.Platform.runLater;
 public class CalculationServiceImpl implements CalculationService {
     private final BrowserService browserService = new SystemairBrowserService();
     private static boolean isStop = false;
+    private boolean isFirst = true;
     private static final Logger LOGGER = Logger.getLogger(CalculationServiceImpl.class.getName());
     private final TableController tableController;
     private final Map<FanUnit, Fan> hashMap = new HashMap<>();
     private boolean isFilterFans;
+    private boolean isChangeLimit = true;
 
     public CalculationServiceImpl(TableController tableController) {
         this.tableController = tableController;
@@ -50,7 +49,10 @@ public class CalculationServiceImpl implements CalculationService {
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
-        browserService.prepareStartPageBeforeCalculation();
+        if (isChangeLimit) browserService.changeLimitBeforeCalculation();
+        isChangeLimit = false;
+        if (isFirst) browserService.prepareStartPageBeforeCalculation();
+        isFirst = false;
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -129,20 +131,7 @@ public class CalculationServiceImpl implements CalculationService {
         isStop = true;
     }
 
-    public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
-        long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
-        tableController.initProgressBar(count, pi, labelProgressBar);
-        AtomicInteger index = new AtomicInteger(0);
-        if (!exchangerMap.isEmpty())
-            for (Integer integer : exchangerMap.keySet()) {
-                if (exchangerMap.get(integer) == null) continue;
-                index.getAndIncrement();
-                Thread t2 = new Thread(() -> runLater(() ->
-                    tableController.progressBar(index.get(), count, pi, labelProgressBar, exchangerMap.get(integer).getProcess().getTxt())
-                ));
-                t2.start();
-                exchangerMap.replace(integer, exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
-            }
-        return exchangerMap;
+    public void setIsChangeLimit(boolean isChangeLimit) {
+        this.isChangeLimit = isChangeLimit;
     }
 }

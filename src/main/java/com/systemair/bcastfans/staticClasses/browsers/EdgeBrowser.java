@@ -2,7 +2,6 @@ package com.systemair.bcastfans.staticClasses.browsers;
 
 import com.systemair.bcastfans.MyCatchException;
 import javafx.scene.control.Alert;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
