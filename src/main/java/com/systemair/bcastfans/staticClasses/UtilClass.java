@@ -5,7 +5,6 @@ import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.formula.functions.FreeRefFunction;
 import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;

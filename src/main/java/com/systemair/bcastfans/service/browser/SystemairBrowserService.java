@@ -6,7 +6,6 @@ import com.systemair.bcastfans.domain.SubType;
 import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
-import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -116,7 +115,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                 throw new MyCatchException("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
             }
             if (typeMontage == ROOF && subType == SubType.ON_ROOF) {
-                throw new MyCatchException("Не допустимая конфигурация, Круглых + Дымоудаление не существует!", Alert.AlertType.WARNING);
+                throw new MyCatchException("Не допустимая конфигурация! Уберите подтип На крыше для Крышных вентиляторов", Alert.AlertType.WARNING);
             }
             if (typeMontage == ROUND && (subType == SubType.KITCHEN || subType == SubType.KITCHEN_AND_EC)) {
                 throw new MyCatchException("Не допустимая конфигурация, Круглых + Кухонных не существует!", Alert.AlertType.WARNING);

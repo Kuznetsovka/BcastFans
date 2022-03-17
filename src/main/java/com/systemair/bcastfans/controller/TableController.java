@@ -4,8 +4,6 @@ import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
-import com.systemair.exchangers.ExchangersApplication;
-import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -30,7 +28,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
@@ -40,12 +40,9 @@ import static javafx.application.Platform.runLater;
 public class TableController implements Initializable {
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
-    protected final ExchangersApplication exchangersApplication = new ExchangersApplication();
     private final TableService tableServiceImpl = new TableServiceImpl();
-    private final ExcelService excelServiceImpl = new ExcelServiceImpl(exchangersApplication.getExchangersService());
+    private final ExcelService excelServiceImpl = new ExcelServiceImpl();
     private CalculationService calculationServiceImpl;
-    private Map<Integer, Exchanger> mapHeaters = new HashMap<>();
-    private Map<Integer, Exchanger> mapCoolers = new HashMap<>();
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -176,32 +173,11 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        final Workbook[] workbook = {excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK)};
-        if (workbook[0] == null) return;
-        final Sheet[] worksheet = {workbook[0].getSheetAt(0)};
-        new Thread(() -> {
-            mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet[0]);
-            mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet[0]);
-            if (isNotNullValue(mapHeaters) || isNotNullValue(mapCoolers)) {
-                worksheet[0] = calculateAndFillingAllExchanger(worksheet[0]);
-            }
-            workbook[0].setForceFormulaRecalculation(true);
-            ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet[0]);
-            fillGUITableFromExcel(cells);
-        }).start();
-    }
-
-    private Sheet calculateAndFillingAllExchanger(Sheet worksheet) {
-        mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
-        mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
-        excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
-        Workbook workbook = excelServiceImpl.reOpen();
-        worksheet = workbook.getSheetAt(0);
-        return worksheet;
-    }
-
-    private boolean isNotNullValue(Map<Integer,Exchanger> map) {
-        return map.values().stream().anyMatch(Objects::nonNull);
+        Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
+        if (workbook == null) return;
+        Sheet worksheet = workbook.getSheetAt(0);
+        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
+        fillGUITableFromExcel(cells);
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
