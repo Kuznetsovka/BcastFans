@@ -47,7 +47,7 @@ public interface BrowserService {
 
     boolean checkAvailableFanModel(String model, List<String> selectedList);
 
-    boolean isContinueFan(String price, SubType subType, String model, String phase);
+    boolean isSkipFan(String price, SubType subType, String model, String phase);
 
     void sorting();
 

@@ -107,7 +107,6 @@ public class TableController implements Initializable {
             return change; //else make no change
         }
         change.setText("");
-        calculationServiceImpl.setIsChangeLimit(true);
         return change; //if change is a number
     };
 
@@ -117,7 +116,6 @@ public class TableController implements Initializable {
         } else {
             change.setText("");
         }
-        calculationServiceImpl.setIsChangeLimit(true);
         return change;
     };
 
@@ -256,8 +254,13 @@ public class TableController implements Initializable {
     }
 
     public void stop() {
-        calculationThread.interrupt();
-
+        try {
+            tableServiceImpl.fillResultData(data, table, columnModel, columnArticle, columnPower, columnPhase, columnPrice);
+            calculationThread.interrupt();
+            throw new MyCatchException("Процесс остановлен!", Alert.AlertType.INFORMATION);
+        } catch (MyCatchException ex) {
+            ex.printStackTrace();
+        }
         calculationServiceImpl.stopCalculation();
     }
 
@@ -303,4 +306,7 @@ public class TableController implements Initializable {
         return isSaveTechData;
     }
 
+    public void changeLimit() {
+        calculationServiceImpl.setIsChangeLimit(true);
+    }
 }

@@ -36,14 +36,16 @@
                           style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
                         <HBox spacing="10.0">
                             <Label prefWidth="150.0" text="Отрицательный допуск"/>
-                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="0"/>
+                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
+                                       onKeyPressed="#changeLimit" text="0"/>
                             <VBox.margin>
                                 <Insets/>
                             </VBox.margin>
                         </HBox>
                         <HBox spacing="10.0">
                             <Label prefWidth="150.0" text="Положительный допуск"/>
-                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0" text="100"/>
+                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
+                                       onKeyPressed="#changeLimit" text="100"/>
                         </HBox>
                         <HBox>
                             <Label prefHeight="17.0" text="Путь сохранения" HBox.hgrow="ALWAYS">

@@ -189,7 +189,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
                     countRow++;
                     continue;
                 }
-            if (isContinueFan(price, subType, model, phase)) {
+            if (isSkipFan(price, subType, model, phase)) {
                 countRow++;
                 continue;
             }
@@ -237,10 +237,11 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     }
 
     @Override
-    public boolean isContinueFan(String price, SubType subType, String model, String phase) {
+    public boolean isSkipFan(String price, SubType subType, String model, String phase) {
         return (price.equals("") ||
                 phase.contains("поворот на 90") || // Подбирать MUB только версии Прямой поток
                 (subType == SubType.ON_ROOF && !model.startsWith("K ") && !model.contains("MUB")) ||
+                ((subType != SubType.KITCHEN && subType != SubType.KITCHEN_AND_EC) && model.startsWith("MUB/T")) || // MUB/T только для кухонь
                 (subType == SubType.ON_ROOF && model.contains("EC"))) ||
                 (model.contains("150"));
     }

@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.staticClasses;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.formula.OperationEvaluationContext;
 import org.apache.poi.ss.formula.eval.*;
 import org.apache.poi.ss.formula.functions.FreeRefFunction;
@@ -10,6 +11,7 @@ import java.util.List;
 import static java.lang.Math.pow;
 
 public class Polinom implements FreeRefFunction {
+    private static final Logger LOGGER = Logger.getLogger(Polinom.class.getName());
     @Override
     public ValueEval evaluate(ValueEval[] args, OperationEvaluationContext ec) {
         if (args.length != 4) {
@@ -30,7 +32,6 @@ public class Polinom implements FreeRefFunction {
             ValueEval v4 = OperandResolver.getSingleValue(args[3],
                     ec.getRowIndex(),
                     ec.getColumnIndex());
-
             flow = OperandResolver.coerceValueToInt(v1);
             searchValue = OperandResolver.coerceValueToString(v2);
             index = OperandResolver.coerceValueToInt(v4);
@@ -38,7 +39,6 @@ public class Polinom implements FreeRefFunction {
             result = calculateDropByPolinom(flow, searchValue, table, index);
             checkValue(result);
         } catch (EvaluationException e) {
-            e.printStackTrace();
             return e.getErrorEval();
         }
         return new NumberEval(result);
