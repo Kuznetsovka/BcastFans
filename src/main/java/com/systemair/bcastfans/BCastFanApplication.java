@@ -1,6 +1,5 @@
 package com.systemair.bcastfans;
 
-
 import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.application.Application;
