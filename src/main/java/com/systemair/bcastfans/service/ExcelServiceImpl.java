@@ -59,16 +59,16 @@ public class ExcelServiceImpl implements ExcelService {
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
-            while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
-                rows = new ArrayList<>();
-                for (int column = 0; column < lastColumn; column++) {
-                    Cell cell = worksheet.getRow(row).getCell(column);
-                    if (cell != null)
-                        rows.add(parseCell(cell));
-                }
-                if (!rows.isEmpty())
-                    cells.add(rows);
+        while (worksheet.getRow(++row).getCell(1).getCellType() != CellType.BLANK) {
+            rows = new ArrayList<>();
+            for (int column = 0; column < lastColumn; column++) {
+                Cell cell = worksheet.getRow(row).getCell(column);
+                if (cell != null)
+                    rows.add(parseCell(cell));
             }
+            if (!rows.isEmpty())
+                cells.add(rows);
+        }
         return cells;
     }
 
