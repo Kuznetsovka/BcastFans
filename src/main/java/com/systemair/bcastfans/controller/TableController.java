@@ -22,8 +22,6 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
@@ -41,6 +39,8 @@ public class TableController implements Initializable {
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl();
     private CalculationService calculationServiceImpl;
+    @FXML
+    public ChoiceBox<String> cbIP;
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -135,6 +135,10 @@ public class TableController implements Initializable {
         columnChoose.setCellValueFactory(new PropertyValueFactory<>("check"));
         fieldNegativeLimit.setTextFormatter(new TextFormatter<>(negativeFormatter));
         fieldPositiveLimit.setTextFormatter(new TextFormatter<>(formatter));
+        cbIP.setItems(FXCollections.observableArrayList(
+                "Все ", "IP01", "IP22", "IP24", "IP43", "IP44", "IP45", "IP51", "IP54", "IP55", "IP65", "IPX4", "IPX5")
+        );
+        cbIP.setValue("Все ");
         fieldPathDownloading.setText(PATH_WORK);
         calculationServiceImpl = new CalculationServiceImpl(this);
         initializeListBoxes();
@@ -193,16 +197,7 @@ public class TableController implements Initializable {
         excelServiceImpl.createCellsInWorksheet(worksheet, table);
         excelServiceImpl.setHeader(worksheet, table);
         excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
-        try {
-            FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
-            if (outFile == null) return;
-            workbook.write(outFile);
-            outFile.close();
-            workbook.close();
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            e.printStackTrace();
-        }
+        excelServiceImpl.saveResultWorkbook(workbook, table);
     }
 
     public void calculate() {
@@ -220,6 +215,7 @@ public class TableController implements Initializable {
                     data,
                     progressIndicator,
                     labelProgressBar,
+                    cbIP.getValue(),
                     radioFillOne.isSelected(),
                     listRectangleFans,
                     listRoundFans,
@@ -308,5 +304,9 @@ public class TableController implements Initializable {
 
     public void changeLimit() {
         calculationServiceImpl.setIsChangeLimit(true);
+    }
+
+    public void changeIP() {
+        calculationServiceImpl.setChangeIP(true);
     }
 }

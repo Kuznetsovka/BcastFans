@@ -75,4 +75,6 @@ public abstract class BrowserServiceImpl implements BrowserService {
         ((JavascriptExecutor) sbc.getDriver()).executeScript("arguments[0].scrollIntoView(true);", webElement);
         sbc.getWait().until(elementToBeClickable(webElement)).click();
     }
+
+    public abstract void changeIP();
 }

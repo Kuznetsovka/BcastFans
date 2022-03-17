@@ -21,6 +21,7 @@ import static org.openqa.selenium.support.ui.ExpectedConditions.*;
 public class SystemairBrowserService extends BrowserServiceImpl {
     protected String positiveLimit = "100";
     protected String negativeLimit = "0";
+    protected String valueIP;
     private boolean isClear;
     boolean flagWarning;
     boolean isSorting;
@@ -73,6 +74,12 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void changeIP() {
+        changeValueComboBoxByLabel("Класс защиты IP", valueIP);
+        LOGGER.info("Заполнен класс IP");
     }
 
     @Override
@@ -497,6 +504,11 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         clickElementIfExistsByXpath(".//button[@data-id='2']");
         // Открытие вкладки Дополнительные параметры поиска
         clickElementIfExistsByXpath(".//div[text() = 'Дополнительные параметры поиска']/i[1]", "class", "fa fa-chevron-down");
+    }
+
+    @Override
+    public void setValueIP(String valueIP) {
+        this.valueIP = valueIP;
     }
 
     @Override

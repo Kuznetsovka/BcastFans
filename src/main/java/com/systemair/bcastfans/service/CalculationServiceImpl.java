@@ -31,6 +31,7 @@ public class CalculationServiceImpl implements CalculationService {
     private final Map<FanUnit, Fan> hashMap = new HashMap<>();
     private boolean isFilterFans;
     private boolean isChangeLimit = true;
+    private boolean isChangeIP = true;
 
     public CalculationServiceImpl(TableController tableController) {
         this.tableController = tableController;
@@ -38,7 +39,7 @@ public class CalculationServiceImpl implements CalculationService {
     }
 
     @Override
-    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
+    public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, String valueIP, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
         if (!browserService.getSbc().isOriginTab())
             browserService.getSbc().switchToOrigin();
         isStop = false;
@@ -49,10 +50,13 @@ public class CalculationServiceImpl implements CalculationService {
         String positiveLimit = fieldPositiveLimit.getText();
         browserService.setNegativeLimit(negativeLimit);
         browserService.setPositiveLimit(positiveLimit);
+        browserService.setValueIP(valueIP);
         if (isChangeLimit) browserService.changeLimitBeforeCalculation();
         isChangeLimit = false;
         if (isFirst) browserService.prepareStartPageBeforeCalculation();
         isFirst = false;
+        if (isChangeIP) browserService.changeIP();
+        isChangeIP = false;
         if (!data.isEmpty())
             data.stream().
                     filter(u -> u.getCheck().isSelected()).
@@ -102,7 +106,7 @@ public class CalculationServiceImpl implements CalculationService {
 
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
-            Fan currentFan = null;
+            Fan currentFan = new Fan();
             try {
                 currentFan = isFilterFans ?
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
@@ -131,7 +135,13 @@ public class CalculationServiceImpl implements CalculationService {
         isStop = true;
     }
 
+    @Override
     public void setIsChangeLimit(boolean isChangeLimit) {
         this.isChangeLimit = isChangeLimit;
+    }
+
+    @Override
+    public void setChangeIP(boolean changeIP) {
+        isChangeIP = changeIP;
     }
 }

@@ -2,6 +2,7 @@ package com.systemair.bcastfans.service;
 
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.bcastfans.staticClasses.UtilClass;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
@@ -14,10 +15,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
 import static com.systemair.bcastfans.staticClasses.UtilClass.parseCell;
 
 public class ExcelServiceImpl implements ExcelService {
@@ -148,6 +152,23 @@ public class ExcelServiceImpl implements ExcelService {
             }
         }
         return cells;
+    }
+
+    @Override
+    public void saveResultWorkbook(Workbook workbook, TableView<FanUnit> table) {
+        try {
+            FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
+            if (outFile == null) return;
+            workbook.write(outFile);
+            outFile.close();
+            workbook.close();
+        } catch (IOException e) {
+            try {
+                throw new MyCatchException("Ошибка создания файла excel!", Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     @Override

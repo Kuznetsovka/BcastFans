@@ -58,4 +58,8 @@ public interface BrowserService {
     void changeMeasureValueOnTableByIndex(String newValue, int index);
 
     SingletonBrowserClass getSbc();
+
+    void setValueIP(String valueIP);
+
+    void changeIP();
 }
