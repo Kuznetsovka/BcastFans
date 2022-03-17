@@ -105,10 +105,7 @@ public class ExcelServiceImpl implements ExcelService {
         Cell[] cell = new XSSFCell[lastColumn];
         for (int count = 0; count < countSystems; count++) {
             FanUnit cells = table.getItems().get(count);
-            if (cells.getFan() != null)
-                url = cells.getFan().getShortLink();
-            else
-                url = "";
+            url = (cells.getFan() != null) ? cells.getFan().getShortLink() : "";
             for (Map.Entry<Integer, String> entry : cells.getRow().entrySet()) {
                 Integer column = entry.getKey();
                 String value = entry.getValue();
