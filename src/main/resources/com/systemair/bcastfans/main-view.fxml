@@ -165,8 +165,6 @@
                                     text="Очистить"/>
                         </VBox>
                         <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calcExchangers"
-                                    prefWidth="80.0" text="Расчет т/о"/>
                             <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0"
                                     text="Расчет"/>
                             <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0"

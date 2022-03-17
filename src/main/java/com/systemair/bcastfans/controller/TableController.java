@@ -1,11 +1,13 @@
 package com.systemair.bcastfans.controller;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.*;
 import com.systemair.bcastfans.staticClasses.UtilClass;
+import com.systemair.exchangers.ExchangersApplication;
+import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -28,9 +30,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.UnaryOperator;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
@@ -38,12 +38,14 @@ import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
-    //protected App exchangersApplication;
     public static final int CELL_SIZE = 20;
     public static final int TABLE_SIZE = 905;
+    protected final ExchangersApplication exchangersApplication = new ExchangersApplication();
     private final TableService tableServiceImpl = new TableServiceImpl();
-    private final ExcelService excelServiceImpl = new ExcelServiceImpl();
+    private final ExcelService excelServiceImpl = new ExcelServiceImpl(exchangersApplication.getExchangersService());
     private CalculationService calculationServiceImpl;
+    private Map<Integer, Exchanger> mapHeaters = new HashMap<>();
+    private Map<Integer, Exchanger> mapCoolers = new HashMap<>();
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -174,11 +176,32 @@ public class TableController implements Initializable {
     }
 
     public void load() {
-        Workbook workbook = excelServiceImpl.loadWorkbook(table, PATH_WORK);
-        if (workbook == null) return;
-        Sheet worksheet = workbook.getSheetAt(0);
-        ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
-        fillGUITableFromExcel(cells);
+        final Workbook[] workbook = {excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK)};
+        if (workbook[0] == null) return;
+        final Sheet[] worksheet = {workbook[0].getSheetAt(0)};
+        new Thread(() -> {
+            mapHeaters = excelServiceImpl.getHeaterExchangers(worksheet[0]);
+            mapCoolers = excelServiceImpl.getCoolerExchangers(worksheet[0]);
+            if (isNotNullValue(mapHeaters) || isNotNullValue(mapCoolers)) {
+                worksheet[0] = calculateAndFillingAllExchanger(worksheet[0]);
+            }
+            workbook[0].setForceFormulaRecalculation(true);
+            ArrayList<ArrayList<String>> cells = excelServiceImpl.loadFansWorksheet(worksheet[0]);
+            fillGUITableFromExcel(cells);
+        }).start();
+    }
+
+    private Sheet calculateAndFillingAllExchanger(Sheet worksheet) {
+        mapHeaters = calculationServiceImpl.calculationExchangers(exchangersApplication, mapHeaters, progressIndicator, labelProgressBar);
+        mapCoolers = calculationServiceImpl.calculationExchangers(exchangersApplication, mapCoolers, progressIndicator, labelProgressBar);
+        excelServiceImpl.fillExchangersFromGUI(worksheet, mapHeaters, mapCoolers);
+        Workbook workbook = excelServiceImpl.reOpen();
+        worksheet = workbook.getSheetAt(0);
+        return worksheet;
+    }
+
+    private boolean isNotNullValue(Map<Integer,Exchanger> map) {
+        return map.values().stream().anyMatch(Objects::nonNull);
     }
 
     private void fillGUITableFromExcel(ArrayList<ArrayList<String>> dataSource) {
@@ -211,7 +234,11 @@ public class TableController implements Initializable {
     public void calculate() {
         Thread thread = new Thread(() -> {
             Instant start = Instant.now();
-            if (data == null) showAlert(LOGGER, "Поле данных не заполнено!", Alert.AlertType.INFORMATION);
+            if (data == null) try {
+                throw new MyCatchException("Поле данных не заполнено!", Alert.AlertType.INFORMATION);
+            } catch (MyCatchException e) {
+                e.printStackTrace();
+            }
             if (data.isEmpty()) return;
             data = calculationServiceImpl.calculate(
                     fieldNegativeLimit,
@@ -231,7 +258,7 @@ public class TableController implements Initializable {
             String timeLong = UtilClass.millisToShortDHMS(Duration.between(start, finish).toMillis());
             LOGGER.info("Время выполнения: " + timeLong);
             Thread t2 = new Thread(() -> runLater(() -> {
-                showAlert(LOGGER, "Все установки посчитаны!", Alert.AlertType.INFORMATION);
+                showAlert("Все установки посчитаны!", Alert.AlertType.INFORMATION);
                 labelTimeLong.setText("Время выполнения: " + timeLong);
                 labelTimeLong.setVisible(true);
             }));
@@ -285,6 +312,11 @@ public class TableController implements Initializable {
         labelProgressBar.setText(String.format("Посчитано %d установок из %d", index, size));
     }
 
+    public synchronized void progressBar(int index, long size, ProgressIndicator pi, Label labelProgressBar, String type) {
+        pi.setProgress((double) (index) / size);
+        labelProgressBar.setText(String.format("Посчитано %d теплообменников (%s) из %d", index, type, size));
+    }
+
     private void configuringDirectoryChooser(DirectoryChooser directoryChooser) {
         directoryChooser.setTitle("Выберите папку для сохранения файлов");
         directoryChooser.setInitialDirectory(new File(PATH_WORK));
@@ -298,7 +330,4 @@ public class TableController implements Initializable {
         return isSaveTechData;
     }
 
-    public void calcExchangers(ActionEvent actionEvent) {
-        //exchangersApplication.run();
-    }
 }

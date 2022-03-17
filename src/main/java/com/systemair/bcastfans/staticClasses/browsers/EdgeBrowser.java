@@ -1,6 +1,8 @@
 package com.systemair.bcastfans.staticClasses.browsers;
 
+import com.systemair.bcastfans.MyCatchException;
 import javafx.scene.control.Alert;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.openqa.selenium.NoSuchElementException;
@@ -14,9 +16,10 @@ import java.time.Duration;
 import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 
 public class EdgeBrowser {
-    EdgeDriver driver;
-    Wait<EdgeDriver> wait;
+    private EdgeDriver driver;
+    private Wait<EdgeDriver> wait;
     private static final Logger LOGGER = Logger.getLogger(EdgeBrowser.class.getName());
+
     public EdgeBrowser() {
         try {
             System.setProperty("webdriver.edge.driver", EDGE_DRIVER);
@@ -30,8 +33,12 @@ public class EdgeBrowser {
                     .withTimeout(Duration.ofSeconds(MAX_LIMIT_TIMEOUT))
                     .pollingEvery(Duration.ofNanos(LIMIT_REPEAT_TIMEOUT))
                     .ignoring(NoSuchElementException.class, ElementClickInterceptedException.class);
-        } catch (IllegalArgumentException e) {
-            showAlert(LOGGER, "Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + EDGE_DRIVER, Alert.AlertType.WARNING);
+        } catch (IllegalStateException e) {
+            try {
+                throw new MyCatchException("Драйвер не найден по указанному пути!" + "\n" + e.getMessage() + "\r" + "Требуемый путь: " + EDGE_DRIVER, Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

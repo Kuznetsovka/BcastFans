@@ -1,9 +1,12 @@
 package com.systemair.bcastfans.service;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.controller.TableController;
 import com.systemair.bcastfans.domain.*;
 import com.systemair.bcastfans.service.browser.BrowserService;
 import com.systemair.bcastfans.service.browser.SystemairBrowserService;
+import com.systemair.exchangers.ExchangersApplication;
+import com.systemair.exchangers.domain.exchangers.Exchanger;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import org.apache.log4j.Logger;
@@ -13,15 +16,16 @@ import org.openqa.selenium.TimeoutException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.*;
+import static com.systemair.bcastfans.staticClasses.UtilClass.downloadUsingNIO;
+import static com.systemair.bcastfans.staticClasses.UtilClass.getCorrectSavePath;
 import static javafx.application.Platform.runLater;
 
 public class CalculationServiceImpl implements CalculationService {
-
     private final BrowserService browserService = new SystemairBrowserService();
     private static boolean isStop = false;
     private static final Logger LOGGER = Logger.getLogger(CalculationServiceImpl.class.getName());
@@ -36,6 +40,8 @@ public class CalculationServiceImpl implements CalculationService {
 
     @Override
     public ObservableList<FanUnit> calculate(TextField fieldNegativeLimit, TextField fieldPositiveLimit, ObservableList<FanUnit> data, ProgressIndicator pi, Label labelProgressBar, boolean isFillTableByOne, ListView<RectangleModels> listRectangleFans, ListView<RoundModels> listRoundFans, ListView<RoofModels> listRoofFans) {
+        if (!browserService.getSbc().isOriginTab())
+            browserService.getSbc().switchToOrigin();
         isStop = false;
         AtomicInteger index = new AtomicInteger();
         long count = data.filtered(u -> u.getCheck().isSelected()).size();
@@ -94,14 +100,17 @@ public class CalculationServiceImpl implements CalculationService {
 
     private void getCurrentFan(FanUnit u, List<String> selectedList) {
         if (!hashMap.containsKey(u)) {
-            Fan currentFan = new Fan();
+            Fan currentFan = null;
             try {
                 currentFan = isFilterFans ?
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension(), selectedList) :
                         browserService.calculate(u.getAirFlow(), u.getAirDrop(), u.getTypeMontage(), u.getSubType(), u.getDimension());
             } catch (TimeoutException | NoSuchSessionException e) {
-                showAlert(LOGGER, e.getMessage(), Alert.AlertType.WARNING);
-
+                try {
+                    throw new MyCatchException(e.getMessage(), Alert.AlertType.WARNING);
+                } catch (MyCatchException ex) {
+                    ex.printStackTrace();
+                }
             }
             u.setFan(currentFan);
             hashMap.put(u, currentFan);
@@ -118,5 +127,22 @@ public class CalculationServiceImpl implements CalculationService {
     @Override
     public void stopCalculation() {
         isStop = true;
+    }
+
+    public Map<Integer, Exchanger> calculationExchangers(ExchangersApplication exchangersApplication, Map<Integer, Exchanger> exchangerMap, ProgressIndicator pi, Label labelProgressBar) {
+        long count = exchangerMap.values().stream().filter(Objects::nonNull).count();
+        tableController.initProgressBar(count, pi, labelProgressBar);
+        AtomicInteger index = new AtomicInteger(0);
+        if (!exchangerMap.isEmpty())
+            for (Integer integer : exchangerMap.keySet()) {
+                if (exchangerMap.get(integer) == null) continue;
+                index.getAndIncrement();
+                Thread t2 = new Thread(() -> runLater(() ->
+                    tableController.progressBar(index.get(), count, pi, labelProgressBar, exchangerMap.get(integer).getProcess().getTxt())
+                ));
+                t2.start();
+                exchangerMap.replace(integer, exchangersApplication.run(browserService.getSbc().getDriver(), browserService.getSbc().getWait(), exchangerMap.get(integer)));
+            }
+        return exchangerMap;
     }
 }

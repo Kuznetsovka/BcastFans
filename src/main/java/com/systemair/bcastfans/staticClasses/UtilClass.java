@@ -1,12 +1,19 @@
 package com.systemair.bcastfans.staticClasses;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
+import org.apache.poi.ss.formula.functions.FreeRefFunction;
+import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
+import org.apache.poi.ss.formula.udf.DefaultUDFFinder;
+import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import java.io.*;
 import java.net.URL;
@@ -25,6 +32,7 @@ public class UtilClass {
     public static String PATH_WORK;
     public static String CHROME_DRIVER;
     public static String EDGE_DRIVER;
+    public static String SECURITY_CODE;
     public static String BROWSER;
     public static final int MAX_LIMIT_TIMEOUT = 40;
     public static final int LIMIT_REPEAT_TIMEOUT = 500;
@@ -52,9 +60,14 @@ public class UtilClass {
             CHROME_DRIVER = properties.getProperty("path.driver");
             EDGE_DRIVER = properties.getProperty("path.edge.driver");
             BROWSER = properties.getProperty("type.browser");
+            SECURITY_CODE = properties.getProperty("security.password");
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(LOGGER, "Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            try {
+                throw new MyCatchException("Файл свойств config.property не найдет или не доступен!", Alert.AlertType.WARNING);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -109,37 +122,36 @@ public class UtilClass {
                 return cell.getStringCellValue();
             case FORMULA:
                 FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                return String.valueOf(evaluator.evaluate(cell).getNumberValue());
+                registryCustomFunction(cell.getSheet().getWorkbook());
+                evaluator.evaluateFormulaCell(cell);
+                evaluator.evaluate(cell);
+                return String.valueOf(round(cell.getNumericCellValue()));
             case ERROR:
-                showAlert(LOGGER, "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
-                throw new IllegalArgumentException("");
+                try {
+                    throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
+                } catch (MyCatchException e) {
+                    e.printStackTrace();
+                }
         }
         return "";
     }
 
-    public static void showAlert(Logger LOGGER, String alertTxt, Alert.AlertType type) {
+    private static void registryCustomFunction(Workbook workbook) {
+        String[] functionNames = {"polinom"};
+        FreeRefFunction[] functionImpls = {new Polinom()};
+        UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
+        UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
+        workbook.addToolPack(udfToolpack);
+    }
+
+    public static void showAlert(String alertTxt, Alert.AlertType type) {
         new Thread(() -> runLater(() -> {
             Alert alert = new Alert(type);
             alert.setTitle(rightStringCase(type.toString()));
             alert.setHeaderText("Description:");
             alert.setContentText(alertTxt);
             alert.showAndWait();
-            show(LOGGER, alertTxt, type);
         })).start();
-    }
-
-    private static void show(Logger LOGGER, String alertTxt, Alert.AlertType type) {
-        switch (type) {
-            case WARNING:
-                LOGGER.warn(alertTxt);
-                break;
-            case ERROR:
-                LOGGER.error(alertTxt);
-                break;
-            case INFORMATION:
-                LOGGER.info(alertTxt);
-                break;
-        }
     }
 
     private static String rightStringCase(String txt) {

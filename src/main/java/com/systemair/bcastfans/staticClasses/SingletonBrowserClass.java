@@ -1,5 +1,6 @@
 package com.systemair.bcastfans.staticClasses;
 
+import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.staticClasses.browsers.ChromeBrowser;
 import com.systemair.bcastfans.staticClasses.browsers.EdgeBrowser;
 import javafx.scene.control.Alert;
@@ -9,7 +10,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Wait;
 
 import static com.systemair.bcastfans.staticClasses.UtilClass.BROWSER;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
 import static java.lang.System.exit;
 
 public class SingletonBrowserClass {
@@ -19,6 +19,7 @@ public class SingletonBrowserClass {
     private static final String HOME_URL = "https://www.systemair.com/ru/";
     private static Wait wait;
     private static WebDriver driver;
+    private String originalWindow = "";
 
     private SingletonBrowserClass() {
         try {
@@ -33,9 +34,14 @@ public class SingletonBrowserClass {
             }
             LOGGER.info("Загрузка страницы!");
             driver.navigate().to(HOME_URL);
+            originalWindow = driver.getWindowHandle();
             LOGGER.info("Страница загружена!");
         } catch (SessionNotCreatedException e) {
-            showAlert(LOGGER, "Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.ERROR);
+            try {
+                throw new MyCatchException("Обновите драйвер браузера!" + "\n" + e.getRawMessage(), Alert.AlertType.ERROR);
+            } catch (MyCatchException ex) {
+                ex.printStackTrace();
+            }
             if (driver != null) driver.quit();
             exit(0);
         }
@@ -54,5 +60,13 @@ public class SingletonBrowserClass {
 
     public Wait<WebDriver> getWait() {
         return wait;
+    }
+
+    public boolean isOriginTab() {
+        return driver.getWindowHandle().equals(originalWindow);
+    }
+
+    public void switchToOrigin() {
+        driver.switchTo().window(originalWindow);
     }
 }
