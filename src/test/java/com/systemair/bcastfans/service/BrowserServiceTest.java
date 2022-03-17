@@ -34,6 +34,7 @@ class BrowserServiceTest {
         browserService.setNegativeLimit("0");
         browserService.setPositiveLimit("100");
         browserService.initializeBrowser();
+        browserService.changeLimitBeforeCalculation();
         browserService.prepareStartPageBeforeCalculation();
     }
 
