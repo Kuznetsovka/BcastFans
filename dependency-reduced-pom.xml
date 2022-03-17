@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <artifactId>DuctSystems</artifactId>
-    <groupId>com.systemair</groupId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
+  <groupId>com.systemair.bcastfans</groupId>
   <artifactId>BcastFans</artifactId>
   <name>BcastFans</name>
+    <version>v1.7</version>
   <description>Program for calculation fans Systemair</description>
   <url>http://maven.apache.org</url>
   <build>
@@ -33,11 +30,11 @@
                 <path>C:\ProgramData\DriverChrome\jre</path>
               </jre>
               <versionInfo>
-                <fileVersion>1.0.6.0</fileVersion>
+                  <fileVersion>1.0.7.0</fileVersion>
                 <txtFileVersion>${project.version}</txtFileVersion>
                 <fileDescription>${project.description}</fileDescription>
                 <copyright>© 2021 Systemair (KuznetsovKA)</copyright>
-                <productVersion>1.0.6.0</productVersion>
+                  <productVersion>1.0.7.0</productVersion>
                 <txtProductVersion>${project.version}</txtProductVersion>
                 <productName>${project.name}</productName>
                 <companyName>Systemair</companyName>
@@ -154,7 +151,7 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>com.systemair</groupId>
+          <groupId>com.systemair.bcastfans</groupId>
         <artifactId>BcastFans</artifactId>
         <version>${project.version}</version>
       </dependency>

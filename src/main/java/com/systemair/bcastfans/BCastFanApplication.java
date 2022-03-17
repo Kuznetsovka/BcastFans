@@ -13,14 +13,24 @@ import org.apache.log4j.Logger;
 import javax.swing.*;
 import java.io.IOException;
 
+import static com.systemair.bcastfans.service.SecurityService.validatePassword;
+import static com.systemair.bcastfans.staticClasses.UtilClass.SECURITY_CODE;
+import static java.lang.System.exit;
+
 public class BCastFanApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(BCastFanApplication.class.getName());
-
     @Override
     public void start(Stage stage) throws IOException {
         JFrame loadingWindow = new LoadingWindow().getInitWindow();
         FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
         UtilClass.initProperties();
+        try {
+            validatePassword(SECURITY_CODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.info("Ключ просрочен!");
+            exit(0);
+        }
         Scene scene = new Scene(fxmlLoader.load());
         stage.getIcons().add(new Image("/logo.ico"));
         stage.setTitle("Подбор вентиляторов");
