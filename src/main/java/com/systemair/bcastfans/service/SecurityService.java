@@ -7,7 +7,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Calendar;
 
 public class SecurityService {
-    static String originalPassword = "systemairKA" + Calendar.getInstance().get(Calendar.YEAR);
+    static String originalPassword = System.getenv("PASS_TXT") + Calendar.getInstance().get(Calendar.YEAR);
 
     public static boolean validatePassword(String storedPassword) {
         try {
