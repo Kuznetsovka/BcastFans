@@ -1,4 +1,4 @@
-package com.systemair.bcastfans.staticClasses;
+package com.systemair.bcastfans.macroses;
 
 import org.apache.log4j.Logger;
 import org.apache.poi.ss.formula.OperationEvaluationContext;

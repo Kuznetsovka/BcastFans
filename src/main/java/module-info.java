@@ -21,6 +21,6 @@ module com.systemair.bcastfans {
     opens com.systemair.bcastfans.service to javafx.fxml;
     exports com.systemair.bcastfans.staticClasses;
     opens com.systemair.bcastfans.staticClasses to javafx.fxml;
-    exports com.systemair.bcastfans.staticClasses.browsers;
-    opens com.systemair.bcastfans.staticClasses.browsers to javafx.fxml;
+    exports com.systemair.bcastfans.browsers;
+    opens com.systemair.bcastfans.browsers to javafx.fxml;
 }

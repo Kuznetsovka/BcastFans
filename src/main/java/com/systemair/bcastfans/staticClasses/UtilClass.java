@@ -2,6 +2,8 @@ package com.systemair.bcastfans.staticClasses;
 
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
+import com.systemair.bcastfans.macroses.FindByTwoCriteria;
+import com.systemair.bcastfans.macroses.Polinom;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
@@ -122,13 +124,13 @@ public class UtilClass {
                     return cell.getStringCellValue();
                 case FORMULA:
                     FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                    registryCustomFunction(cell.getSheet().getWorkbook());
+                    registryCustomFunctionTwoCriteria(cell.getSheet().getWorkbook());
+                    registryCustomFunctionPolinom(cell.getSheet().getWorkbook());
                     evaluator.evaluateFormulaCell(cell);
                     evaluator.evaluate(cell);
                     return String.valueOf(round(cell.getNumericCellValue()));
                 case ERROR:
                     throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
-
             }
         } catch (Exception e) {
             try {
@@ -140,9 +142,17 @@ public class UtilClass {
         return "";
     }
 
-    private static void registryCustomFunction(Workbook workbook) {
+    private static void registryCustomFunctionPolinom(Workbook workbook) {
         String[] functionNames = {"polinom"};
         FreeRefFunction[] functionImpls = {new Polinom()};
+        UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
+        UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
+        workbook.addToolPack(udfToolpack);
+    }
+
+    private static void registryCustomFunctionTwoCriteria(Workbook workbook) {
+        String[] functionNames = {"findByTwoCriteria"};
+        FreeRefFunction[] functionImpls = {new FindByTwoCriteria()};
         UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
         UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
         workbook.addToolPack(udfToolpack);

@@ -1,4 +1,4 @@
-package com.systemair.bcastfans.staticClasses.browsers;
+package com.systemair.bcastfans.browsers;
 
 import com.systemair.bcastfans.MyCatchException;
 import javafx.scene.control.Alert;

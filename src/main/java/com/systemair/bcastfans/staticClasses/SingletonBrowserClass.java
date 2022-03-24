@@ -1,8 +1,8 @@
 package com.systemair.bcastfans.staticClasses;
 
 import com.systemair.bcastfans.MyCatchException;
-import com.systemair.bcastfans.staticClasses.browsers.ChromeBrowser;
-import com.systemair.bcastfans.staticClasses.browsers.EdgeBrowser;
+import com.systemair.bcastfans.browsers.ChromeBrowser;
+import com.systemair.bcastfans.browsers.EdgeBrowser;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.SessionNotCreatedException;
