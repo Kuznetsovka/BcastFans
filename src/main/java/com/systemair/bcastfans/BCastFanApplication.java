@@ -18,6 +18,7 @@ import static java.lang.System.exit;
 
 public class BCastFanApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(BCastFanApplication.class.getName());
+
     @Override
     public void start(Stage stage) throws IOException {
         JFrame loadingWindow = new LoadingWindow().getInitWindow();

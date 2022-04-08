@@ -13,7 +13,6 @@ import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
 import org.apache.poi.ss.formula.udf.DefaultUDFFinder;
 import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -143,8 +142,8 @@ public class UtilClass {
     }
 
     public static void registryCustomFunction(Workbook workbook) {
-        String[] functionNames = {"findByTwoCriteria","polinom"};
-        FreeRefFunction[] functionImpls = {new FindByTwoCriteria(),new Polinom()};
+        String[] functionNames = {"findByTwoCriteria", "polinom"};
+        FreeRefFunction[] functionImpls = {new FindByTwoCriteria(), new Polinom()};
         UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
         UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
         workbook.addToolPack(udfToolpack);
