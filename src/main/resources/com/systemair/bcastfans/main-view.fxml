@@ -2,28 +2,26 @@
 
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
-<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="-Infinity" minHeight="460.0" minWidth="1100.0" prefHeight="560.0"
-      prefWidth="1060.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.systemair.bcastfans.controller.TableController">
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" maxHeight="1280.0" maxWidth="-Infinity" minHeight="460.0" minWidth="1100.0" prefHeight="560.0" prefWidth="1060.0" spacing="20.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.systemair.bcastfans.controller.TableController">
     <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
             <Label text="BCastFans" wrapText="true">
                 <font>
-                    <Font name="Chiller" size="24.0"/>
+                    <Font name="Chiller" size="24.0" />
                 </font>
             </Label>
         </HBox>
         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-            <ImageView fx:id="idImage" fitHeight="36.0" fitWidth="100.0" nodeOrientation="INHERIT" pickOnBounds="true"
-                       preserveRatio="true">
+            <ImageView fx:id="idImage" fitHeight="36.0" fitWidth="100.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
                 <viewport>
-                    <Rectangle2D/>
+                    <Rectangle2D />
                 </viewport>
             </ImageView>
         </HBox>
@@ -32,72 +30,68 @@
         <Tab text="Основное">
             <VBox>
                 <HBox>
-                    <VBox spacing="10.0"
-                          style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
+                    <VBox spacing="10.0" style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
                         <HBox spacing="10.0">
-                            <Label prefWidth="150.0" text="Отрицательный допуск"/>
-                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
-                                       onKeyPressed="#changeLimit" text="0"/>
+                            <Label prefWidth="150.0" text="Отрицательный допуск" />
+                            <TextField fx:id="fieldNegativeLimit" alignment="CENTER_RIGHT" maxWidth="50.0" onKeyPressed="#changeLimit" text="0" />
                             <VBox.margin>
-                                <Insets/>
+                                <Insets />
                             </VBox.margin>
                         </HBox>
                         <HBox spacing="10.0">
-                            <Label prefWidth="150.0" text="Положительный допуск"/>
-                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0"
-                                       onKeyPressed="#changeLimit" text="100"/>
+                            <Label prefWidth="150.0" text="Положительный допуск" />
+                            <TextField fx:id="fieldPositiveLimit" alignment="CENTER_RIGHT" maxWidth="50.0" onKeyPressed="#changeLimit" text="100" />
                         </HBox>
                         <HBox>
                             <Label prefHeight="17.0" text="Путь сохранения" HBox.hgrow="ALWAYS">
                                 <padding>
-                                    <Insets top="5.0"/>
+                                    <Insets top="5.0" />
                                 </padding>
                             </Label>
-                            <CheckBox fx:id="checkboxCustomPath" mnemonicParsing="false" onAction="#customPath"
-                                      selected="true">
+                            <CheckBox fx:id="checkboxCustomPath" mnemonicParsing="false" onAction="#customPath" selected="true">
                                 <padding>
-                                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+                                    <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                                 </padding>
                             </CheckBox>
-                            <TextField fx:id="fieldPathDownloading" disable="true" editable="false" prefHeight="25.0"
-                                       prefWidth="300.0">
+                            <TextField fx:id="fieldPathDownloading" disable="true" editable="false" prefHeight="25.0" prefWidth="300.0">
                                 <HBox.margin>
-                                    <Insets left="30.0"/>
+                                    <Insets left="30.0" />
                                 </HBox.margin>
                             </TextField>
                         </HBox>
                     </VBox>
                     <VBox alignment="TOP_RIGHT" prefHeight="97.0" spacing="10.0" HBox.hgrow="ALWAYS">
                         <HBox prefHeight="100.0" prefWidth="200.0">
-                            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0"
-                                  style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;"
-                                  HBox.hgrow="ALWAYS">
+                            <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;" HBox.hgrow="ALWAYS">
                                 <Label text="Выбор способа заполнения таблицы" wrapText="true" VBox.vgrow="ALWAYS">
                                     <VBox.margin>
-                                        <Insets/>
+                                        <Insets />
                                     </VBox.margin>
                                 </Label>
-                                <RadioButton fx:id="radioFillOne" mnemonicParsing="false"
-                                             nodeOrientation="LEFT_TO_RIGHT" text="Заполнение по 1 вентилятору"
-                                             toggleGroup="$methodFillTable">
+                                <RadioButton fx:id="radioFillOne" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" text="Заполнение по 1 вентилятору" toggleGroup="$methodFillTable">
                                     <toggleGroup>
-                                        <ToggleGroup fx:id="methodFillTable"/>
+                                        <ToggleGroup fx:id="methodFillTable" />
                                     </toggleGroup>
                                 </RadioButton>
-                                <RadioButton fx:id="radioFillAll" mnemonicParsing="false"
-                                             nodeOrientation="LEFT_TO_RIGHT" selected="true"
-                                             text="Заполнение после подбора" toggleGroup="$methodFillTable"/>
+                                <RadioButton fx:id="radioFillAll" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" selected="true" text="Заполнение после подбора" toggleGroup="$methodFillTable" />
                             </VBox>
                             <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                                 <HBox prefHeight="100.0" prefWidth="200.0">
-                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0"
-                                          style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;"
-                                          HBox.hgrow="ALWAYS">
-                                        <Label alignment="TOP_CENTER" contentDisplay="TOP" minWidth="-Infinity"
-                                               prefHeight="24.0" prefWidth="141.0" text="Сохранение техники"
-                                               textAlignment="CENTER" wrapText="true"/>
-                                        <CheckBox fx:id="isSaveTechData" mnemonicParsing="false" selected="true"
-                                                  text="Да/Нет"/>
+                                    <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" style="-fx-padding: 10;-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;" HBox.hgrow="ALWAYS">
+                                        <Label alignment="TOP_CENTER" contentDisplay="TOP" minWidth="-Infinity" prefHeight="24.0" prefWidth="141.0" text="Сохранение техники" textAlignment="CENTER" wrapText="true" />
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                              <CheckBox fx:id="isSaveTechData" mnemonicParsing="false" selected="true" text="Да/Нет">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets right="10.0" />
+                                       </padding>
+                                    </CheckBox>
+                                    <CheckBox  fx:id="isCompactFile"  mnemonicParsing="false" selected="true" text="Compact file" />
+                                 </children>
+                              </HBox>
                                     </VBox>
                                     <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                                         <ProgressIndicator fx:id="progressIndicator" progress="0.0" visible="false">
@@ -107,19 +101,19 @@
                                 <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                     <Label fx:id="labelProgressBar" text="Посчитано установок:" visible="false">
                                         <padding>
-                                            <Insets top="10.0"/>
+                                            <Insets top="10.0" />
                                         </padding>
                                     </Label>
-                                    <Label fx:id="labelTimeLong" text="Label" visible="false"/>
+                                    <Label fx:id="labelTimeLong" text="Label" visible="false" />
                                 </VBox>
                             </VBox>
                         </HBox>
                         <HBox.margin>
-                            <Insets/>
+                            <Insets />
                         </HBox.margin>
                     </VBox>
                     <padding>
-                        <Insets top="10.0"/>
+                        <Insets top="10.0" />
                     </padding>
                 </HBox>
                 <HBox VBox.vgrow="ALWAYS">
@@ -127,52 +121,44 @@
                         <columns>
                             <TableColumn fx:id="columnChoose" minWidth="35.0" prefWidth="35.0" resizable="false">
                                 <graphic>
-                                    <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize"
-                                              prefHeight="20.0" prefWidth="10.0"/>
+                                    <CheckBox fx:id="checkBox" mnemonicParsing="false" onAction="#checkBoxInitialize" prefHeight="20.0" prefWidth="10.0" />
                                 </graphic>
                             </TableColumn>
-                            <TableColumn fx:id="columnNumberSystem" minWidth="50.0" prefWidth="50.0" text="#"/>
-                            <TableColumn fx:id="columnAirFlow" minWidth="75.0" prefWidth="75.0" text="Расход"/>
-                            <TableColumn fx:id="columnAirDrop" minWidth="50.0" prefWidth="50.0" text="Потери"/>
-                            <TableColumn fx:id="columnTypeMontage" minWidth="120.0" prefWidth="120.0"
-                                         text="Тип монтажа"/>
-                            <TableColumn fx:id="columnSubType" minWidth="120.0" prefWidth="120.0" text="Тип установки"/>
-                            <TableColumn fx:id="columnDimension" minWidth="75.0" prefWidth="75.0" text="Размер"/>
-                            <TableColumn fx:id="columnModel" minWidth="140.0" prefWidth="140.0" text="Модель"/>
-                            <TableColumn fx:id="columnArticle" minWidth="60.0" prefWidth="60.0" text="Артикул"/>
-                            <TableColumn fx:id="columnPower" minWidth="70.0" prefWidth="70.0" text="Мощность"/>
-                            <TableColumn fx:id="columnPhase" minWidth="60.0" prefWidth="60.0" text="Фазность"/>
-                            <TableColumn fx:id="columnPrice" minWidth="50.0" prefWidth="50.0" text="Цена"/>
+                            <TableColumn fx:id="columnNumberSystem" minWidth="50.0" prefWidth="50.0" text="#" />
+                            <TableColumn fx:id="columnAirFlow" minWidth="75.0" prefWidth="75.0" text="Расход" />
+                            <TableColumn fx:id="columnAirDrop" minWidth="50.0" prefWidth="50.0" text="Потери" />
+                            <TableColumn fx:id="columnTypeMontage" minWidth="120.0" prefWidth="120.0" text="Тип монтажа" />
+                            <TableColumn fx:id="columnSubType" minWidth="120.0" prefWidth="120.0" text="Тип установки" />
+                            <TableColumn fx:id="columnDimension" minWidth="75.0" prefWidth="75.0" text="Размер" />
+                            <TableColumn fx:id="columnModel" minWidth="140.0" prefWidth="140.0" text="Модель" />
+                            <TableColumn fx:id="columnArticle" minWidth="60.0" prefWidth="60.0" text="Артикул" />
+                            <TableColumn fx:id="columnPower" minWidth="70.0" prefWidth="70.0" text="Мощность" />
+                            <TableColumn fx:id="columnPhase" minWidth="60.0" prefWidth="60.0" text="Фазность" />
+                            <TableColumn fx:id="columnPrice" minWidth="50.0" prefWidth="50.0" text="Цена" />
                         </columns>
                         <columnResizePolicy>
-                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                     </TableView>
-                    <VBox spacing="10.0"
-                          style="-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
+                    <VBox spacing="10.0" style="-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
                         <VBox alignment="CENTER" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#load" prefWidth="80.0"
-                                    text="Загрузить"/>
-                            <Button alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#save"
-                                    prefWidth="80.0" text="Сохранить"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#load" prefWidth="80.0" text="Загрузить" />
+                            <Button alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#save" prefWidth="80.0" text="Сохранить" />
                             <opaqueInsets>
-                                <Insets/>
+                                <Insets />
                             </opaqueInsets>
                             <padding>
-                                <Insets top="10.0"/>
+                                <Insets top="10.0" />
                             </padding>
                         </VBox>
                         <VBox alignment="CENTER" prefWidth="100.0" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#clear" prefWidth="80.0"
-                                    text="Очистить"/>
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#clear" prefWidth="80.0" text="Очистить" />
                         </VBox>
                         <VBox alignment="BOTTOM_CENTER" prefHeight="200.0" spacing="20.0">
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0"
-                                    text="Расчет"/>
-                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0"
-                                    text="СТОП">
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#calculate" prefWidth="80.0" text="Расчет" />
+                            <Button alignment="CENTER" mnemonicParsing="false" onAction="#stop" prefWidth="80.0" text="СТОП">
                                 <VBox.margin>
-                                    <Insets bottom="10.0"/>
+                                    <Insets bottom="10.0" />
                                 </VBox.margin>
                             </Button>
                         </VBox>
@@ -186,47 +172,46 @@
                 <VBox prefWidth="100.0" HBox.hgrow="ALWAYS">
                     <Label text="Список подбираемых вентиляторов">
                         <padding>
-                            <Insets bottom="10.0"/>
+                            <Insets bottom="10.0" />
                         </padding>
                     </Label>
-                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0"
-                          style="-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
+                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" style="-fx-border-style: solid inside;-fx-border-width: 2;-fx-border-insets: 5;-fx-border-radius: 5;-fx-border-color: grey;">
                         <VBox prefHeight="100.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                             <Label text="Круглые">
                                 <padding>
-                                    <Insets top="10.0"/>
+                                    <Insets top="10.0" />
                                 </padding>
                             </Label>
-                            <ListView fx:id="listRoundFans" minHeight="-Infinity" prefWidth="200.0"/>
+                            <ListView fx:id="listRoundFans" minHeight="-Infinity" prefWidth="200.0" />
                             <padding>
-                                <Insets left="10.0"/>
+                                <Insets left="10.0" />
                             </padding>
                         </VBox>
                         <VBox prefHeight="100.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                             <Label text="Прямоугольные">
                                 <padding>
-                                    <Insets top="10.0"/>
+                                    <Insets top="10.0" />
                                 </padding>
                             </Label>
-                            <ListView fx:id="listRectangleFans" minHeight="-Infinity" prefWidth="200.0"/>
+                            <ListView fx:id="listRectangleFans" minHeight="-Infinity" prefWidth="200.0" />
                         </VBox>
                         <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                             <Label text="Крышные">
                                 <padding>
-                                    <Insets top="10.0"/>
+                                    <Insets top="10.0" />
                                 </padding>
                             </Label>
-                            <ListView fx:id="listRoofFans" maxHeight="100.0" minHeight="-Infinity"/>
+                            <ListView fx:id="listRoofFans" maxHeight="100.0" minHeight="-Infinity" />
                             <padding>
-                                <Insets right="10.0"/>
+                                <Insets right="10.0" />
                             </padding>
                         </VBox>
                     </HBox>
                     <padding>
-                        <Insets top="10.0"/>
+                        <Insets top="10.0" />
                     </padding>
                 </VBox>
-                <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS"/>
+                <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS" />
             </HBox>
         </Tab>
     </TabPane>

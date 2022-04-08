@@ -59,10 +59,11 @@ public class FindByTwoCriteria implements FreeRefFunction {
     private List<ValueEval> getValues(ValueEval eval) throws EvaluationException {
         if (eval instanceof TwoDEval) {
             int column = ((AreaEval) eval).getFirstColumn();
-            TwoDEval ae = ((TwoDEval) eval).getColumn(column);
+            TwoDEval ae = ((TwoDEval) eval).getColumn(0);
+            int rowCount = ((AreaEval) ae).getLastRow();
             List<ValueEval> list = new ArrayList<>();
-            int i = 0;
-            while (ae.getRow(++i).isRow()) {
+            int i = -1;
+            while (i++ < rowCount) {
                 list.add(OperandResolver.getSingleValue(ae.getValue(i, column), i, column));
             }
             return list;
@@ -70,10 +71,10 @@ public class FindByTwoCriteria implements FreeRefFunction {
         return null;
     }
 
-    public Integer getIndex(List<Double> table1, List<Double> table2, String criteria1, Double searchValue1, Double searchValue2, int count) {
+    public Integer getIndex(List<Double> table1, List<Double> table2, String criteria, Double searchValue1, Double searchValue2, int count) {
         int entrance = 1;
         for (int i = 0; i < table1.size(); i++) {
-            switch (criteria1) {
+            switch (criteria) {
                 case ">":
                     if (table1.get(i) > searchValue1)
                         if (isSuit(table2, searchValue2, count, entrance, i)) return i;

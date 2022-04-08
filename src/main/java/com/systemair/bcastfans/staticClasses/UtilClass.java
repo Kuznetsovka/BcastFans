@@ -13,6 +13,7 @@ import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
 import org.apache.poi.ss.formula.udf.DefaultUDFFinder;
 import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -124,9 +125,8 @@ public class UtilClass {
                     return cell.getStringCellValue();
                 case FORMULA:
                     FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                    registryCustomFunctionTwoCriteria(cell.getSheet().getWorkbook());
-                    registryCustomFunctionPolinom(cell.getSheet().getWorkbook());
                     evaluator.evaluateFormulaCell(cell);
+
                     evaluator.evaluate(cell);
                     return String.valueOf(round(cell.getNumericCellValue()));
                 case ERROR:
@@ -142,17 +142,9 @@ public class UtilClass {
         return "";
     }
 
-    private static void registryCustomFunctionPolinom(Workbook workbook) {
-        String[] functionNames = {"polinom"};
-        FreeRefFunction[] functionImpls = {new Polinom()};
-        UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
-        UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
-        workbook.addToolPack(udfToolpack);
-    }
-
-    private static void registryCustomFunctionTwoCriteria(Workbook workbook) {
-        String[] functionNames = {"findByTwoCriteria"};
-        FreeRefFunction[] functionImpls = {new FindByTwoCriteria()};
+    public static void registryCustomFunction(Workbook workbook) {
+        String[] functionNames = {"findByTwoCriteria","polinom"};
+        FreeRefFunction[] functionImpls = {new FindByTwoCriteria(),new Polinom()};
         UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
         UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
         workbook.addToolPack(udfToolpack);

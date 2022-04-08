@@ -1,6 +1,5 @@
 package com.systemair.bcastfans.macroses;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.formula.OperationEvaluationContext;
 import org.apache.poi.ss.formula.eval.*;
 import org.apache.poi.ss.formula.functions.FreeRefFunction;
@@ -11,7 +10,6 @@ import java.util.List;
 import static java.lang.Math.pow;
 
 public class Polinom implements FreeRefFunction {
-    private static final Logger LOGGER = Logger.getLogger(Polinom.class.getName());
     @Override
     public ValueEval evaluate(ValueEval[] args, OperationEvaluationContext ec) {
         if (args.length != 4) {
@@ -104,7 +102,6 @@ public class Polinom implements FreeRefFunction {
                     case 2:
                         return Math.toIntExact((long) (getPart(flow, 2, row.get(1)) + getPart(flow, 1, row.get(2)) + getPart(flow, 0, row.get(3))));
                 }
-
             }
         }
         return 0;

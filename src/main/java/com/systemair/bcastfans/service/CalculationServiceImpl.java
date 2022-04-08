@@ -70,7 +70,10 @@ public class CalculationServiceImpl implements CalculationService {
                                 LOGGER.info("Установка " + u.getName() + " посчитана");
                                 String absFileName = getCorrectSavePath(tableController.getFieldPathDownloading().getText(), u.getName(), u.getModel());
                                 if (!u.getModel().equals("") && tableController.isSaveTechData().isSelected()) {
-                                    downloadUsingNIO(u.getFan().getShortLink(), absFileName);
+                                    if (tableController.isCompactFile().isSelected())
+                                        downloadUsingNIO(u.getFan().getShortLink(), absFileName);
+                                    else
+                                        downloadUsingNIO(u.getFan().getFullLink(), absFileName);
                                     LOGGER.info("Установка " + u.getName() + " выгружена");
                                 }
                             });

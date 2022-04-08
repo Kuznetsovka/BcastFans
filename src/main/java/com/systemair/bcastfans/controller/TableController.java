@@ -33,14 +33,16 @@ import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-import static com.systemair.bcastfans.staticClasses.UtilClass.PATH_WORK;
-import static com.systemair.bcastfans.staticClasses.UtilClass.showAlert;
+import static com.systemair.bcastfans.staticClasses.UtilClass.*;
 import static javafx.application.Platform.runLater;
 
 public class TableController implements Initializable {
     private final TableService tableServiceImpl = new TableServiceImpl();
     private final ExcelService excelServiceImpl = new ExcelServiceImpl();
+
     private CalculationService calculationServiceImpl;
+    @FXML
+    public CheckBox isCompactFile;
     @FXML
     public ToggleGroup methodFillTable;
     @FXML
@@ -173,6 +175,7 @@ public class TableController implements Initializable {
     public void load() {
         Workbook workbook = excelServiceImpl.loadWorkbook(table.getScene().getWindow(), PATH_WORK);
         if (workbook == null) return;
+        registryCustomFunction(workbook);
         Sheet worksheet = workbook.getSheetAt(0);
         ArrayList<ArrayList<String>> cells = excelServiceImpl.loadCellsFromWorksheet(worksheet);
         fillGUITableFromExcel(cells);
@@ -304,6 +307,10 @@ public class TableController implements Initializable {
 
     public CheckBox isSaveTechData() {
         return isSaveTechData;
+    }
+
+    public CheckBox isCompactFile() {
+        return isCompactFile;
     }
 
     public void changeLimit() {
