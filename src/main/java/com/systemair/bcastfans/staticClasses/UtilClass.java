@@ -32,6 +32,7 @@ public class UtilClass {
     private static final Logger LOGGER = Logger.getLogger(UtilClass.class.getName());
     public static String PATH_WORK;
     public static String CHROME_DRIVER;
+    public static Boolean HEAD;
     public static String EDGE_DRIVER;
     public static String SECURITY_CODE;
     public static String BROWSER;
@@ -62,6 +63,7 @@ public class UtilClass {
             EDGE_DRIVER = properties.getProperty("path.edge.driver");
             BROWSER = properties.getProperty("type.browser");
             SECURITY_CODE = properties.getProperty("security.password");
+            HEAD = Boolean.valueOf(String.valueOf(properties.get("visible.browser")));
         } catch (IOException e) {
             e.printStackTrace();
             try {

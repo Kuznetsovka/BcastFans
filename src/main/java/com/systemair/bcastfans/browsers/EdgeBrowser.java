@@ -25,7 +25,8 @@ public class EdgeBrowser {
             EdgeOptions edgeOptions = new EdgeOptions();
             edgeOptions.addArguments("start-maximized");
             edgeOptions.addArguments("enable-automation");
-            edgeOptions.addArguments("--headless");
+            if (!HEAD)
+                edgeOptions.addArguments("--headless");
             driver = new EdgeDriver(edgeOptions);
             // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)

@@ -60,6 +60,8 @@ public abstract class BrowserServiceImpl implements BrowserService {
 
     protected void clickElementIfExistsByXpath(String xpath, String... attributeAndValue) throws ElementClickInterceptedException {
         By by = By.xpath(xpath);
+        WebElement wb = getWebElementByXpath(xpath);
+        if (wb.isEnabled()) sbc.getDriver().navigate().refresh();
         sbc.getWait().until(visibilityOfElementLocated(by));
         if (attributeAndValue.length > 0) {
             String attribute = attributeAndValue[0];

@@ -27,7 +27,8 @@ public class ChromeBrowser {
             chromeOptions.setBrowserVersion("93");
             chromeOptions.addArguments("start-maximized");
             chromeOptions.addArguments("enable-automation");
-            chromeOptions.addArguments("--headless");
+            if (!HEAD)
+                chromeOptions.addArguments("--headless");
             chromeOptions.addArguments("--no-sandbox");
             chromeOptions.addArguments("--disable-infobars");
             chromeOptions.addArguments("--disable-dev-shm-usage");
