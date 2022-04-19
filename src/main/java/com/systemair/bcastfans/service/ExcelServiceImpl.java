@@ -68,6 +68,7 @@ public class ExcelServiceImpl implements ExcelService {
             }
             if (!rows.isEmpty())
                 cells.add(rows);
+            if (worksheet.getRow(row + 1).getCell(1) == null) break;
         }
         return cells;
     }
