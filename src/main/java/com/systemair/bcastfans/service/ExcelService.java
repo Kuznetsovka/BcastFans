@@ -11,6 +11,10 @@ import java.util.ArrayList;
 public interface ExcelService {
     Workbook loadWorkbook(Window table, String path);
 
+    ArrayList<String> loadRowsByColumn(Sheet worksheet, int column);
+
+    ArrayList<String> loadColumnsByRow(Sheet worksheet, int row);
+
     ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet);
 
     void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table);

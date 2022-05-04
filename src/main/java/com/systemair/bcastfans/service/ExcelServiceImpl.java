@@ -49,6 +49,33 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
+    public ArrayList<String> loadRowsByColumn(Sheet worksheet, int column) {
+        ArrayList<String> rows = new ArrayList<>();
+        int row = 0;
+        while (worksheet.getRow(row).getCell(column).getCellType() != CellType.BLANK) {
+            Cell cell = worksheet.getRow(row).getCell(column);
+            if (cell != null)
+                rows.add(parseCell(cell));
+            row++;
+        }
+        return rows;
+    }
+
+    @Override
+    public ArrayList<String> loadColumnsByRow(Sheet worksheet, int row) {
+        int i = 0;
+        ArrayList<String> columns = new ArrayList<>();
+        while (worksheet.getRow(row).getCell(i).getCellType() != CellType.BLANK) {
+            Cell cell = worksheet.getRow(row).getCell(i);
+            if (cell != null)
+                columns.add(parseCell(cell));
+            i++;
+        }
+        return columns;
+
+    }
+
+    @Override
     public Workbook reOpen() {
         return readWorkbook(fileExcelOLPath);
     }
