@@ -232,11 +232,11 @@ public class FanUnit {
                 Double.valueOf(airDrop.getValue()).intValue() == Double.valueOf(fanUnit.airDrop.getValue()).intValue() &&
                 typeMontage == fanUnit.typeMontage &&
                 subType == fanUnit.subType &&
-                dimension == fanUnit.dimension;
+                dimension.getValue().equals(fanUnit.dimension.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Double.valueOf(airFlow.getValue()).intValue(), Double.valueOf(airDrop.getValue()).intValue(), typeMontage, subType, dimension);
+        return Objects.hash(Double.valueOf(airFlow.getValue()).intValue(), Double.valueOf(airDrop.getValue()).intValue(), typeMontage, subType, dimension.getValue());
     }
 }
