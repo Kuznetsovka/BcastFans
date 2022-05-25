@@ -6,7 +6,7 @@
 
     <groupId>com.systemair.bcastfans</groupId>
     <artifactId>BcastFans</artifactId>
-    <version>v1.8</version>
+    <version>v1.8.3</version>
     <description>Program for calculation fans Systemair</description>
     <name>BcastFans</name>
     <packaging>jar</packaging>
