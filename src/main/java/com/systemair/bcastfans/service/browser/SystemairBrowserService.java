@@ -7,10 +7,7 @@ import com.systemair.bcastfans.domain.TypeMontage;
 import com.systemair.bcastfans.staticClasses.SingletonBrowserClass;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
-import org.openqa.selenium.By;
-import org.openqa.selenium.ElementClickInterceptedException;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,24 +74,24 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void inputTextByLabel(String findTextLabel, String newValue) throws InterruptedException {
-        // "fgkAsr" - без ошибки "lnjRPV" - c ошибкой
+        // "gwhnHm" - без ошибки "iNwSrS" - c ошибкой
         String checkXPath = ".//span[text() = '" + findTextLabel + "']";
         String xpath = checkXPath + "/following::input[1]";
         By by = By.xpath(xpath);
         WebElement wb = sbc.getWait().until(visibilityOfElementLocated(by));
         if (wb.getAttribute("value").equals(newValue)) return;
-        LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
         do {
             wb.sendKeys(Keys.CONTROL + "a");
             wb.sendKeys(Keys.DELETE);
         } while (!wb.getAttribute("value").equals(""));
         //sbc.getWait().until(attributeToBe(wb, "value", "")); //Быстрая версия
-        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS lnjRPV"));
+        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-btzYZH iNwSrS"));
         do {
             wb.sendKeys(newValue);
         } while (!wb.getAttribute("value").equals(newValue));
         //sleep(300); //Быстрая версия
-        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-jwKygS fgkAsr"));
+        LOGGER.info("Заполнено текстовое поле, значение: " + newValue);
+        sbc.getWait().until(attributeToBe(By.xpath(checkXPath), "class", "sc-btzYZH gwhnHm"));
     }
 
     @SafeVarargs
@@ -150,7 +147,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void clearTypeMontage() {
-        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-iELTvK')]"));
         selectTypeFan(-1, listTypeMontage);
         LOGGER.info("Выключаем все вентиляторы...");
         isClear = true;
@@ -215,8 +212,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     }
 
     private void clickButtonMoreFans(By moreFansButtonBy) {
-        WebElement btnMoreUnit;
-        btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
+        WebElement btnMoreUnit = sbc.getWait().until(visibilityOfAllElementsLocatedBy(moreFansButtonBy)).get(2);
         sbc.getWait().until(elementToBeClickable(btnMoreUnit)).click();
         LOGGER.info("Нажата кнопка больше вентиляторов.");
     }
@@ -247,6 +243,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     }
 
     public Fan getResultFan(List<WebElement> row) {
+        // sc-gzOgki fZFiGg - Обертка перед кнопкой
         WebElement modelCell = sbc.getWait().until(visibilityOf(row.get(2).findElement(By.tagName("a"))));
         String phase = "";
         if (!row.get(2).findElement(By.tagName("small")).getText().equals("")) {
@@ -259,9 +256,9 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         String power = row.get(7).getText();
         WebElement wb = row.get(1).findElement(By.tagName("button"));
         sbc.getWait().until(elementToBeClickable(wb)).click();
-        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-iyvyFf cTzSso']"), 0));
+        List<WebElement> webLinks = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//a[@class='sc-hwwEjo hQVAeM']"), 0));
         List<String> links = webLinks.stream().map(l -> l.getAttribute("href")).collect(Collectors.toList());
-        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-dfVpRl cERHhv']"));
+        clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-gzOgki fZFiGg']"));
         return new Fan(model, article, Double.valueOf(power), phase, Double.valueOf(price), links.get(0), links.get(1));
     }
 
@@ -289,6 +286,10 @@ public class SystemairBrowserService extends BrowserServiceImpl {
 
     @Override
     public void fillFlowAndDrop(String airFlow, String airDrop) {
+        /*
+        SWiNZ - кнопка доступна
+        laYwdb - кнопка не доступна
+         */
         try {
             inputTextByLabel("Расход воздуха", airFlow);
             inputTextByLabel("Внешнее давление", airDrop);
@@ -308,6 +309,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         WebElement checkingWb = sbc.getWait().until(visibilityOfElementLocated(By.xpath(checkingXpath)));
         if (checkingWb.getText().equals(newValue)) return;
         sbc.getWait().until(elementToBeClickable(By.xpath(xpath))).click();
+        //clickWithoutTimeOut(By.xpath(".//div[@class = 'sc-EHOje gdmUuL']"));
         List<WebElement> list = sbc.getWait().until(numberOfElementsToBeMoreThan(By.xpath(".//div[@class='sc-EHOje gdmUuL']/following::div[2]/div"), 0));
         WebElement changingElement = list.stream().filter(webElement -> webElement.getText().trim().equals(newValue)).findAny().orElse(null);
         if (changingElement == null)
@@ -344,6 +346,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public void selectSubType(SubType subType) {
         /*
+            .//div[@class ='sc-kafWEX TtVRF']
             0 - все
             1 - стандартные
             2 - 120°С Кухонные
@@ -356,7 +359,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             9 - Агрессивная среда + Взрывозащита
          */
         if (subType == lastSubMontage) return;
-        WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-cIShpX htEzPC']"));
+        WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-kafWEX yOUGM']"));
         List<WebElement> listSubType = listSubTypeParent.findElements(By.tagName("div"));
         List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-tilXH')]"));
         lastSubMontage = subType;
@@ -406,13 +409,13 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public void onCheckbox(boolean onAction, WebElement webElement) {
         /*
-        "kClLXW" - выкл.
-        "eITjnS" - вкл.
+        "bZFzXH" - выкл.
+        "cTYPyr" - вкл.
          */
         if (onAction) {
-            if (isContainsInClass(webElement, "kClLXW")) webElement.click();
+            if (isContainsInClass(webElement, "bZFzXH")) webElement.click();
         } else {
-            if (isContainsInClass(webElement, "eITjnS")) webElement.click();
+            if (isContainsInClass(webElement, "cTYPyr")) webElement.click();
         }
     }
 
@@ -429,6 +432,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public void selectTypeMontage(TypeMontage typeMontage) {
         /*
+        sc-iELTvK - вентиляторы
             Круглые - 0
             Прямоугольные - 1
             Крышные - 2
@@ -436,7 +440,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
             Центробежные - 4
         */
         if (typeMontage == lastTypeMontage && !isClear) return;
-        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-feJyhm')]"));
+        List<WebElement> listTypeMontage = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-iELTvK')]"));
         lastTypeMontage = typeMontage;
         switch (typeMontage) {
             case ROUND:
@@ -459,15 +463,15 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public void selectTwoTypeFan(int i1, int i2, List<WebElement> list) {
         /*
-            "gHdNtY" - вкл.
-            "cxjQFd" - выкл.
+            "AEUnf" - вкл.
+            "hKkcrT" - выкл.
          */
         for (int i = 0; i < list.size(); i++) {
             if (i == i1 || i == i2) {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("hKkcrT"))
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("AEUnf"))
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
@@ -476,15 +480,15 @@ public class SystemairBrowserService extends BrowserServiceImpl {
     @Override
     public void selectTypeFan(int index, List<WebElement> list) {
         /*
-        "gHdNtY" - вкл.
-        "cxjQFd" - выкл.
+        "AEUnf" - вкл.
+        "hKkcrT" - выкл.
          */
         for (int i = 0; i < list.size(); i++) {
             if (i == index) {
-                if (list.get(i).getAttribute("class").contains("cxjQFd"))
+                if (list.get(i).getAttribute("class").contains("hKkcrT"))
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             } else {
-                if (list.get(i).getAttribute("class").contains("gHdNtY"))
+                if (list.get(i).getAttribute("class").contains("AEUnf"))
                     sbc.getWait().until(elementToBeClickable(list.get(i))).click();
             }
         }
