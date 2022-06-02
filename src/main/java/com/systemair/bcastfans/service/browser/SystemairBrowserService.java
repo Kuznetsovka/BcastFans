@@ -361,7 +361,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         if (subType == lastSubMontage) return;
         WebElement listSubTypeParent = sbc.getDriver().findElement(By.xpath(".//div[@class ='sc-kafWEX yOUGM']"));
         List<WebElement> listSubType = listSubTypeParent.findElements(By.tagName("div"));
-        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-tilXH')]"));
+        List<WebElement> listSilentEC = sbc.getDriver().findElements(By.xpath(".//div[contains(@class, 'sc-hEsumM')]"));
         lastSubMontage = subType;
         clearTypeMontage();
         switch (subType) {
@@ -465,7 +465,7 @@ public class SystemairBrowserService extends BrowserServiceImpl {
         /*
             "AEUnf" - вкл.
             "hKkcrT" - выкл.
-         */
+        */
         for (int i = 0; i < list.size(); i++) {
             if (i == i1 || i == i2) {
                 if (list.get(i).getAttribute("class").contains("hKkcrT"))
