@@ -31,13 +31,13 @@ public class BCastFanApplication extends Application {
         Thread.setDefaultUncaughtExceptionHandler(BCastFanApplication::showError);
         FXMLLoader fxmlLoader = new FXMLLoader(BCastFanApplication.class.getResource("main-view.fxml"));
         UtilClass.initProperties();
-        try {
-            validatePassword(SECURITY_CODE);
-        } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.info("Ключ просрочен!");
-            exit(0);
-        }
+//        try {
+//            validatePassword(SECURITY_CODE);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            LOGGER.info("Ключ просрочен!");
+//            exit(0);
+//        }
         Scene scene = new Scene(fxmlLoader.load());
         stage.getIcons().add(new Image("/logo.ico"));
         stage.setTitle("Подбор вентиляторов");

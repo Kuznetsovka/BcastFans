@@ -3,10 +3,7 @@ package com.systemair.bcastfans.domain;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class FanUnit {
     private final SimpleStringProperty name;
@@ -22,13 +19,14 @@ public class FanUnit {
     private final SimpleStringProperty dimension;
     private final CheckBox check = new CheckBox();
     private Fan fan;
+    private List<Element> elements = new ArrayList<>();
     private Map<Integer, String> row = new HashMap<>();
 
     public FanUnit(ArrayList<String> columns) {
         check.setSelected(columns.get(0).equals("Да"));
         this.name = new SimpleStringProperty(columns.get(1));
         this.airFlow = new SimpleStringProperty(columns.get(2));
-        this.airDrop = new SimpleStringProperty(columns.get(3));
+        this.airDrop = new SimpleStringProperty(columns.get(7));
         this.typeMontage = TypeMontage.getByDescription(columns.get(4));
         if (columns.size() > 5)
             this.subType = SubType.getByDescription(columns.get(5));
@@ -43,7 +41,13 @@ public class FanUnit {
         } else {
             this.dimension = new SimpleStringProperty("");
         }
-
+        elements.add(new Element("Клапан",columns.get(12),columns.get(13)));
+        elements.add(new Element("Фильтр1",columns.get(16),columns.get(17)));
+        elements.add(new Element("Фильтр2",columns.get(20),columns.get(21)));
+        elements.add(new Element("Шумоглушитель",columns.get(24),columns.get(25)));
+        elements.add(new Element("Эл. нагреватель",columns.get(30),columns.get(31)));
+        elements.add(new Element("Нагреватель",columns.get(40),columns.get(44)));
+        elements.add(new Element("Охладитель",columns.get(53),columns.get(57)));
     }
 
     public Fan getFan() {
@@ -57,7 +61,7 @@ public class FanUnit {
         this.power = new SimpleStringProperty(fan.getPower().toString());
         this.phase = new SimpleStringProperty(fan.getPhase());
         this.price = new SimpleStringProperty(fan.getPrice().toString());
-        createMapFan();
+        //createMapFan();
     }
 
     public CheckBox getCheck() {
@@ -198,6 +202,7 @@ public class FanUnit {
     }
 
     public Map<Integer, String> getRow() {
+        createMapFan();
         return row;
     }
 
@@ -216,6 +221,17 @@ public class FanUnit {
             row.put(9, String.valueOf(fan.getPower()));
             row.put(10, fan.getPhase());
             row.put(11, String.valueOf(fan.getPrice()));
+        } else {
+            row.put(7, "");
+            row.put(8, "");
+            row.put(9, "");
+            row.put(10, "");
+            row.put(11, "");
+        }
+        int count = 0;
+        for (int i = 12; i < 25; i += 2) {
+            row.put(i,elements.get(count).getModel());
+            row.put(i + 1,elements.get(count++).getPressureDrop());
         }
     }
 

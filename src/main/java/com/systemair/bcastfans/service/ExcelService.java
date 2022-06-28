@@ -22,4 +22,6 @@ public interface ExcelService {
     void createCellsInWorksheet(Sheet worksheet, TableView<FanUnit> table);
 
     Workbook reOpen();
+
+    void fillWorksheetFromOL(Sheet worksheet);
 }

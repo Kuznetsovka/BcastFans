@@ -61,10 +61,10 @@ public class FindByTwoCriteria implements FreeRefFunction {
             int column = ((AreaEval) eval).getFirstColumn();
             TwoDEval ae = ((TwoDEval) eval).getColumn(0);
             int rowCount = ((AreaEval) ae).getLastRow();
+            int firstRow = ((AreaEval) ae).getFirstRow();
             List<ValueEval> list = new ArrayList<>();
-            int i = -1;
-            while (i++ < rowCount) {
-                list.add(OperandResolver.getSingleValue(ae.getValue(i, column), i, column));
+            for (int i = firstRow; i <= rowCount; i++) {
+                list.add(OperandResolver.getSingleValue(eval,i,column));
             }
             return list;
         }
@@ -73,32 +73,32 @@ public class FindByTwoCriteria implements FreeRefFunction {
 
     public Integer getIndex(List<Double> table1, List<Double> table2, String criteria, Double searchValue1, Double searchValue2, int count) {
         int entrance = 1;
+        int result;
         for (int i = 0; i < table1.size(); i++) {
-            switch (criteria) {
-                case ">":
-                    if (table1.get(i) > searchValue1)
-                        if (isSuit(table2, searchValue2, count, entrance, i)) return i;
-                case "<":
-                    if (table1.get(i) < searchValue1)
-                        if (isSuit(table2, searchValue2, count, entrance, i)) return i;
-                case "=":
-                    if (table1.get(i).equals(searchValue1))
-                        if (isSuit(table2, searchValue2, count, entrance, i)) return i;
-                case ">=":
-                    if (table1.get(i) >= searchValue1)
-                        if (isSuit(table2, searchValue2, count, entrance, i)) return i;
-                case "<=":
-                    if (table1.get(i) <= searchValue1)
-                        if (isSuit(table2, searchValue2, count, entrance, i)) return i;
-                default:
-                    entrance++;
+            if (isSuit(criteria, table1.get(i), table2.get(i), searchValue1, searchValue2)) {
+                result = i;
+                if (count == entrance)
+                    return result;
+                else entrance++;
             }
         }
         return table1.size() + 1;
     }
 
-    private boolean isSuit(List<Double> table2, Double searchValue2, int count, int entrance, int i) {
-        return table2.get(i) >= searchValue2 && count == entrance;
+    private boolean isSuit(String criteria, Double table1Value, Double table2Value, Double searchValue1, Double searchValue2) {
+        switch (criteria) {
+            case ">":
+                return table1Value > searchValue1 && table2Value >= searchValue2;
+            case "<":
+                return table1Value < searchValue1 && table2Value >= searchValue2;
+            case "=":
+                return table1Value.equals(searchValue1) && table2Value >= searchValue2;
+            case ">=":
+                return table1Value >= searchValue1 && table2Value >= searchValue2;
+            case "<=":
+                return table1Value <= searchValue1 && table2Value >= searchValue2;
+        }
+        return false;
     }
 
     /**

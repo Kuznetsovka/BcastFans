@@ -54,8 +54,12 @@ public class ExcelServiceImpl implements ExcelService {
     }
 
     @Override
+    public void fillWorksheetFromOL(Sheet worksheet) {
+    }
+
+    @Override
     public ArrayList<ArrayList<String>> loadCellsFromWorksheet(Sheet worksheet) {
-        int lastColumn = 7;
+        int lastColumn = 58;
         int row = 0;
         ArrayList<ArrayList<String>> cells = new ArrayList<>();
         ArrayList<String> rows;
@@ -65,6 +69,8 @@ public class ExcelServiceImpl implements ExcelService {
                 Cell cell = worksheet.getRow(row).getCell(column);
                 if (cell != null)
                     rows.add(parseCell(cell));
+                else
+                    rows.add("");
             }
             if (!rows.isEmpty())
                 cells.add(rows);
@@ -93,7 +99,7 @@ public class ExcelServiceImpl implements ExcelService {
     @Override
     public void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table) {
         String url;
-        int lastColumn = table.getColumns().size();
+        int lastColumn = 26;
         int countSystems = table.getItems().size();
         Cell[] cell = new XSSFCell[lastColumn];
         for (int count = 0; count < countSystems; count++) {
@@ -153,7 +159,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public void setHeader(Sheet worksheet, TableView<FanUnit> table) {
-        int lastColumn = table.getColumns().size();
+        int lastColumn = 26;
         Cell[] cell = new XSSFCell[lastColumn];
         for (int i = 0; i < lastColumn; i++) {
             cell[i] = worksheet.getRow(0).createCell(i, CellType.STRING);
@@ -170,6 +176,20 @@ public class ExcelServiceImpl implements ExcelService {
         cell[9].setCellValue("Мощность");
         cell[10].setCellValue("Фазность");
         cell[11].setCellValue("Цена");
+        cell[12].setCellValue("Клапан");
+        cell[13].setCellValue("Потери");
+        cell[14].setCellValue("Фильтр1");
+        cell[15].setCellValue("Потери");
+        cell[16].setCellValue("Фильтр2");
+        cell[17].setCellValue("Потери");
+        cell[18].setCellValue("Шумоглушитель");
+        cell[19].setCellValue("Потери");
+        cell[20].setCellValue("Эл. нагреватель");
+        cell[21].setCellValue("Потери");
+        cell[22].setCellValue("Нагреватель");
+        cell[23].setCellValue("Потери");
+        cell[24].setCellValue("Охладитель");
+        cell[25].setCellValue("Потери");
     }
 
 }

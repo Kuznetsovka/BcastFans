@@ -2,8 +2,7 @@ package com.systemair.bcastfans.staticClasses;
 
 import com.systemair.bcastfans.MyCatchException;
 import com.systemair.bcastfans.domain.FanUnit;
-import com.systemair.bcastfans.macroses.FindByTwoCriteria;
-import com.systemair.bcastfans.macroses.Polinom;
+import com.systemair.bcastfans.macroses.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TableView;
 import javafx.stage.FileChooser;
@@ -13,6 +12,7 @@ import org.apache.poi.ss.formula.udf.AggregatingUDFFinder;
 import org.apache.poi.ss.formula.udf.DefaultUDFFinder;
 import org.apache.poi.ss.formula.udf.UDFFinder;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Workbook;
 
@@ -127,9 +127,11 @@ public class UtilClass {
                 case FORMULA:
                     FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                     evaluator.evaluateFormulaCell(cell);
-
                     evaluator.evaluate(cell);
-                    return String.valueOf(round(cell.getNumericCellValue()));
+                    if (evaluator.evaluateFormulaCell(cell) == CellType.NUMERIC) {
+                        return String.valueOf(round(cell.getNumericCellValue()));
+                    }
+                    return String.valueOf(cell.getRichStringCellValue());
                 case ERROR:
                     throw new MyCatchException("В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.WARNING);
             }
@@ -138,14 +140,16 @@ public class UtilClass {
                 throw new MyCatchException("Ошибка считывания данных, не должно быть формул" + "В ячейке " + cell.getAddress() + " найдена ошибка!", Alert.AlertType.ERROR);
             } catch (MyCatchException ex) {
                 ex.printStackTrace();
+            } finally {
+                return "";
             }
         }
         return "";
     }
 
     public static void registryCustomFunction(Workbook workbook) {
-        String[] functionNames = {"findByTwoCriteria", "polinom"};
-        FreeRefFunction[] functionImpls = {new FindByTwoCriteria(), new Polinom()};
+        String[] functionNames = {"findByTwoCriteria", "polinom","Ro","Cp","FindByIndex"};
+        FreeRefFunction[] functionImpls = {new FindByTwoCriteria(), new Polinom(),new Ro(),new Cp(), new FindByIndex()};
         UDFFinder udfs = new DefaultUDFFinder(functionNames, functionImpls);
         UDFFinder udfToolpack = new AggregatingUDFFinder(udfs);
         workbook.addToolPack(udfToolpack);
