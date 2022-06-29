@@ -15,13 +15,7 @@ public interface ExcelService {
 
     void fillWorksheetFromGUI(Sheet worksheet, TableView<FanUnit> table);
 
-    ArrayList<ArrayList<String>> loadFansWorksheet(Sheet worksheet);
-
     void setHeader(Sheet worksheet, TableView<FanUnit> table);
 
     void createCellsInWorksheet(Sheet worksheet, TableView<FanUnit> table);
-
-    Workbook reOpen();
-
-    void fillWorksheetFromOL(Sheet worksheet);
 }

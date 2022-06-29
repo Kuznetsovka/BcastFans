@@ -196,7 +196,6 @@ public class TableController implements Initializable {
         excelServiceImpl.createCellsInWorksheet(worksheet, table);
         excelServiceImpl.setHeader(worksheet, table);
         excelServiceImpl.fillWorksheetFromGUI(worksheet, table);
-        excelServiceImpl.fillWorksheetFromOL(worksheet);
         try {
             FileOutputStream outFile = UtilClass.getFileOutputStream(table, PATH_WORK);
             if (outFile == null) return;
