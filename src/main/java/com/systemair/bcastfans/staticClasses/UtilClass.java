@@ -29,6 +29,7 @@ import static javafx.application.Platform.runLater;
 
 public class UtilClass {
     private static final String PROPERTY_FILE = "C:/ProgramData/DriverChrome/config.properties";
+    public static final String CACHE_FOLDER = "C:/ProgramData/DriverChrome/";
     private static final Logger LOGGER = Logger.getLogger(UtilClass.class.getName());
     public static String PATH_WORK;
     public static String CHROME_DRIVER;

@@ -8,6 +8,7 @@ module com.systemair.bcastfans {
     requires java.desktop;
     requires org.apache.poi.poi;
     requires org.apache.poi.ooxml;
+    requires io.github.bonigarcia.webdrivermanager;
 
     opens com.systemair.bcastfans to javafx.fxml;
     exports com.systemair.bcastfans;

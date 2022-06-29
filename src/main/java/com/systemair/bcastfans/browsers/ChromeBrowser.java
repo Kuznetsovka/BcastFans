@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.browsers;
 
 import com.systemair.bcastfans.MyCatchException;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -23,6 +24,7 @@ public class ChromeBrowser {
     public ChromeBrowser() {
         try {
             System.setProperty("webdriver.chrome.driver", CHROME_DRIVER);
+            System.setProperty("user.home", CACHE_FOLDER);
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setBrowserVersion("93");
             chromeOptions.addArguments("start-maximized");
@@ -34,6 +36,7 @@ public class ChromeBrowser {
             chromeOptions.addArguments("--disable-dev-shm-usage");
             chromeOptions.addArguments("--disable-browser-side-navigation");
             chromeOptions.addArguments("--disable-gpu");
+            WebDriverManager.edgedriver().setup();
             driver = new ChromeDriver(chromeOptions);
             // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)

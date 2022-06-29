@@ -18,10 +18,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static com.systemair.bcastfans.service.SecurityService.validatePassword;
-import static com.systemair.bcastfans.staticClasses.UtilClass.SECURITY_CODE;
-import static java.lang.System.exit;
-
 public class BCastFanApplication extends Application {
     private static final Logger LOGGER = Logger.getLogger(BCastFanApplication.class.getName());
 

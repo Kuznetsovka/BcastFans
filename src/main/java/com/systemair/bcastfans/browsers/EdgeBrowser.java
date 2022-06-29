@@ -1,6 +1,7 @@
 package com.systemair.bcastfans.browsers;
 
 import com.systemair.bcastfans.MyCatchException;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import javafx.scene.control.Alert;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -22,11 +23,13 @@ public class EdgeBrowser {
     public EdgeBrowser() {
         try {
             System.setProperty("webdriver.edge.driver", EDGE_DRIVER);
+            System.setProperty("user.home",CACHE_FOLDER);
             EdgeOptions edgeOptions = new EdgeOptions();
             edgeOptions.addArguments("start-maximized");
             edgeOptions.addArguments("enable-automation");
             if (!HEAD)
                 edgeOptions.addArguments("--headless");
+            WebDriverManager.edgedriver().setup();
             driver = new EdgeDriver(edgeOptions);
             // Ожидание 40 секунд, опрос каждые 0.5 секунды
             wait = new FluentWait<>(driver)
